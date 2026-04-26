@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Términos y Condiciones · Inmuebles Audiovisuales</title>
+<meta name="description" content="Términos y condiciones del contrato de servicios audiovisuales inmobiliarios de Inmuebles Audiovisuales, Monterrey, NL.">
+<link rel="canonical" href="https://inmueblesaudiovisuales.com/terminos.html"/>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E2C289;
+    --gold-dim: rgba(201,168,76,0.12);
+    --charcoal: #1C1C1E;
+    --charcoal2: #2A2A2D;
+    --concrete: #9B9B9F;
+    --surface: #F9F7F4;
+    --white: #FAFAFA;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--white);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.7;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(250,250,250,0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(28,28,30,0.08);
+  }
+
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-inner img {
+    height: 36px;
+    width: auto;
+  }
+
+  .header-badge {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--concrete);
+  }
+
+  /* ── HERO ── */
+  .doc-hero {
+    background: var(--charcoal);
+    padding: 64px 24px 56px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .doc-hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 260px; height: 260px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,.12);
+    pointer-events: none;
+  }
+
+  .doc-hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -60px;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,.07);
+    pointer-events: none;
+  }
+
+  .doc-hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  .doc-hero-label {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+  }
+
+  .doc-hero h1 {
+    font-size: clamp(24px, 4vw, 36px);
+    font-weight: 900;
+    letter-spacing: -.025em;
+    line-height: 1.1;
+    color: var(--white);
+    margin-bottom: 16px;
+  }
+
+  .doc-hero p {
+    font-size: 14px;
+    color: var(--concrete);
+    line-height: 1.7;
+  }
+
+  .gold-line {
+    width: 40px;
+    height: 2px;
+    background: var(--gold);
+    margin: 24px auto 0;
+    border-radius: 2px;
+  }
+
+  /* ── LAYOUT ── */
+  .doc-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px 80px;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  @media (max-width: 720px) {
+    .doc-wrap { grid-template-columns: 1fr; gap: 0; }
+    .doc-toc { display: none; }
+  }
+
+  /* ── TABLE OF CONTENTS ── */
+  .doc-toc {
+    position: sticky;
+    top: 80px;
+    padding-top: 48px;
+  }
+
+  .doc-toc-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 16px;
+    display: block;
+  }
+
+  .doc-toc ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .doc-toc a {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--concrete);
+    text-decoration: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    display: block;
+    transition: all .2s;
+    line-height: 1.4;
+  }
+
+  .doc-toc a:hover {
+    color: var(--charcoal);
+    background: var(--gold-dim);
+  }
+
+  .doc-toc a.active {
+    color: var(--gold);
+    background: var(--gold-dim);
+  }
+
+  /* ── CONTENT ── */
+  .doc-content {
+    padding-top: 48px;
+  }
+
+  /* Datos del contrato */
+  .doc-meta {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    border: 1px solid rgba(28,28,30,.06);
+  }
+
+  .doc-meta-title {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 16px;
+  }
+
+  .doc-meta-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 24px;
+  }
+
+  @media (max-width: 480px) {
+    .doc-meta-grid { grid-template-columns: 1fr; }
+  }
+
+  .doc-meta-item label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .doc-meta-item span {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+  }
+
+  /* Cláusulas */
+  .clause {
+    margin-bottom: 48px;
+    scroll-margin-top: 90px;
+  }
+
+  .clause-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid rgba(28,28,30,.07);
+  }
+
+  .clause-num {
+    width: 32px;
+    height: 32px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--charcoal);
+    flex-shrink: 0;
+  }
+
+  .clause h2 {
+    font-size: 15px;
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: var(--charcoal);
+  }
+
+  .clause p {
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: #444;
+    margin-bottom: 14px;
+  }
+
+  .clause p:last-child { margin-bottom: 0; }
+
+  .clause ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .clause ul li {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: #444;
+    padding-left: 18px;
+    position: relative;
+  }
+
+  .clause ul li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    position: absolute;
+    left: 0;
+    top: 10px;
+  }
+
+  .clause strong {
+    font-weight: 700;
+    color: var(--charcoal);
+  }
+
+  /* Highlight box */
+  .highlight-box {
+    background: var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--charcoal);
+  }
+
+  /* Divider */
+  .clause-divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201,168,76,.3), transparent);
+    margin: 48px 0;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    background: var(--charcoal);
+    padding: 40px 24px;
+    text-align: center;
+  }
+
+  .doc-footer img {
+    height: 32px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    margin-bottom: 16px;
+  }
+
+  .doc-footer p {
+    font-size: 11px;
+    color: var(--concrete);
+    letter-spacing: .06em;
+    line-height: 1.8;
+  }
+
+  .doc-footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  /* ── ANIMACIONES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  .doc-hero-inner > * {
+    animation: fadeUp .5s cubic-bezier(.22,1,.36,1) both;
+  }
+  .doc-hero-inner > *:nth-child(1) { animation-delay: 0ms; }
+  .doc-hero-inner > *:nth-child(2) { animation-delay: 80ms; }
+  .doc-hero-inner > *:nth-child(3) { animation-delay: 160ms; }
+  .doc-hero-inner > *:nth-child(4) { animation-delay: 220ms; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity .5s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="/">
+      <img src="logo.svg" alt="Inmuebles Audiovisuales">
+    </a>
+    <span class="header-badge">Términos y Condiciones</span>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="doc-hero">
+  <div class="doc-hero-inner">
+    <span class="doc-hero-label">Documento legal · Monterrey, NL</span>
+    <h1>Contrato de Servicios Audiovisuales Inmobiliarios</h1>
+    <p>Este documento establece los términos y condiciones que rigen la prestación de servicios de producción multimedia de Inmuebles Audiovisuales. Léelo con atención antes de confirmar tu sesión.</p>
+    <div class="gold-line"></div>
+  </div>
+</section>
+
+<!-- CONTENIDO -->
+<div class="doc-wrap">
+
+  <!-- ÍNDICE -->
+  <aside class="doc-toc">
+    <span class="doc-toc-label">Contenido</span>
+    <ul>
+      <li><a href="#c1">1. Pre-producción</a></li>
+      <li><a href="#c2">2. Logística y Acceso</a></li>
+      <li><a href="#c3">3. Estado del Inmueble</a></li>
+      <li><a href="#c4">4. Áreas Comunes</a></li>
+      <li><a href="#c5">5. Talento en Cámara</a></li>
+      <li><a href="#c6">6. Ejecución y Drones</a></li>
+      <li><a href="#c7">7. Entregables y Revisiones</a></li>
+      <li><a href="#c8">8. Condiciones de Pago</a></li>
+      <li><a href="#c9">9. Horarios de Atención</a></li>
+      <li><a href="#c10">10. Cancelaciones</a></li>
+      <li><a href="#c11">11. Uso Promocional</a></li>
+      <li><a href="#c12">12. Experiencia del Servicio</a></li>
+    </ul>
+  </aside>
+
+  <!-- CLÁUSULAS -->
+  <main class="doc-content">
+
+    <!-- C1 -->
+    <article class="clause reveal" id="c1">
+      <div class="clause-header">
+        <div class="clause-num">01</div>
+        <h2>Pre-producción y Planificación</h2>
+      </div>
+      <p>Para garantizar la máxima calidad y eficiencia en el servicio, el cliente deberá proporcionar la siguiente información al momento de la contratación:</p>
+      <ul>
+        <li><strong>Ubicación de la propiedad:</strong> Enlace exacto de Google Maps, acompañado del nombre de la calle y el número exterior e interior. Se solicita, de manera preferente, una fotografía de la fachada como referencia visual para el equipo al momento de la llegada.</li>
+        <li><strong>Elementos de identidad visual:</strong> Cualquier texto, nombre del agente, datos de contacto o logotipos que deban integrarse en el material final deberán ser entregados al proveedor previo a la sesión. No se aceptarán adiciones de logotipos o textos una vez iniciada la fase de edición sin que esto genere un costo adicional.</li>
+        <li><strong>Requerimientos técnicos:</strong> Tipo y formato de contenido requerido (fotografía, video, drone, recorrido virtual inmersivo, formato vertical u horizontal) y referencias visuales de inspiración (opcional). En caso de no recibir referencias previas, el cliente acepta que el proyecto se ejecutará bajo el criterio y la dirección creativa exclusiva del proveedor.</li>
+        <li><strong>Especificaciones para Terrenos y Lotes:</strong> En el caso de terrenos o lotes baldíos, el cliente tiene la obligación de proporcionar documentación técnica (planos o levantamientos) y una referencia visual clara (screenshot de Google Maps con perímetro delineado) que permita identificar los límites exactos de la propiedad. El proveedor no se hace responsable por material capturado fuera de los límites reales si estos no fueron señalados con precisión. Cualquier re-grabación derivada de una identificación incorrecta por falta de información tendrá el costo completo del servicio original.</li>
+      </ul>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C2 -->
+    <article class="clause reveal" id="c2">
+      <div class="clause-header">
+        <div class="clause-num">02</div>
+        <h2>Logística y Acceso a la Propiedad</h2>
+      </div>
+      <p><strong>Gestión de Acceso:</strong> Es responsabilidad absoluta del cliente garantizar que el equipo de producción tenga libre acceso a la locación en la fecha y hora acordadas.</p>
+      <p><strong>Accesos Restringidos:</strong> En fraccionamientos privados o zonas que requieran código QR, invitación digital o registro previo, el cliente deberá gestionarlo y proporcionarlo al proveedor con la debida anticipación. Cualquier demora en el ingreso derivada de la falta de gestión de accesos se descontará del tiempo total asignado a la sesión.</p>
+      <div class="highlight-box">
+        <strong>Tiempos de Espera:</strong> Se otorgará un periodo de tolerancia máximo de 20 minutos sobre la hora acordada. En caso de que el cliente o encargado demore más de este tiempo en otorgar el acceso al inmueble, se podrá aplicar un cargo extra por tiempo de espera o la sesión estará sujeta a cancelación sin derecho a reembolso del anticipo.
+      </div>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C3 -->
+    <article class="clause reveal" id="c3">
+      <div class="clause-header">
+        <div class="clause-num">03</div>
+        <h2>Estado del Inmueble y Preparación</h2>
+      </div>
+      <ul>
+        <li><strong>Preparación de la Propiedad:</strong> La propiedad será documentada exactamente en las condiciones en las que se encuentre al momento de la llegada del equipo. El proveedor no realiza labores de limpieza, no oculta objetos personales ni reubica mobiliario pesado. El cliente es el único responsable de asegurar que el inmueble se encuentre impecable y listo para la grabación.</li>
+        <li><strong>Objetos Personales:</strong> En propiedades habitadas, es responsabilidad del cliente retirar previamente cualquier objeto de carácter personal (fotografías, documentos, artículos íntimos, etc.) que no desee que aparezca en el material. El proveedor no realizará retiro físico de objetos durante la sesión ni eliminación digital de los mismos en postproducción, salvo cotización adicional.</li>
+        <li><strong>Vehículos:</strong> Se solicita que al momento de la sesión no haya vehículos estacionados frente a la propiedad o en áreas que interfieran con la captura de fachada y tomas aéreas. El proveedor no se responsabiliza por la presencia de vehículos de terceros ajenos al inmueble.</li>
+        <li><strong>Iluminación y Cortinas:</strong> Para agilizar la sesión, se solicita que al momento de la llegada del equipo todas las luminarias del inmueble se encuentren encendidas y las persianas o cortinas abiertas, salvo indicación contraria del proveedor.</li>
+        <li><strong>Ocupantes del Inmueble:</strong> Durante la sesión, se solicita que todas las personas presentes en el inmueble, incluyendo niños, permanezcan concentradas en una sola área o habitación designada, con el fin de agilizar el flujo de trabajo y evitar interrupciones en la captura del material.</li>
+        <li><strong>Mascotas:</strong> Con el fin de salvaguardar la integridad del equipo técnico y evitar interferencias sonoras en el material, cualquier mascota deberá permanecer resguardada en un área cerrada o fuera del inmueble durante la totalidad de la sesión.</li>
+      </ul>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C4 -->
+    <article class="clause reveal" id="c4">
+      <div class="clause-header">
+        <div class="clause-num">04</div>
+        <h2>Áreas Comunes y Amenidades</h2>
+      </div>
+      <p><strong>Gestión de Permisos:</strong> La captura de imágenes o video en amenidades (tales como albercas, gimnasios, casas club o áreas verdes) está estrictamente sujeta a la autorización previa de la administración del condominio o fraccionamiento.</p>
+      <p><strong>Limitaciones:</strong> Es responsabilidad del cliente tramitar dichos permisos. Si al momento de la sesión el personal de seguridad prohíbe la grabación o el vuelo de drone en dichas áreas, el proveedor quedará eximido de toda responsabilidad respecto a la omisión de este material en la entrega final.</p>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C5 -->
+    <article class="clause reveal" id="c5">
+      <div class="clause-header">
+        <div class="clause-num">05</div>
+        <h2>Presencia de Agentes y Talento en Cámara</h2>
+      </div>
+      <p><strong>Preparación Previa:</strong> Todo agente inmobiliario o presentador que vaya a aparecer en cámara deberá presentarse a la hora acordada debidamente arreglado (maquillaje, peinado y vestuario).</p>
+      <p><strong>Memorización de Guion:</strong> Es de carácter obligatorio que el talento cuente con su guion completamente memorizado y ensayado antes de iniciar. El proveedor no suministra equipo de teleprompter. Los retrasos excesivos originados por errores constantes de locución o falta de preparación afectarán el tiempo total de la sesión y podrán generar cargos adicionales por tiempo extraordinario.</p>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C6 -->
+    <article class="clause reveal" id="c6">
+      <div class="clause-header">
+        <div class="clause-num">06</div>
+        <h2>Ejecución, Drones y Restricciones</h2>
+      </div>
+      <p><strong>Flujo de Trabajo:</strong> El flujo y orden de captura serán definidos enteramente por el proveedor bajo su criterio creativo y técnico. Si el cliente tiene preferencias o requerimientos específicos respecto al orden o enfoque de las tomas, deberá comunicarlos antes del inicio de la sesión. Una vez comenzada la grabación, no se aceptarán modificaciones estructurales al flujo de trabajo ni al material capturado.</p>
+      <p><strong>Vuelo de Drone:</strong> El servicio aéreo se encuentra estrictamente subordinado a las regulaciones locales y a las condiciones meteorológicas. Si el inmueble se ubica en una zona de restricción de vuelo o si el clima representa un riesgo (lluvia, vientos fuertes), la operación no se llevará a cabo por motivos de seguridad y legalidad, eximiendo al proveedor de responsabilidad.</p>
+      <p><strong>Limitaciones Generales:</strong> El proveedor no asume responsabilidad por elementos inestéticos en el entorno (cableado, obras aledañas) o condiciones externas ajenas a su control.</p>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C7 -->
+    <article class="clause reveal" id="c7">
+      <div class="clause-header">
+        <div class="clause-num">07</div>
+        <h2>Entregables, Edición y Revisiones</h2>
+      </div>
+      <p><strong>Tiempos y Método de Entrega:</strong> El material finalizado será entregado de forma digital mediante un enlace de Google Drive, en un plazo de 3 días hábiles posteriores a la sesión, una vez que el servicio haya sido liquidado en su totalidad. Es responsabilidad del cliente descargar los archivos a sus propios dispositivos a la brevedad.</p>
+      <p><strong>Archivos Originales:</strong> El servicio ampara de manera exclusiva la entrega del material final editado. Bajo ninguna circunstancia se proporcionarán archivos crudos (RAW), material de video sin editar o proyectos de software de edición.</p>
+      <p><strong>Retoque Digital y Postproducción:</strong> La edición estándar contempla únicamente la corrección de color y ajuste de iluminación. No se incluye limpieza digital profunda, tal como eliminación de cableado, remoción de vehículos, reparación virtual de desperfectos físicos o montaje virtual de mobiliario (Virtual Staging). Cualquier requerimiento de alteración digital de la realidad requerirá una cotización independiente.</p>
+      <p><strong>Locución con Inteligencia Artificial:</strong> En caso de que el proyecto incluya una narración generada por IA, el cliente deberá enviar el guion final aprobado previo a la fase de edición. Si el cliente omite entregar dicho guion y delega la redacción y generación de voz al proveedor, el resultado final se considerará definitivo y no estará sujeto a modificaciones, cambios de redacción ni regrabaciones en posteriores rondas de revisión.</p>
+      <p><strong>Música para Redes Sociales:</strong> Los videos se entregan acompañados de música de biblioteca libre de derechos de autor. En caso de que el cliente desee emplear piezas musicales comerciales en tendencia, será su entera responsabilidad agregarlas directamente desde las plataformas digitales (Instagram o TikTok) al momento de su publicación.</p>
+      <div class="highlight-box">
+        <strong>Rondas de Revisión:</strong> El servicio contempla un máximo de 2 rondas de correcciones menores (supresión de clips específicos o modificación de textos en pantalla). No se aceptarán cambios estructurales como re-edición completa, cambio de concepto creativo, cambio de música o reordenamiento drástico de tomas. Las solicitudes de revisión deberán enviarse invariablemente por escrito.
+      </div>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C8 -->
+    <article class="clause reveal" id="c8">
+      <div class="clause-header">
+        <div class="clause-num">08</div>
+        <h2>Tarifas y Condiciones de Pago</h2>
+      </div>
+      <p><strong>Transferencia bancaria:</strong> Se requiere un anticipo del 50% para agendar la sesión. El 50% restante deberá liquidarse al notificar que la primera versión está lista.</p>
+      <p><strong>Meses Sin Intereses (MSI):</strong> Se requerirá el pago del 100% del paquete en una sola exhibición a través del enlace de pago oficial de Inmuebles Audiovisuales, previo a la sesión.</p>
+      <div class="highlight-box">
+        No se enviarán enlaces de descarga definitiva en alta resolución hasta que el servicio esté liquidado en su totalidad. El anticipo no es reembolsable en caso de cancelación; sin embargo, podrá aplicarse como crédito a una nueva fecha dentro de un periodo razonable, sujeto a disponibilidad.
+      </div>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C9 -->
+    <article class="clause reveal" id="c9">
+      <div class="clause-header">
+        <div class="clause-num">09</div>
+        <h2>Horarios de Comunicación y Atención</h2>
+      </div>
+      <p><strong>Disponibilidad:</strong> La comunicación con el cliente, así como la recepción de solicitudes, retroalimentación y envío de entregables, se llevará a cabo de manera exclusiva en días hábiles (lunes a viernes) en horario comercial. No se brindará atención en días festivos oficiales.</p>
+      <p><strong>Mensajes Fuera de Horario:</strong> Toda solicitud, mensaje o instrucción recibida fuera de los horarios establecidos, incluyendo fines de semana y días festivos, será considerada como recibida a primera hora del día hábil inmediato siguiente.</p>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C10 -->
+    <article class="clause reveal" id="c10">
+      <div class="clause-header">
+        <div class="clause-num">10</div>
+        <h2>Cancelaciones, Reagendamientos y Almacenamiento</h2>
+      </div>
+      <p><strong>Cancelaciones:</strong> Las solicitudes de cambio de fecha notificadas con menos de 24 horas de anticipación causarán un cargo adicional equivalente al 25% del total del servicio contratado. No aplicarán cargos si el reagendamiento obedece a condiciones climáticas adversas que imposibiliten la grabación.</p>
+      <p><strong>Almacenamiento en la Nube:</strong> Los archivos finales permanecerán alojados en Google Drive por un periodo máximo de 30 días naturales posteriores a la entrega. Transcurrido dicho plazo, el proveedor se reserva el derecho de eliminar los archivos sin previo aviso.</p>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C11 -->
+    <article class="clause reveal" id="c11">
+      <div class="clause-header">
+        <div class="clause-num">11</div>
+        <h2>Uso Promocional</h2>
+      </div>
+      <p>El proveedor retiene los derechos para utilizar el contenido generado con fines promocionales, integración a su portafolio profesional y difusión en sus propias plataformas.</p>
+    </article>
+
+    <div class="clause-divider"></div>
+
+    <!-- C12 -->
+    <article class="clause reveal" id="c12">
+      <div class="clause-header">
+        <div class="clause-num">12</div>
+        <h2>Sobre la Experiencia del Servicio</h2>
+      </div>
+      <p>El servicio está diseñado para ofrecer una representación visual estratégica y de alto impacto de cada propiedad, optimizada para atraer compradores potenciales. Cada proyecto se desarrolla bajo un enfoque creativo y técnico definido, por lo que las decisiones de producción y edición buscan maximizar la calidad final y la efectividad comercial del contenido.</p>
+    </article>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="doc-footer">
+  <img src="logo.svg" alt="Inmuebles Audiovisuales">
+  <p>© 2026 Inmuebles Audiovisuales · Monterrey, Nuevo León, México<br>
+  <a href="/">inmueblesaudiovisuales.com</a> · <a href="https://wa.me/528127174207">WhatsApp</a></p>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// TOC active state
+const clauses = document.querySelectorAll('.clause');
+const tocLinks = document.querySelectorAll('.doc-toc a');
+const tocObserver = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const link = document.querySelector('.doc-toc a[href="#' + e.target.id + '"]');
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+clauses.forEach(c => tocObserver.observe(c));
+</script>
+
+</body>
+</html>
