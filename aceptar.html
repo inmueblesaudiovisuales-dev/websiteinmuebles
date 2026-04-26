@@ -375,6 +375,65 @@
 
   .field-conditional.visible { display: block; }
 
+  .greeting {
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--charcoal);
+    letter-spacing: -.02em;
+    margin-bottom: 4px;
+  }
+
+  .greeting span { color: var(--gold); }
+
+  .greeting-sub {
+    font-size: 13px;
+    color: var(--concrete);
+    margin-bottom: 24px;
+  }
+
+  .entregables-list {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+
+  .entregables-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 10px;
+  }
+
+  .entregables-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .entregables-list ul li {
+    font-size: 12px;
+    color: #555;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    line-height: 1.5;
+  }
+
+  .entregables-list ul li:last-child { border-bottom: none; }
+
+  .entregables-list ul li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
 
   footer {
     text-align: center;
@@ -443,6 +502,12 @@
   <!-- FORMULARIO -->
   <div id="state-form">
 
+    <!-- Saludo personalizado -->
+    <div id="greeting-wrap">
+      <p class="greeting">Hola, <span id="txt-saludo">—</span>.</p>
+      <p class="greeting-sub">Revisa los detalles de tu sesión y completa tu información para generar el contrato.</p>
+    </div>
+
     <!-- Resumen del servicio -->
     <div class="card">
       <div class="service-header">
@@ -470,17 +535,18 @@
         <span class="service-row-label">Fecha de sesión</span>
         <span class="service-row-value" id="txt-fecha">—</span>
       </div>
+      <div class="entregables-list">
+        <p class="entregables-title">Incluido en tu paquete</p>
+        <ul id="txt-entregables"></ul>
+      </div>
     </div>
 
     <!-- Datos personales -->
     <div class="card">
       <p class="form-section-title">Tus datos</p>
 
-      <div class="field" id="field-nombre">
-        <label for="inp-nombre">Nombre completo *</label>
-        <input type="text" id="inp-nombre" placeholder="Como aparecerá en el contrato">
-        <span class="field-error">Este campo es obligatorio</span>
-      </div>
+      <!-- Campo oculto con el nombre (se envía al script pero no se muestra) -->
+      <input type="hidden" id="inp-nombre">
 
       <div class="field" id="field-correo">
         <label for="inp-correo">Correo electrónico *</label>
@@ -511,9 +577,9 @@
       </div>
 
       <div class="field" id="field-mapas">
-        <label for="inp-mapas">Enlace de Google Maps *</label>
-        <input type="url" id="inp-mapas" placeholder="https://maps.google.com/...">
-        <span class="field-error">Ingresa el enlace de Google Maps</span>
+        <label for="inp-mapas">Enlace de ubicación *</label>
+        <input type="text" id="inp-mapas" placeholder="Google Maps, Apple Maps, Waze...">
+        <span class="field-error">Ingresa el enlace de ubicación</span>
       </div>
 
       <div class="field">
@@ -533,9 +599,51 @@
           <option value="">Selecciona una opción</option>
           <option value="Horizontal (16:9) — YouTube, sitios web y pantallas">Horizontal — YouTube, sitios web y pantallas</option>
           <option value="Vertical (9:16) — Reels, TikTok e Instagram">Vertical — Reels, TikTok e Instagram</option>
-          <option value="Ambos formatos — Requiere cotización adicional">Ambos formatos — Requiere cotización adicional</option>
         </select>
         <span class="field-error">Selecciona una opción</span>
+      </div>
+
+      <div class="field" id="field-tipo">
+        <label>¿La propiedad es para venta o renta? *</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" name="tipo-yn" id="tipo-venta" value="Venta">
+            <label for="tipo-venta">Venta</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" name="tipo-yn" id="tipo-renta" value="Renta">
+            <label for="tipo-renta">Renta</label>
+          </div>
+        </div>
+        <span class="field-error" id="field-tipo-error" style="display:none">Selecciona una opción</span>
+      </div>
+
+      <div class="field">
+        <label for="inp-precio-prop">Precio de venta o renta (opcional)</label>
+        <input type="text" id="inp-precio-prop" placeholder="Ej: $3,500,000 o $12,000/mes">
+      </div>
+
+      <div class="field">
+        <label for="inp-presentes">¿Quién estará presente el día de la sesión? (opcional)</label>
+        <input type="text" id="inp-presentes" placeholder="Ej: el agente, el dueño, nadie — tienen llave">
+      </div>
+
+      <div class="field">
+        <label for="inp-destacar">¿Qué aspectos son los más importantes de la propiedad? (opcional)</label>
+        <textarea id="inp-destacar" placeholder="Ej: la alberca tiene vista panorámica, la sala tiene techo de doble altura, la cocina es el punto fuerte..."></textarea>
+        <p class="field-hint">Esto ayuda a Bruno a priorizar qué grabar y cómo enfocar el video.</p>
+      </div>
+
+      <div class="field">
+        <label for="inp-referencias-estilo">Referencias de estilo (opcional)</label>
+        <textarea id="inp-referencias-estilo" placeholder="Pega links de videos de YouTube, Instagram o TikTok que te gusten, o describe el estilo que buscas."></textarea>
+        <p class="field-hint">Entre más referencias, más fácil es llegar al resultado que tienes en mente.</p>
+      </div>
+
+      <div class="field">
+        <label for="inp-caracteristicas">Características de la propiedad (opcional)</label>
+        <textarea id="inp-caracteristicas" placeholder="Escribe lo que normalmente pondrías al publicarla: recámaras, baños, m², amenidades, lo que quieras destacar..."></textarea>
+        <p class="field-hint">Este texto puede usarse como base para el copy de publicación.</p>
       </div>
 
       <div class="field">
@@ -571,6 +679,7 @@
           <input type="checkbox" id="chk-terminos">
           <label for="chk-terminos">He leído y acepto los términos y condiciones del contrato de Inmuebles Audiovisuales.</label>
         </div>
+        <p id="chk-terminos-error" style="display:none;font-size:11px;color:var(--error);margin-top:8px">Debes aceptar los términos y condiciones para continuar.</p>
       </div>
 
       <button class="btn-submit" id="btn-submit" onclick="submitForm()">
@@ -625,16 +734,98 @@
       }
 
       // Llenar resumen
-      document.getElementById('txt-paquete').textContent  = data.paquete;
-      document.getElementById('txt-nombre').textContent   = data.nombre || '—';
-      document.getElementById('txt-precio').textContent   = data.precio;
-      document.getElementById('txt-anticipo').textContent = data.anticipo;
-      document.getElementById('txt-fecha').textContent    = data.fecha;
+      document.getElementById('txt-paquete').textContent = data.paquete;
+      document.getElementById('txt-nombre').textContent  = data.nombre || '—';
 
-      // Pre-llenar nombre en el campo del formulario
-      if (data.nombre) {
-        document.getElementById('inp-nombre').value = data.nombre;
+      // Precio y anticipo: usar valor del servidor, con fallback calculado localmente
+      const precioNum = parseFloat(String(data.precioRaw || data.precio || '').replace(/[^0-9.]/g, ''));
+      if (!isNaN(precioNum) && precioNum > 0) {
+        const fmt = n => '$' + n.toLocaleString('es-MX', { minimumFractionDigits: 0 }) + ' MXN';
+        document.getElementById('txt-precio').textContent   = fmt(precioNum);
+        document.getElementById('txt-anticipo').textContent = fmt(precioNum / 2);
+      } else {
+        // El servidor ya los mandó formateados
+        document.getElementById('txt-precio').textContent   = data.precio   || '—';
+        document.getElementById('txt-anticipo').textContent = data.anticipo  || '—';
       }
+
+      // Fecha: separar día y hora en dos líneas si contiene " · "
+      const fechaEl = document.getElementById('txt-fecha');
+      if (data.fecha && data.fecha.includes(' · ')) {
+        const [dia, hora] = data.fecha.split(' · ');
+        fechaEl.innerHTML = dia + '<br><span style="font-weight:500;color:var(--concrete)">' + hora + '</span>';
+      } else {
+        fechaEl.textContent = data.fecha || '—';
+      }
+
+      // Saludo personalizado
+      const nombreCorto = (data.nombre || '').split(' ')[0];
+      document.getElementById('txt-saludo').textContent = nombreCorto || 'bienvenido';
+
+      // Pre-llenar nombre en el campo oculto
+      document.getElementById('inp-nombre').value = data.nombre || '';
+
+      // Entregables
+      const entregablesMap = {
+        'Residencial Esencial': [
+          'Fotografía profesional (35–50 imágenes en alta resolución)',
+          'Video cinemático (30–60 segundos con colorización profesional y música)',
+          'Video y fotografía aérea con drone',
+          'Grabación de amenidades',
+        ],
+        'Residencial Plus': [
+          'Fotografía profesional (35–50 imágenes en alta resolución)',
+          'Video cinemático (30–60 segundos con colorización profesional y música)',
+          'Video y fotografía aérea con drone',
+          'Grabación de amenidades',
+          'Recorrido virtual inmersivo (hospedaje en la nube incluido)',
+          'Narración profesional con inteligencia artificial',
+          'Contenido para redes sociales (3 videos verticales)',
+        ],
+        'Residencial Premium': [
+          'Fotografía profesional (35–50 imágenes en alta resolución)',
+          'Video cinemático (30–60 segundos con colorización profesional y música)',
+          'Video y fotografía aérea con drone',
+          'Grabación de amenidades',
+          'Recorrido virtual inmersivo (hospedaje en la nube incluido)',
+          'Narración profesional con inteligencia artificial',
+          'Contenido para redes sociales (3 videos verticales)',
+          'Video cómo llegar (animación satelital)',
+          'Folleto digital PDF',
+          'Landing page propia para la propiedad',
+        ],
+        'Terreno Esencial': [
+          'Video cinemático aéreo (30–60 segundos)',
+          'Animación gráfica de perímetro con tracking 3D',
+          'Fotografía aérea con delimitado del terreno',
+          'Grabación de amenidades del fraccionamiento',
+        ],
+        'Terreno Plus': [
+          'Video cinemático aéreo (30–60 segundos)',
+          'Animación gráfica de perímetro con tracking 3D',
+          'Fotografía aérea con delimitado del terreno',
+          'Grabación de amenidades del fraccionamiento',
+          'Visualización de potencial con inteligencia artificial (render)',
+          'Recorrido virtual inmersivo aéreo',
+          'Narración profesional con inteligencia artificial',
+        ],
+        'Terreno Premium': [
+          'Video cinemático aéreo (30–60 segundos)',
+          'Animación gráfica de perímetro con tracking 3D',
+          'Fotografía aérea con delimitado del terreno',
+          'Grabación de amenidades del fraccionamiento',
+          'Visualización de potencial con inteligencia artificial (render)',
+          'Recorrido virtual inmersivo aéreo',
+          'Narración profesional con inteligencia artificial',
+          'Video cómo llegar (animación satelital)',
+          'Folleto digital PDF',
+          'Landing page propia para el terreno',
+        ],
+      };
+
+      const lista = entregablesMap[data.paquete] || [];
+      const ul = document.getElementById('txt-entregables');
+      ul.innerHTML = lista.map(e => `<li>${e}</li>`).join('');
 
       showState('state-form');
 
@@ -653,11 +844,10 @@
     let valid = true;
 
     const fields = [
-      { id: 'inp-nombre',    fieldId: 'field-nombre',      check: v => v.length > 1 },
-      { id: 'inp-correo',    fieldId: 'field-correo',      check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
-      { id: 'inp-telefono',  fieldId: 'field-telefono',    check: v => v.length >= 10 },
-      { id: 'inp-direccion', fieldId: 'field-direccion',   check: v => v.length > 4 },
-      { id: 'inp-mapas',     fieldId: 'field-mapas',       check: v => v.startsWith('http') },
+      { id: 'inp-correo',      fieldId: 'field-correo',      check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
+      { id: 'inp-telefono',    fieldId: 'field-telefono',    check: v => v.length >= 10 },
+      { id: 'inp-direccion',   fieldId: 'field-direccion',   check: v => v.length > 4 },
+      { id: 'inp-mapas',       fieldId: 'field-mapas',       check: v => v.length > 4 },
       { id: 'inp-orientacion', fieldId: 'field-orientacion', check: v => v !== '' },
     ];
 
@@ -669,12 +859,34 @@
       if (!ok) valid = false;
     });
 
-    if (!document.getElementById('chk-terminos').checked) {
-      alert('Debes aceptar los términos y condiciones para continuar.');
+    // Validar venta/renta
+    const tipoChecked = document.querySelector('input[name="tipo-yn"]:checked');
+    const tipoError = document.getElementById('field-tipo-error');
+    if (!tipoChecked) {
+      document.getElementById('field-tipo').classList.add('has-error');
+      tipoError.style.display = 'block';
       valid = false;
+    } else {
+      document.getElementById('field-tipo').classList.remove('has-error');
+      tipoError.style.display = 'none';
     }
 
-    if (!valid) return;
+    // Validar términos
+    const chk = document.getElementById('chk-terminos');
+    const chkError = document.getElementById('chk-terminos-error');
+    if (!chk.checked) {
+      chkError.style.display = 'block';
+      valid = false;
+    } else {
+      chkError.style.display = 'none';
+    }
+
+    // Scroll al primer error
+    if (!valid) {
+      const firstError = document.querySelector('.has-error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
 
     // Deshabilitar botón
     const btn = document.getElementById('btn-submit');
@@ -682,6 +894,18 @@
     btn.textContent = 'Generando contrato...';
 
     try {
+      // Validar venta/renta
+      const tipoChecked = document.querySelector('input[name="tipo-yn"]:checked');
+      const tipoError = document.getElementById('field-tipo-error');
+      if (!tipoChecked) {
+        document.getElementById('field-tipo').classList.add('has-error');
+        tipoError.style.display = 'block';
+        valid = false;
+      } else {
+        document.getElementById('field-tipo').classList.remove('has-error');
+        tipoError.style.display = 'none';
+      }
+
       const identidadYN  = document.querySelector('input[name="identidad-yn"]:checked');
       const identidadVal = identidadYN ? identidadYN.value : 'no';
       const identidadDetalle = identidadVal === 'si'
@@ -689,16 +913,22 @@
         : 'No';
 
       const payload = {
-        token      : currentToken,
-        nombre     : document.getElementById('inp-nombre').value.trim(),
-        correo     : document.getElementById('inp-correo').value.trim(),
-        telefono   : document.getElementById('inp-telefono').value.trim(),
-        agencia    : document.getElementById('inp-agencia').value.trim(),
-        direccion  : document.getElementById('inp-direccion').value.trim(),
-        mapas      : document.getElementById('inp-mapas').value.trim(),
-        referencias: document.getElementById('inp-referencias').value.trim(),
-        orientacion: document.getElementById('inp-orientacion').value,
-        identidad  : identidadDetalle,
+        token             : currentToken,
+        nombre            : document.getElementById('inp-nombre').value.trim(),
+        correo            : document.getElementById('inp-correo').value.trim(),
+        telefono          : document.getElementById('inp-telefono').value.trim(),
+        agencia           : document.getElementById('inp-agencia').value.trim(),
+        direccion         : document.getElementById('inp-direccion').value.trim(),
+        mapas             : document.getElementById('inp-mapas').value.trim(),
+        referencias       : document.getElementById('inp-referencias').value.trim(),
+        orientacion       : document.getElementById('inp-orientacion').value,
+        tipo              : tipoChecked ? tipoChecked.value : '',
+        precioProp        : document.getElementById('inp-precio-prop').value.trim(),
+        presentes         : document.getElementById('inp-presentes').value.trim(),
+        destacar          : document.getElementById('inp-destacar').value.trim(),
+        referenciasEstilo : document.getElementById('inp-referencias-estilo').value.trim(),
+        caracteristicas   : document.getElementById('inp-caracteristicas').value.trim(),
+        identidad         : identidadDetalle,
       };
 
       const res  = await fetch(SCRIPT_URL, {
