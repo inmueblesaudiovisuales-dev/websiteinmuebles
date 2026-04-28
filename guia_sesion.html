@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Antes de tu sesión — Inmuebles Audiovisuales</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.10);
+    --charcoal: #1C1C1E;
+    --charcoal2: #2A2A2D;
+    --concrete: #9B9B9F;
+    --surface: #F5F5F7;
+    --white: #FAFAFA;
+    --text: #333333;
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--white);
+    color: var(--charcoal);
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    width: 794px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--charcoal);
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header img {
+    height: 52px;
+    width: auto;
+  }
+
+  .header-badge {
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  .header-badge span {
+    display: block;
+    color: var(--gold);
+    font-size: 9px;
+  }
+
+  /* Línea dorada */
+  .gold-line {
+    height: 2px;
+    background: linear-gradient(90deg, var(--gold), rgba(201,168,76,0.2));
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 40px 48px 32px;
+    border-bottom: 1px solid rgba(28,28,30,0.08);
+  }
+
+  .hero-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    display: block;
+    margin-bottom: 12px;
+  }
+
+  .hero h1 {
+    font-size: 28px;
+    font-weight: 900;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+    color: var(--charcoal);
+    margin-bottom: 10px;
+  }
+
+  .hero p {
+    font-size: 12px;
+    color: var(--concrete);
+    font-weight: 400;
+    line-height: 1.7;
+    max-width: 480px;
+  }
+
+  /* ── CONTENIDO ── */
+  .content {
+    padding: 0 48px 48px;
+  }
+
+  /* Sección */
+  .section {
+    margin-top: 36px;
+  }
+
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(28,28,30,0.08);
+  }
+
+  .section-title-bar {
+    width: 3px;
+    height: 18px;
+    background: var(--gold);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .section-title h2 {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: .18em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+  }
+
+  .section-title .section-count {
+    font-size: 8px;
+    font-weight: 600;
+    color: var(--concrete);
+    margin-left: auto;
+    letter-spacing: .06em;
+  }
+
+  /* Grid de items */
+  .items-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .items-grid.single {
+    grid-template-columns: 1fr;
+  }
+
+  /* Item */
+  .item {
+    background: var(--white);
+    border: 1px solid rgba(28,28,30,0.07);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    break-inside: avoid;
+  }
+
+  .item-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 5px;
+  }
+
+  .item-body {}
+
+  .item-title {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+    letter-spacing: -.01em;
+  }
+
+  .item-desc {
+    font-size: 9px;
+    color: #555;
+    line-height: 1.65;
+    font-weight: 400;
+  }
+
+  /* Separador entre secciones */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201,168,76,0.3), transparent);
+    margin: 32px 0 0;
+  }
+
+  /* Highlight para terrenos */
+  .terrenos-note {
+    background: var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    font-size: 9px;
+    color: var(--charcoal);
+    line-height: 1.6;
+    font-weight: 500;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--charcoal);
+    padding: 18px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+  }
+
+  .footer p {
+    font-size: 8px;
+    color: var(--concrete);
+    letter-spacing: .08em;
+    line-height: 1.7;
+  }
+
+  .footer a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+
+  .footer-whatsapp {
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--gold);
+    letter-spacing: .06em;
+  }
+
+  @media print {
+    body { width: 100%; }
+    .item { break-inside: avoid; }
+    .section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <img src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">
+  <div class="header-badge">
+    <span>Guía de sesión</span>
+    Inmuebles Audiovisuales · 2026
+  </div>
+</div>
+<div class="gold-line"></div>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-label">Antes de tu sesión</span>
+  <h1>Todo listo para<br>producir algo increíble.</h1>
+  <p>Estos puntos nos ayudan a garantizar la mejor calidad en cada sesión. Léelos con calma antes del día acordado.</p>
+</div>
+
+<!-- CONTENIDO -->
+<div class="content">
+
+  <!-- SECCIÓN GENERAL -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-title-bar"></div>
+      <h2>Para todas las propiedades</h2>
+      <span class="section-count">16 puntos</span>
+    </div>
+
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Propiedad lista</div>
+          <div class="item-desc">Llega con el inmueble limpio y ordenado. Todas las luces encendidas y cortinas abiertas al momento de nuestra llegada.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Sin vehículos</div>
+          <div class="item-desc">Libera el frente de la propiedad y áreas de fachada antes de nuestra llegada para no interferir con la captura exterior y tomas aéreas.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Mascotas y personas</div>
+          <div class="item-desc">Concentra a todos los ocupantes en una sola área durante la sesión. Las mascotas deben permanecer resguardadas en un área cerrada o fuera del inmueble.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Accesos</div>
+          <div class="item-desc">Si la propiedad está en fraccionamiento privado o requiere QR, código o invitación digital, envíanoslo por WhatsApp al menos un día antes.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Drone</div>
+          <div class="item-desc">El vuelo aéreo depende del clima y permisos de la zona. Si hay alguna limitante el día de la sesión, te avisamos con anticipación.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Identidad visual</div>
+          <div class="item-desc">Si quieres que aparezca tu nombre, logo o datos de contacto en el material, envíanoslos antes de la sesión. No se aceptan cambios una vez iniciada la edición.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Referencias de estilo</div>
+          <div class="item-desc">Si tienes fotos o videos de referencia de cómo te gustaría el resultado, compártelos antes. Sin referencias, el criterio creativo es nuestro.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Agente en cámara</div>
+          <div class="item-desc">Si vas a aparecer en video, llega con vestuario, peinado y guion completamente memorizado. No contamos con teleprompter.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Música</div>
+          <div class="item-desc">El material se entrega con música libre de derechos. Si quieres música en tendencia, agrégala tú directamente desde Instagram o TikTok al publicar.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Revisiones</div>
+          <div class="item-desc">Tienes hasta 2 rondas de correcciones menores. Envíalas siempre por escrito.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Archivos</div>
+          <div class="item-desc">Solo entregamos material final editado. No se entregan archivos en crudo ni proyectos de edición bajo ninguna circunstancia.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Entrega del material</div>
+          <div class="item-desc">Al estar listo, recibirás una versión en baja resolución para revisión. Una vez liquidado el saldo, enviamos la versión final en alta. Los ajustes menores se trabajan después del pago.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Horarios de comunicación</div>
+          <div class="item-desc">Respondemos en días hábiles en horario comercial. Mensajes de fin de semana o festivos los atendemos el siguiente día hábil.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Almacenamiento</div>
+          <div class="item-desc">Tus archivos estarán disponibles en Google Drive por 30 días naturales. Descárgalos a tiempo, después de ese plazo los eliminamos.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Áreas comunes</div>
+          <div class="item-desc">Si quieres incluir amenidades como alberca o gimnasio, tramita el permiso con la administración antes. Sin permiso no podemos grabar ahí.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Propiedad habitada</div>
+          <div class="item-desc">Retira antes fotos, documentos y objetos personales que no quieras que aparezcan. No realizamos retiro ni edición digital de objetos personales.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider"></div>
+
+  <!-- SECCIÓN TERRENOS -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-title-bar"></div>
+      <h2>Para terrenos y lotes</h2>
+      <span class="section-count">6 puntos adicionales</span>
+    </div>
+
+    <div class="terrenos-note">
+      Si tu propiedad es un terreno o lote baldío, estos puntos adicionales son importantes para garantizar una captura precisa y de calidad.
+    </div>
+
+    <div class="items-grid">
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Delimitación física</div>
+          <div class="item-desc">Si es posible, marca los límites del terreno con estacas, cinta o cualquier referencia visible antes de nuestra llegada. Facilita mucho la captura aérea.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Screenshot con perímetro</div>
+          <div class="item-desc">Envíanos un screenshot de Google Maps con el perímetro del terreno claramente delineado. Sin esta referencia no podemos garantizar que capturemos los límites correctos.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Acceso al terreno</div>
+          <div class="item-desc">Asegúrate de que la entrada esté desbloqueada y sin obstáculos. Si hay candado o reja, coordina quién nos abre antes de la sesión.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Orientación</div>
+          <div class="item-desc">Indícanos cuál es el frente oficial del terreno y hacia dónde da. Esto define desde dónde tomamos las tomas principales.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Contexto del entorno</div>
+          <div class="item-desc">Si hay elementos del entorno que quieras destacar como vista, avenida principal o servicios cercanos, menciónalo antes para incluirlo en la captura aérea.</div>
+        </div>
+      </div>
+
+      <div class="item">
+        <div class="item-dot"></div>
+        <div class="item-body">
+          <div class="item-title">Planos o levantamiento</div>
+          <div class="item-desc">Si cuentas con planos o un levantamiento topográfico, compártelos antes de la sesión. Nos ayudan a entender la geometría exacta del terreno.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<div class="gold-line"></div>
+<div class="footer">
+  <p>© 2026 Inmuebles Audiovisuales · Monterrey, Nuevo León, México<br>
+  <a href="https://inmueblesaudiovisuales.com">inmueblesaudiovisuales.com</a></p>
+  <div class="footer-whatsapp">wa.me/5218127174207</div>
+</div>
+
+</body>
+</html>
