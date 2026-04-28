@@ -202,6 +202,55 @@
     line-height: 1.5;
   }
 
+  /* ── FILE INPUT ── */
+  .file-upload-wrap {
+    margin-top: 10px;
+  }
+
+  .file-upload-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  .file-upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background: var(--gold-dim);
+    border: 1.5px solid var(--gold);
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: background .2s;
+    white-space: nowrap;
+  }
+
+  .file-upload-btn:hover { background: rgba(201,168,76,.22); }
+
+  .file-upload-name {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--concrete);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 200px;
+  }
+
+  .file-upload-name.has-file { color: var(--charcoal); }
+
+  input[type="file"].file-input-hidden {
+    display: none;
+  }
+
   .field-error {
     font-size: 11px;
     color: var(--error);
@@ -650,6 +699,16 @@
         <label for="inp-referencias-estilo">Referencias de estilo (opcional)</label>
         <textarea id="inp-referencias-estilo" placeholder="Pega links de videos de YouTube, Instagram o TikTok que te gusten, o describe el estilo que buscas."></textarea>
         <p class="field-hint">Entre más referencias, más fácil es llegar al resultado que tienes en mente.</p>
+        <div class="file-upload-wrap">
+          <label class="file-upload-label" for="inp-file-estilo">
+            <span class="file-upload-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              Subir imagen de referencia
+            </span>
+            <span class="file-upload-name" id="nombre-file-estilo">Ningún archivo</span>
+          </label>
+          <input type="file" id="inp-file-estilo" class="file-input-hidden" accept="image/jpeg,image/png,image/webp,application/pdf" onchange="actualizarNombreArchivo('inp-file-estilo','nombre-file-estilo')">
+        </div>
       </div>
 
       <div class="field">
@@ -673,6 +732,16 @@
         <div class="field-conditional" id="field-identidad-detalle">
           <label for="inp-identidad" style="margin-top:0">¿Qué datos quieres incluir?</label>
           <textarea id="inp-identidad" placeholder="Nombre, teléfono, correo, sitio web, etc."></textarea>
+          <div class="file-upload-wrap">
+            <label class="file-upload-label" for="inp-file-identidad">
+              <span class="file-upload-btn">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Subir logo o imagen
+              </span>
+              <span class="file-upload-name" id="nombre-file-identidad">Ningún archivo</span>
+            </label>
+            <input type="file" id="inp-file-identidad" class="file-input-hidden" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="actualizarNombreArchivo('inp-file-identidad','nombre-file-identidad')">
+          </div>
         </div>
       </div>
 
@@ -861,6 +930,39 @@
     }
   }
 
+  function actualizarNombreArchivo(inputId, labelId) {
+    const input = document.getElementById(inputId);
+    const label = document.getElementById(labelId);
+    if (input.files && input.files[0]) {
+      label.textContent = input.files[0].name;
+      label.classList.add('has-file');
+    } else {
+      label.textContent = 'Ningún archivo';
+      label.classList.remove('has-file');
+    }
+  }
+
+  function leerArchivoBase64(inputId) {
+    return new Promise((resolve) => {
+      const input = document.getElementById(inputId);
+      if (!input || !input.files || !input.files[0]) {
+        resolve(null);
+        return;
+      }
+      const archivo = input.files[0];
+      const reader = new FileReader();
+      reader.onload = () => {
+        resolve({
+          nombre: archivo.name,
+          tipo: archivo.type,
+          base64: reader.result.split(',')[1],
+        });
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(archivo);
+    });
+  }
+
   async function submitForm() {
     // Validar campos
     let valid = true;
@@ -933,7 +1035,6 @@
       return;
     }
 
-    // Deshabilitar botón
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
     btn.textContent = 'Generando contrato...';
@@ -956,6 +1057,12 @@
       const identidadDetalle = identidadVal === 'si'
         ? document.getElementById('inp-identidad').value.trim()
         : 'No';
+
+      // Leer archivos opcionales
+      const [archivoEstilo, archivoIdentidad] = await Promise.all([
+        leerArchivoBase64('inp-file-estilo'),
+        leerArchivoBase64('inp-file-identidad'),
+      ]);
 
       const payload = {
         token             : currentToken,
@@ -982,6 +1089,9 @@
         })(),
         comentarios       : document.getElementById('inp-comentarios').value.trim(),
       };
+
+      if (archivoEstilo)    payload.archivoEstilo    = archivoEstilo;
+      if (archivoIdentidad) payload.archivoIdentidad = archivoIdentidad;
 
       const res  = await fetch(SCRIPT_URL, {
         method : 'POST',
