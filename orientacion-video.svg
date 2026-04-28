@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 320" role="img" aria-label="Referencia visual de orientación de video horizontal y vertical">
+  <title>Orientación del video: horizontal y vertical</title>
+  <desc>Dos celulares lado a lado mostrando las dos orientaciones disponibles.</desc>
+
+  <!-- ── HORIZONTAL ── -->
+  <g transform="translate(40, 60)">
+    <!-- Carcasa del celular horizontal -->
+    <rect x="0" y="20" width="240" height="140" rx="16" fill="#1C1C1E"/>
+    <!-- Pantalla -->
+    <rect x="10" y="30" width="220" height="120" rx="6" fill="#FAFAFA"/>
+    <!-- Botón de play -->
+    <circle cx="120" cy="90" r="28" fill="#C9A84C"/>
+    <path d="M 113 78 L 113 102 L 133 90 Z" fill="#1C1C1E"/>
+    <!-- Detalle: cámara/sensor lateral -->
+    <circle cx="5" cy="90" r="2" fill="#3a3a3c"/>
+
+    <!-- Etiqueta -->
+    <text x="120" y="210" text-anchor="middle" font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#1C1C1E" letter-spacing="2.5">HORIZONTAL</text>
+    <text x="120" y="232" text-anchor="middle" font-family="Montserrat, sans-serif" font-size="11" font-weight="500" fill="#9B9B9F">YouTube · Sitios web · Pantallas</text>
+  </g>
+
+  <!-- Línea divisoria sutil -->
+  <line x1="300" y1="80" x2="300" y2="260" stroke="#E8E8EA" stroke-width="1"/>
+
+  <!-- ── VERTICAL ── -->
+  <g transform="translate(360, 30)">
+    <!-- Carcasa del celular vertical -->
+    <rect x="60" y="0" width="120" height="220" rx="16" fill="#1C1C1E"/>
+    <!-- Pantalla -->
+    <rect x="70" y="10" width="100" height="200" rx="6" fill="#FAFAFA"/>
+    <!-- Botón de play -->
+    <circle cx="120" cy="110" r="28" fill="#C9A84C"/>
+    <path d="M 113 98 L 113 122 L 133 110 Z" fill="#1C1C1E"/>
+    <!-- Detalle: cámara superior -->
+    <circle cx="120" cy="18" r="2" fill="#3a3a3c"/>
+
+    <!-- Etiqueta -->
+    <text x="120" y="240" text-anchor="middle" font-family="Montserrat, sans-serif" font-size="14" font-weight="700" fill="#1C1C1E" letter-spacing="2.5">VERTICAL</text>
+    <text x="120" y="262" text-anchor="middle" font-family="Montserrat, sans-serif" font-size="11" font-weight="500" fill="#9B9B9F">Reels · TikTok · Instagram</text>
+  </g>
+
+</svg>
