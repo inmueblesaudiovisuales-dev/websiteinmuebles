@@ -617,7 +617,7 @@
 
       <div class="field" id="field-telefono">
         <label for="inp-telefono">Teléfono móvil *</label>
-        <input type="tel" id="inp-telefono" placeholder="10 dígitos">
+        <input type="text" id="inp-telefono" placeholder="Ej: 8127174207, +52 81 2717 4207, (81) 2717-4207" inputmode="tel">
         <span class="field-error">Este campo es obligatorio</span>
       </div>
 
@@ -952,7 +952,7 @@
 
     const fields = [
       { id: 'inp-correo',      fieldId: 'field-correo',      check: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) },
-      { id: 'inp-telefono',    fieldId: 'field-telefono',    check: v => v.length >= 10 },
+      { id: 'inp-telefono',    fieldId: 'field-telefono',    check: v => v.replace(/\D/g, '').length >= 8 },
       { id: 'inp-direccion',   fieldId: 'field-direccion',   check: v => v.length > 4 },
       { id: 'inp-mapas',       fieldId: 'field-mapas',       check: v => v.length > 4 },
       { id: 'inp-orientacion', fieldId: 'field-orientacion', check: v => v !== '' },
