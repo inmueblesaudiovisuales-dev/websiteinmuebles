@@ -816,67 +816,29 @@
       // Pre-llenar nombre en el campo oculto
       document.getElementById('inp-nombre').value = data.nombre || '';
 
-      // Entregables
-      const entregablesMap = {
-        'Residencial Esencial': [
-          'Fotografía profesional (35–50 imágenes en alta resolución)',
-          'Video cinemático (30–60 segundos con colorización profesional y música)',
-          'Video y fotografía aérea con drone',
-          'Grabación de amenidades',
-        ],
-        'Residencial Plus': [
-          'Fotografía profesional (35–50 imágenes en alta resolución)',
-          'Video cinemático (30–60 segundos con colorización profesional y música)',
-          'Video y fotografía aérea con drone',
-          'Grabación de amenidades',
-          'Recorrido virtual inmersivo (hospedaje en la nube incluido)',
-          'Narración profesional con inteligencia artificial',
-          'Contenido para redes sociales (3 videos verticales)',
-        ],
-        'Residencial Premium': [
-          'Fotografía profesional (35–50 imágenes en alta resolución)',
-          'Video cinemático (30–60 segundos con colorización profesional y música)',
-          'Video y fotografía aérea con drone',
-          'Grabación de amenidades',
-          'Recorrido virtual inmersivo (hospedaje en la nube incluido)',
-          'Narración profesional con inteligencia artificial',
-          'Contenido para redes sociales (3 videos verticales)',
-          'Video cómo llegar (animación satelital)',
-          'Folleto digital PDF',
-          'Landing page propia para la propiedad',
-        ],
-        'Terreno Esencial': [
-          'Video cinemático aéreo (30–60 segundos)',
-          'Animación gráfica de perímetro con tracking 3D',
-          'Fotografía aérea con delimitado del terreno',
-          'Grabación de amenidades del fraccionamiento',
-        ],
-        'Terreno Plus': [
-          'Video cinemático aéreo (30–60 segundos)',
-          'Animación gráfica de perímetro con tracking 3D',
-          'Fotografía aérea con delimitado del terreno',
-          'Grabación de amenidades del fraccionamiento',
-          'Visualización de potencial con inteligencia artificial (render)',
-          'Recorrido virtual inmersivo aéreo',
-          'Narración profesional con inteligencia artificial',
-        ],
-        'Terreno Premium': [
-          'Video cinemático aéreo (30–60 segundos)',
-          'Animación gráfica de perímetro con tracking 3D',
-          'Fotografía aérea con delimitado del terreno',
-          'Grabación de amenidades del fraccionamiento',
-          'Visualización de potencial con inteligencia artificial (render)',
-          'Recorrido virtual inmersivo aéreo',
-          'Narración profesional con inteligencia artificial',
-          'Video cómo llegar (animación satelital)',
-          'Folleto digital PDF',
-          'Landing page propia para el terreno',
-        ],
-      };
-
-      const lista = entregablesMap[data.paquete] || [];
+      // Entregables: vienen directo del token, separados por · o por salto de línea
+      const entregablesRaw = data.entregables || '';
       const ul = document.getElementById('txt-entregables');
-      ul.innerHTML = lista.map(e => `<li>${e}</li>`).join('');
+      if (entregablesRaw.trim()) {
+        // Si el texto contiene · (formato de opción de Form) separar por ·, quitando el nombre del paquete al inicio
+        let items = [];
+        if (entregablesRaw.includes('·')) {
+          const partes = entregablesRaw.split('·').map(s => s.trim()).filter(Boolean);
+          // La primera parte puede ser "Nombre del paquete — primer entregable", separar por " — "
+          if (partes.length > 0 && partes[0].includes(' — ')) {
+            const [, primerItem] = partes[0].split(' — ');
+            items = [primerItem, ...partes.slice(1)].filter(Boolean);
+          } else {
+            items = partes;
+          }
+        } else {
+          // Formato línea por línea (campo "Otro" o texto libre)
+          items = entregablesRaw.split('\n').map(s => s.replace(/^-\s*/, '').trim()).filter(Boolean);
+        }
+        ul.innerHTML = items.map(e => `<li>${e}</li>`).join('');
+      } else {
+        ul.innerHTML = '';
+      }
 
       showState('state-form');
 
