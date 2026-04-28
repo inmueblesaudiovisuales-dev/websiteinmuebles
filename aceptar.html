@@ -740,7 +740,8 @@
               </span>
               <span class="file-upload-name" id="nombre-file-identidad">Ningún archivo</span>
             </label>
-            <input type="file" id="inp-file-identidad" class="file-input-hidden" accept="image/jpeg,image/png,image/webp,image/svg+xml,application/pdf" onchange="actualizarNombreArchivo('inp-file-identidad','nombre-file-identidad')">
+            <input type="file" id="inp-file-identidad" class="file-input-hidden" accept="image/jpeg,image/png,image/webp,application/pdf" onchange="actualizarNombreArchivo('inp-file-identidad','nombre-file-identidad')">
+            <p class="field-hint" style="margin-top:8px">Si subes un logo, idealmente en PNG con fondo transparente y alta resolución.</p>
           </div>
         </div>
       </div>
@@ -762,7 +763,7 @@
       <div id="field-brand-detalle" style="display:none;margin-top:14px">
         <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:6px">
           <input type="checkbox" id="chk-logo" style="width:18px;height:18px;min-width:18px;flex-shrink:0;margin-top:2px;accent-color:var(--gold);cursor:pointer;padding:0;border:none;background:none;-webkit-appearance:auto;appearance:auto">
-          <label for="chk-logo" style="font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer;line-height:1.5;text-transform:none;letter-spacing:0;margin-bottom:0;display:inline">Confirmo que enviaré mi logo a <strong>inmueblesaudiovisuales@gmail.com</strong> antes de la fecha de sesión, con mi nombre completo como asunto, en alta definición, con fondo transparente, en formato PNG o SVG.</label>
+          <label for="chk-logo" style="font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer;line-height:1.5;text-transform:none;letter-spacing:0;margin-bottom:0;display:inline">Confirmo que subiré mi logo en este formulario o lo enviaré a <strong>inmueblesaudiovisuales@gmail.com</strong> antes de la fecha de sesión, con mi nombre completo como asunto, en alta definición, con fondo transparente, en formato PNG.</label>
         </div>
         <p id="chk-logo-error" style="display:none;font-size:11px;color:var(--error);margin-bottom:10px;margin-top:4px">Debes confirmar el envío del logo para continuar.</p>
         <div style="margin-top:14px;margin-bottom:18px">
@@ -934,7 +935,18 @@
     const input = document.getElementById(inputId);
     const label = document.getElementById(labelId);
     if (input.files && input.files[0]) {
-      label.textContent = input.files[0].name;
+      // Validar tamaño máximo: 5 MB
+      const MAX_BYTES = 5 * 1024 * 1024;
+      const archivo = input.files[0];
+      if (archivo.size > MAX_BYTES) {
+        const tamMB = (archivo.size / (1024 * 1024)).toFixed(1);
+        alert('El archivo "' + archivo.name + '" pesa ' + tamMB + ' MB. El máximo permitido es 5 MB. Por favor sube uno más liviano.');
+        input.value = '';
+        label.textContent = 'Ningún archivo';
+        label.classList.remove('has-file');
+        return;
+      }
+      label.textContent = archivo.name;
       label.classList.add('has-file');
     } else {
       label.textContent = 'Ningún archivo';
@@ -950,6 +962,24 @@
         return;
       }
       const archivo = input.files[0];
+
+      // Validar tamaño máximo: 5 MB
+      const MAX_BYTES = 5 * 1024 * 1024;
+      if (archivo.size > MAX_BYTES) {
+        const tamMB = (archivo.size / (1024 * 1024)).toFixed(1);
+        alert('El archivo "' + archivo.name + '" pesa ' + tamMB + ' MB. El máximo permitido es 5 MB. Por favor sube uno más liviano.');
+        // Limpiar input y etiqueta
+        input.value = '';
+        const labelId = inputId === 'inp-file-estilo' ? 'nombre-file-estilo' : 'nombre-file-identidad';
+        const label = document.getElementById(labelId);
+        if (label) {
+          label.textContent = 'Ningún archivo';
+          label.classList.remove('has-file');
+        }
+        resolve(null);
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = () => {
         resolve({
