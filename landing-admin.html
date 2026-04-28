@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Landing Pages · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.12);
+    --gold-dim2: rgba(201,168,76,0.07);
+    --charcoal: #1C1C1E;
+    --surface: #242426;
+    --surface2: #2c2c2e;
+    --border: rgba(255,255,255,0.08);
+    --border-gold: rgba(201,168,76,0.3);
+    --concrete: #9B9B9F;
+    --white: #FAFAFA;
+    --error: #E05252;
+    --success: #4CAF50;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--charcoal);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ── LOGIN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .login-logo {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .login-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  .login-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+  .login-input:focus { border-color: var(--gold); }
+  .login-input::placeholder { color: rgba(155,155,159,0.5); }
+
+  .login-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .login-btn:hover { opacity: 0.88; }
+
+  .login-error {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ── PANEL ── */
+  #panel-screen { display: none; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .topbar-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .panel-body {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 36px 24px 100px;
+  }
+
+  .panel-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .panel-sub {
+    font-size: 13px;
+    color: var(--concrete);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* ── FIELDS ── */
+  .field { margin-bottom: 20px; }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-hint {
+    font-size: 11px;
+    color: rgba(155,155,159,0.6);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .field input[type="text"],
+  .field input[type="url"],
+  .field input[type="number"],
+  .field select,
+  .field textarea {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 90px;
+    line-height: 1.6;
+    font-size: 13px;
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus { border-color: var(--gold); }
+  .field input::placeholder,
+  .field textarea::placeholder { color: rgba(155,155,159,0.4); }
+  .field select option { background: var(--surface2); color: var(--white); }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  /* ── SEPARADORES ── */
+  .section-sep {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 28px 0;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+
+  /* ── FOTO UPLOADER ── */
+  .upload-area {
+    background: var(--surface);
+    border: 0.5px dashed rgba(201,168,76,0.4);
+    border-radius: 8px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    min-height: 68px;
+  }
+  .upload-area:hover { border-color: var(--gold); background: var(--gold-dim2); }
+  .upload-area.uploaded { border-style: solid; border-color: rgba(201,168,76,0.5); }
+
+  .upload-placeholder {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--concrete);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .upload-preview {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .upload-thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+
+  .upload-info { flex: 1; min-width: 0; }
+  .upload-nombre {
+    font-size: 12px;
+    color: var(--white);
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .upload-status {
+    font-size: 11px;
+    color: var(--success);
+    margin-top: 2px;
+  }
+
+  .upload-loading {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    color: var(--concrete);
+    font-size: 13px;
+  }
+
+  .upload-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(201,168,76,0.3);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .upload-error {
+    display: none;
+    font-size: 11px;
+    color: var(--error);
+    margin-top: 6px;
+  }
+
+  /* ── FOTOS GRID ── */
+  .fotos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .foto-slot { }
+  .foto-slot-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .foto-badge {
+    font-size: 9px;
+    background: var(--gold-dim);
+    color: var(--gold);
+    border: 0.5px solid rgba(201,168,76,0.3);
+    border-radius: 4px;
+    padding: 1px 6px;
+  }
+
+  /* ── TOGGLE ── */
+  .extras-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    width: fit-content;
+  }
+
+  .extras-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .extras-toggle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--concrete);
+    letter-spacing: 0.05em;
+    user-select: none;
+  }
+
+  .extras-block { display: none; }
+  .extras-block.visible { display: block; }
+
+  /* ── BOTÓN GENERAR ── */
+  .btn-generar {
+    width: 100%;
+    padding: 15px;
+    background: var(--gold);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+  .btn-generar:hover { opacity: 0.88; }
+  .btn-generar:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── RESULTADO ── */
+  .result-card {
+    background: var(--gold-dim2);
+    border: 0.5px solid var(--border-gold);
+    border-radius: 12px;
+    padding: 22px 20px;
+    margin-top: 24px;
+    display: none;
+  }
+  .result-card.visible { display: block; }
+
+  .result-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .result-url {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--concrete);
+    word-break: break-all;
+    line-height: 1.6;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-family: monospace;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-copy {
+    flex: 1;
+    min-width: 130px;
+    padding: 12px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-copy:hover { opacity: 0.88; }
+
+  .btn-preview {
+    flex: 1;
+    min-width: 130px;
+    padding: 12px;
+    background: transparent;
+    border: 0.5px solid var(--border-gold);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .btn-preview:hover { background: var(--gold-dim); }
+
+  .copy-feedback {
+    font-size: 11px;
+    color: var(--success);
+    margin-top: 10px;
+    display: none;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .copy-feedback.visible { display: block; }
+
+  /* ── VALIDACIÓN ── */
+  .field.has-error input,
+  .field.has-error textarea,
+  .field.has-error select { border-color: var(--error); }
+
+  .field-error {
+    font-size: 11px;
+    color: var(--error);
+    margin-top: 5px;
+    display: none;
+  }
+  .field.has-error .field-error { display: block; }
+
+  /* ── PROGRESS ── */
+  .progress-bar-wrap {
+    display: none;
+    margin-top: 16px;
+  }
+  .progress-bar-wrap.visible { display: block; }
+  .progress-label {
+    font-size: 11px;
+    color: var(--concrete);
+    margin-bottom: 8px;
+  }
+  .progress-track {
+    height: 3px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.3s ease;
+  }
+
+  /* ── COLOR PICKER ── */
+  .color-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .color-row input[type="color"] {
+    width: 38px;
+    height: 38px;
+    padding: 2px;
+    border-radius: 7px;
+    cursor: pointer;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    flex-shrink: 0;
+  }
+  .color-row input[type="text"] {
+    flex: 1;
+  }
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <p class="login-logo">Inmuebles Audiovisuales</p>
+    <h1 class="login-title">Landing pages</h1>
+    <label class="login-label" for="inp-pass">Contraseña</label>
+    <input class="login-input" type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
+    <button class="login-btn" onclick="verificarPassword()">Entrar</button>
+    <p class="login-error" id="login-error">Contraseña incorrecta.</p>
+  </div>
+</div>
+
+<!-- ── PANEL ── -->
+<div id="panel-screen">
+  <div class="topbar">
+    <span class="topbar-logo">Inmuebles Audiovisuales</span>
+    <span class="topbar-tag">Landing pages</span>
+  </div>
+
+  <div class="panel-body">
+    <h1 class="panel-title">Nueva landing</h1>
+    <p class="panel-sub">Llena los datos y sube las fotos. Se genera el link listo para compartir con el cliente o para campañas.</p>
+
+    <!-- ── PROPIEDAD ── -->
+    <p class="section-label">Propiedad</p>
+
+    <div class="field-row" style="margin-bottom:20px;">
+      <div class="field" style="margin-bottom:0" id="field-tipo">
+        <label class="field-label">Tipo</label>
+        <select id="inp-tipo">
+          <option value="Casa">Casa</option>
+          <option value="Departamento">Departamento</option>
+          <option value="Quinta">Quinta / Salón</option>
+          <option value="Airbnb">Airbnb / Renta vacacional</option>
+          <option value="Terreno">Terreno</option>
+          <option value="Local comercial">Local comercial</option>
+        </select>
+      </div>
+      <div class="field" style="margin-bottom:0" id="field-operacion">
+        <label class="field-label">Operación</label>
+        <select id="inp-operacion">
+          <option value="en venta">En venta</option>
+          <option value="en renta">En renta</option>
+          <option value="renta vacacional">Renta vacacional</option>
+          <option value="en preventa">En preventa</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field" id="field-colonia">
+      <label class="field-label">Colonia / Zona</label>
+      <input type="text" id="inp-colonia" placeholder="Ej. Valle Oriente">
+      <p class="field-error">Este campo es obligatorio.</p>
+    </div>
+
+    <div class="field-row">
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Municipio</label>
+        <input type="text" id="inp-municipio" placeholder="Ej. San Pedro Garza García">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Estado</label>
+        <input type="text" id="inp-estado" value="Nuevo León">
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:20px;">
+      <div class="field" style="margin-bottom:0" id="field-precio">
+        <label class="field-label">Precio</label>
+        <input type="text" id="inp-precio" placeholder="Ej. $4,200,000">
+        <p class="field-error">Este campo es obligatorio.</p>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Moneda</label>
+        <select id="inp-moneda">
+          <option value="MXN">MXN</option>
+          <option value="USD">USD</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:20px;">
+      <label class="field-label">Nota de precio (opcional)</label>
+      <input type="text" id="inp-precio-nota" placeholder="Ej. Acepta crédito hipotecario">
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── COPY ── -->
+    <p class="section-label">Textos de la página</p>
+
+    <div class="field" id="field-headline">
+      <label class="field-label">Headline del hero</label>
+      <input type="text" id="inp-headline" placeholder="Ej. La vida que mereces, en Valle Oriente">
+      <p class="field-error">Este campo es obligatorio.</p>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Subtítulo (opcional)</label>
+      <input type="text" id="inp-subheadline" placeholder="Ej. Casa de 280 m² con acabados de primer nivel">
+    </div>
+
+    <div class="field">
+      <label class="field-label">Descripción</label>
+      <textarea id="inp-descripcion" placeholder="Escribe 1 a 3 párrafos sobre la propiedad. Separa cada párrafo con una línea en blanco.&#10;&#10;Tono directo, plural, sin em dashes."></textarea>
+      <p class="field-hint">Separa párrafos con una línea en blanco entre ellos.</p>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── CARACTERÍSTICAS ── -->
+    <p class="section-label">Características</p>
+
+    <div class="field-row">
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Superficie construida</label>
+        <input type="text" id="inp-sup-c" placeholder="Ej. 280 m²">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Terreno</label>
+        <input type="text" id="inp-sup-t" placeholder="Ej. 350 m²">
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:12px;">
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Recámaras</label>
+        <input type="text" id="inp-rec" placeholder="Ej. 3 + 1 servicio">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Baños</label>
+        <input type="text" id="inp-ban" placeholder="Ej. 2.5">
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:12px;">
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Estacionamientos</label>
+        <input type="text" id="inp-est" placeholder="Ej. 2 techados">
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Antigüedad</label>
+        <input type="text" id="inp-ant" placeholder="Ej. Nueva">
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:12px;">
+      <label class="field-label">Amenidades (una por línea, opcional)</label>
+      <textarea id="inp-amenidades" style="min-height:72px;" placeholder="Alberca&#10;Gimnasio&#10;Seguridad 24h"></textarea>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── FOTOS ── -->
+    <p class="section-label">Fotos</p>
+
+    <!-- Portada -->
+    <div class="field">
+      <label class="field-label">Foto de portada <span style="color:var(--error)">*</span></label>
+      <div class="upload-area" id="ua-portada" onclick="document.getElementById('fi-portada').click()">
+        <input type="file" id="fi-portada" accept="image/*" style="display:none" onchange="subirFoto(this,'portada')">
+        <div class="upload-placeholder" id="up-portada">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Seleccionar foto de portada</span>
+        </div>
+        <div class="upload-preview" id="upr-portada">
+          <img class="upload-thumb" id="ut-portada" src="" alt="">
+          <div class="upload-info">
+            <div class="upload-nombre" id="un-portada"></div>
+            <div class="upload-status">Subida a ImgBB</div>
+          </div>
+        </div>
+        <div class="upload-loading" id="ul-portada">
+          <div class="upload-spinner"></div><span>Subiendo...</span>
+        </div>
+      </div>
+      <p class="upload-error" id="ue-portada">Error al subir. Intenta de nuevo.</p>
+      <input type="hidden" id="url-portada">
+    </div>
+
+    <!-- 5 fotos de galería -->
+    <div class="fotos-grid">
+      <div class="foto-slot" id="slot-f1">
+        <div class="foto-slot-label">Foto 1 <span class="foto-badge">Galería</span></div>
+        <div class="upload-area" onclick="document.getElementById('fi-f1').click()">
+          <input type="file" id="fi-f1" accept="image/*" style="display:none" onchange="subirFoto(this,'f1')">
+          <div class="upload-placeholder" id="up-f1"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style="font-size:12px;">Seleccionar</span></div>
+          <div class="upload-preview" id="upr-f1"><img class="upload-thumb" id="ut-f1" src="" alt=""><div class="upload-info"><div class="upload-nombre" id="un-f1"></div><div class="upload-status">Subida</div></div></div>
+          <div class="upload-loading" id="ul-f1"><div class="upload-spinner"></div></div>
+        </div>
+        <p class="upload-error" id="ue-f1">Error. Intenta de nuevo.</p>
+        <input type="hidden" id="url-f1">
+      </div>
+
+      <div class="foto-slot" id="slot-f2">
+        <div class="foto-slot-label">Foto 2 <span class="foto-badge">Galería</span></div>
+        <div class="upload-area" onclick="document.getElementById('fi-f2').click()">
+          <input type="file" id="fi-f2" accept="image/*" style="display:none" onchange="subirFoto(this,'f2')">
+          <div class="upload-placeholder" id="up-f2"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style="font-size:12px;">Seleccionar</span></div>
+          <div class="upload-preview" id="upr-f2"><img class="upload-thumb" id="ut-f2" src="" alt=""><div class="upload-info"><div class="upload-nombre" id="un-f2"></div><div class="upload-status">Subida</div></div></div>
+          <div class="upload-loading" id="ul-f2"><div class="upload-spinner"></div></div>
+        </div>
+        <p class="upload-error" id="ue-f2">Error. Intenta de nuevo.</p>
+        <input type="hidden" id="url-f2">
+      </div>
+
+      <div class="foto-slot" id="slot-f3">
+        <div class="foto-slot-label">Foto 3 <span class="foto-badge">Galería</span></div>
+        <div class="upload-area" onclick="document.getElementById('fi-f3').click()">
+          <input type="file" id="fi-f3" accept="image/*" style="display:none" onchange="subirFoto(this,'f3')">
+          <div class="upload-placeholder" id="up-f3"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style="font-size:12px;">Seleccionar</span></div>
+          <div class="upload-preview" id="upr-f3"><img class="upload-thumb" id="ut-f3" src="" alt=""><div class="upload-info"><div class="upload-nombre" id="un-f3"></div><div class="upload-status">Subida</div></div></div>
+          <div class="upload-loading" id="ul-f3"><div class="upload-spinner"></div></div>
+        </div>
+        <p class="upload-error" id="ue-f3">Error. Intenta de nuevo.</p>
+        <input type="hidden" id="url-f3">
+      </div>
+
+      <div class="foto-slot" id="slot-f4">
+        <div class="foto-slot-label">Foto 4 <span class="foto-badge">Galería</span></div>
+        <div class="upload-area" onclick="document.getElementById('fi-f4').click()">
+          <input type="file" id="fi-f4" accept="image/*" style="display:none" onchange="subirFoto(this,'f4')">
+          <div class="upload-placeholder" id="up-f4"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style="font-size:12px;">Seleccionar</span></div>
+          <div class="upload-preview" id="upr-f4"><img class="upload-thumb" id="ut-f4" src="" alt=""><div class="upload-info"><div class="upload-nombre" id="un-f4"></div><div class="upload-status">Subida</div></div></div>
+          <div class="upload-loading" id="ul-f4"><div class="upload-spinner"></div></div>
+        </div>
+        <p class="upload-error" id="ue-f4">Error. Intenta de nuevo.</p>
+        <input type="hidden" id="url-f4">
+      </div>
+
+      <div class="foto-slot" id="slot-f5">
+        <div class="foto-slot-label">Foto 5 <span class="foto-badge">Galería</span></div>
+        <div class="upload-area" onclick="document.getElementById('fi-f5').click()">
+          <input type="file" id="fi-f5" accept="image/*" style="display:none" onchange="subirFoto(this,'f5')">
+          <div class="upload-placeholder" id="up-f5"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg><span style="font-size:12px;">Seleccionar</span></div>
+          <div class="upload-preview" id="upr-f5"><img class="upload-thumb" id="ut-f5" src="" alt=""><div class="upload-info"><div class="upload-nombre" id="un-f5"></div><div class="upload-status">Subida</div></div></div>
+          <div class="upload-loading" id="ul-f5"><div class="upload-spinner"></div></div>
+        </div>
+        <p class="upload-error" id="ue-f5">Error. Intenta de nuevo.</p>
+        <input type="hidden" id="url-f5">
+      </div>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── AGENTE ── -->
+    <p class="section-label">Agente</p>
+
+    <div class="field-row">
+      <div class="field" style="margin-bottom:0" id="field-ag-nombre">
+        <label class="field-label">Nombre</label>
+        <input type="text" id="inp-ag-nombre" placeholder="Ej. Mariana López">
+        <p class="field-error">Este campo es obligatorio.</p>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Agencia (opcional)</label>
+        <input type="text" id="inp-ag-agencia" placeholder="Ej. ERA Inmobiliaria">
+      </div>
+    </div>
+
+    <div class="field-row" style="margin-top:12px;">
+      <div class="field" style="margin-bottom:0" id="field-ag-wa">
+        <label class="field-label">WhatsApp (con código de país, sin +)</label>
+        <input type="text" id="inp-ag-wa" placeholder="528112345678">
+        <p class="field-error">Este campo es obligatorio.</p>
+      </div>
+      <div class="field" style="margin-bottom:0">
+        <label class="field-label">Email (opcional)</label>
+        <input type="text" id="inp-ag-email" placeholder="agente@inmobiliaria.com">
+      </div>
+    </div>
+
+    <div class="field" style="margin-top:12px;">
+      <label class="field-label">Especialidad / frase (opcional)</label>
+      <input type="text" id="inp-ag-bio" placeholder="Ej. Especialista en propiedades residenciales en Valle Oriente">
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── MEDIA OPCIONAL ── -->
+    <p class="section-label">Media opcional</p>
+
+    <label class="extras-toggle" for="chk-video">
+      <input type="checkbox" id="chk-video" onchange="toggleBlock('block-video',this)">
+      <span class="extras-toggle-label">Incluir video cinemático</span>
+    </label>
+    <div class="extras-block" id="block-video">
+      <div class="field">
+        <label class="field-label">URL de YouTube o Vimeo</label>
+        <input type="url" id="inp-video" placeholder="https://www.youtube.com/watch?v=...">
+      </div>
+    </div>
+
+    <label class="extras-toggle" for="chk-tour">
+      <input type="checkbox" id="chk-tour" onchange="toggleBlock('block-tour',this)">
+      <span class="extras-toggle-label">Incluir recorrido virtual</span>
+    </label>
+    <div class="extras-block" id="block-tour">
+      <div class="field">
+        <label class="field-label">URL de Cloudpano</label>
+        <input type="url" id="inp-tour" placeholder="https://cloudpano.com/tours/...">
+      </div>
+    </div>
+
+    <label class="extras-toggle" for="chk-mapa">
+      <input type="checkbox" id="chk-mapa" onchange="toggleBlock('block-mapa',this)">
+      <span class="extras-toggle-label">Incluir mapa de ubicación</span>
+    </label>
+    <div class="extras-block" id="block-mapa">
+      <div class="field">
+        <label class="field-label">URL embed de Google Maps (src del iframe)</label>
+        <input type="url" id="inp-mapa" placeholder="https://www.google.com/maps/embed?pb=...">
+      </div>
+      <div class="field">
+        <label class="field-label">Descripción de ubicación (opcional)</label>
+        <input type="text" id="inp-mapa-desc" placeholder="Ej. A 5 min de Av. Morones Prieto">
+      </div>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- ── MARCA DEL CLIENTE ── -->
+    <label class="extras-toggle" for="chk-marca">
+      <input type="checkbox" id="chk-marca" onchange="toggleBlock('block-marca',this)">
+      <span class="extras-toggle-label">Marca del cliente (logo y colores propios)</span>
+    </label>
+    <div class="extras-block" id="block-marca">
+      <div class="field">
+        <label class="field-label">URL del logo (PNG/SVG con fondo transparente)</label>
+        <input type="url" id="inp-logo" placeholder="https://...">
+      </div>
+      <div class="field-row">
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">Nombre del cliente / agencia</label>
+          <input type="text" id="inp-cl-nombre" placeholder="Ej. Grupo Inmobiliario Del Norte">
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">Fuente Google Fonts (vacío = Montserrat)</label>
+          <input type="text" id="inp-font" placeholder="Ej. Playfair Display">
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:12px;">
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">Color acento</label>
+          <div class="color-row">
+            <input type="color" id="cp-gold" value="#C9A84C" oninput="document.getElementById('ch-gold').value=this.value">
+            <input type="text" id="ch-gold" value="#C9A84C" oninput="syncColor('ch-gold','cp-gold')">
+          </div>
+        </div>
+        <div class="field" style="margin-bottom:0">
+          <label class="field-label">Color fondo oscuro</label>
+          <div class="color-row">
+            <input type="color" id="cp-dark" value="#1C1C1E" oninput="document.getElementById('ch-dark').value=this.value">
+            <input type="text" id="ch-dark" value="#1C1C1E" oninput="syncColor('ch-dark','cp-dark')">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-sep">
+
+    <button class="btn-generar" id="btn-generar" onclick="generarLink()">Generar landing</button>
+
+    <div class="progress-bar-wrap" id="progress-wrap">
+      <p class="progress-label" id="progress-label">Subiendo fotos a ImgBB...</p>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    </div>
+
+    <div class="result-card" id="result-card">
+      <p class="result-label">Landing lista</p>
+      <p class="result-url" id="result-url"></p>
+      <div class="btn-row">
+        <button class="btn-copy" onclick="copiarLink()">Copiar link</button>
+        <a class="btn-preview" id="btn-preview" href="#" target="_blank" rel="noopener">Ver página</a>
+      </div>
+      <p class="copy-feedback" id="copy-feedback">Link copiado al portapapeles.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const PASSWORD  = 'ia2024';
+  const BASE_URL  = 'https://inmueblesaudiovisuales.com/landing.html';
+  const IMGBB_KEY = 'e31f66bd10c9c3abff1cd4c7475da580';
+
+  // ── AUTH ──
+  function verificarPassword() {
+    const val = document.getElementById('inp-pass').value;
+    if (val === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('panel-screen').style.display = 'block';
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+  document.getElementById('inp-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') verificarPassword();
+  });
+
+  // ── TOGGLE BLOCKS ──
+  function toggleBlock(id, chk) {
+    document.getElementById(id).classList.toggle('visible', chk.checked);
+  }
+
+  // ── COLOR SYNC ──
+  function syncColor(hexId, pickerId) {
+    const v = document.getElementById(hexId).value;
+    if (/^#[0-9A-Fa-f]{6}$/.test(v)) document.getElementById(pickerId).value = v;
+  }
+
+  // ── FOTO UPLOADER ──
+  async function subirFoto(input, key) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const ph  = document.getElementById('up-' + key);
+    const pr  = document.getElementById('upr-' + key);
+    const ld  = document.getElementById('ul-' + key);
+    const err = document.getElementById('ue-' + key);
+    const ua  = input.closest('.upload-area') || input.parentElement;
+
+    ph.style.display  = 'none';
+    pr.style.display  = 'none';
+    ld.style.display  = 'flex';
+    err.style.display = 'none';
+    document.getElementById('url-' + key).value = '';
+
+    try {
+      const base64 = await toBase64(file);
+      const form = new FormData();
+      form.append('key', IMGBB_KEY);
+      form.append('image', base64);
+
+      const resp = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: form });
+      const data = await resp.json();
+      if (!data.success) throw new Error('imgbb');
+
+      const url = data.data.url;
+      document.getElementById('url-' + key).value = url;
+
+      const thumb = document.getElementById('ut-' + key);
+      if (thumb) { thumb.src = url; }
+      const nombre = document.getElementById('un-' + key);
+      if (nombre) nombre.textContent = file.name;
+
+      ld.style.display = 'none';
+      pr.style.display = 'flex';
+      ua.classList.add('uploaded');
+    } catch(e) {
+      ld.style.display = 'none';
+      ph.style.display = 'flex';
+      err.style.display = 'block';
+    }
+  }
+
+  function toBase64(file) {
+    return new Promise((res, rej) => {
+      const r = new FileReader();
+      r.onload = () => res(r.result.split(',')[1]);
+      r.onerror = rej;
+      r.readAsDataURL(file);
+    });
+  }
+
+  // ── VALIDAR ──
+  function v(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+
+  function validar() {
+    let ok = true;
+    const required = [
+      ['field-colonia',   'inp-colonia'],
+      ['field-precio',    'inp-precio'],
+      ['field-headline',  'inp-headline'],
+      ['field-ag-nombre', 'inp-ag-nombre'],
+      ['field-ag-wa',     'inp-ag-wa'],
+    ];
+    required.forEach(([fId, iId]) => {
+      const field = document.getElementById(fId);
+      const val   = v(iId);
+      if (!val) { field.classList.add('has-error'); ok = false; }
+      else field.classList.remove('has-error');
+    });
+    if (!v('url-portada')) {
+      document.getElementById('ue-portada').style.display = 'block';
+      document.getElementById('ue-portada').textContent = 'La foto de portada es obligatoria.';
+      ok = false;
+    } else {
+      document.getElementById('ue-portada').style.display = 'none';
+    }
+    return ok;
+  }
+
+  // ── YOUTUBE EMBED ──
+  function youtubeEmbed(url) {
+    if (!url) return '';
+    const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\s?]+)/);
+    if (m) return 'https://www.youtube.com/embed/' + m[1];
+    const vm = url.match(/vimeo\.com\/(\d+)/);
+    if (vm) return 'https://player.vimeo.com/video/' + vm[1];
+    return url;
+  }
+
+  // ── GENERAR LINK ──
+  function generarLink() {
+    if (!validar()) {
+      document.querySelector('.has-error, [id="ue-portada"]:not([style*="none"])')
+        ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const p = new URLSearchParams();
+
+    // Propiedad
+    p.set('tipo',      v('inp-tipo'));
+    p.set('op',        v('inp-operacion'));
+    p.set('colonia',   v('inp-colonia'));
+    if (v('inp-municipio')) p.set('municipio', v('inp-municipio'));
+    if (v('inp-estado'))    p.set('estado',    v('inp-estado'));
+    p.set('precio',    v('inp-precio'));
+    p.set('moneda',    v('inp-moneda'));
+    if (v('inp-precio-nota')) p.set('pnota', v('inp-precio-nota'));
+
+    // Copy
+    p.set('hl',  v('inp-headline'));
+    if (v('inp-subheadline'))  p.set('shl', v('inp-subheadline'));
+    if (v('inp-descripcion'))  p.set('desc', v('inp-descripcion'));
+    if (v('inp-amenidades'))   p.set('amen', v('inp-amenidades'));
+
+    // Características
+    if (v('inp-sup-c')) p.set('sc', v('inp-sup-c'));
+    if (v('inp-sup-t')) p.set('st', v('inp-sup-t'));
+    if (v('inp-rec'))   p.set('rec', v('inp-rec'));
+    if (v('inp-ban'))   p.set('ban', v('inp-ban'));
+    if (v('inp-est'))   p.set('est', v('inp-est'));
+    if (v('inp-ant'))   p.set('ant', v('inp-ant'));
+
+    // Fotos
+    p.set('portada', v('url-portada'));
+    ['f1','f2','f3','f4','f5'].forEach(k => {
+      const url = v('url-' + k);
+      if (url) p.set(k, url);
+    });
+
+    // Agente
+    p.set('ag',    v('inp-ag-nombre'));
+    p.set('wa',    v('inp-ag-wa'));
+    if (v('inp-ag-agencia')) p.set('agencia', v('inp-ag-agencia'));
+    if (v('inp-ag-email'))   p.set('email',   v('inp-ag-email'));
+    if (v('inp-ag-bio'))     p.set('bio',     v('inp-ag-bio'));
+
+    // Media
+    if (document.getElementById('chk-video').checked && v('inp-video')) {
+      p.set('video', youtubeEmbed(v('inp-video')));
+    }
+    if (document.getElementById('chk-tour').checked && v('inp-tour')) {
+      p.set('tour', v('inp-tour'));
+    }
+    if (document.getElementById('chk-mapa').checked && v('inp-mapa')) {
+      p.set('mapa', v('inp-mapa'));
+      if (v('inp-mapa-desc')) p.set('mapadesc', v('inp-mapa-desc'));
+    }
+
+    // Marca
+    if (document.getElementById('chk-marca').checked) {
+      if (v('inp-logo'))      p.set('logo',    v('inp-logo'));
+      if (v('inp-cl-nombre')) p.set('clnombre',v('inp-cl-nombre'));
+      if (v('inp-font'))      p.set('font',    v('inp-font'));
+      const gold = v('ch-gold');
+      const dark = v('ch-dark');
+      if (gold !== '#C9A84C') p.set('cgold', gold);
+      if (dark !== '#1C1C1E') p.set('cdark', dark);
+    }
+
+    const urlFinal = `${BASE_URL}?${p.toString()}`;
+
+    document.getElementById('result-url').textContent = urlFinal;
+    document.getElementById('btn-preview').href = urlFinal;
+    document.getElementById('result-card').classList.add('visible');
+    document.getElementById('copy-feedback').classList.remove('visible');
+    document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── COPIAR ──
+  function copiarLink() {
+    const url = document.getElementById('result-url').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      const fb = document.getElementById('copy-feedback');
+      fb.classList.add('visible');
+      setTimeout(() => fb.classList.remove('visible'), 3000);
+    });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de Entregas · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.12);
+    --gold-dim2: rgba(201,168,76,0.07);
+    --charcoal: #1C1C1E;
+    --surface: #242426;
+    --surface2: #2c2c2e;
+    --border: rgba(255,255,255,0.08);
+    --border-gold: rgba(201,168,76,0.3);
+    --concrete: #9B9B9F;
+    --white: #FAFAFA;
+    --error: #E05252;
+    --success: #4CAF50;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--charcoal);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  /* ── PANTALLA DE LOGIN ── */
+  #login-screen {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+
+  .login-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 360px;
+  }
+
+  .login-logo {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .login-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 28px;
+    letter-spacing: -0.01em;
+  }
+
+  .login-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .login-input {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 16px;
+  }
+
+  .login-input:focus { border-color: var(--gold); }
+  .login-input::placeholder { color: rgba(155,155,159,0.5); }
+
+  .login-btn {
+    width: 100%;
+    padding: 13px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .login-btn:hover { opacity: 0.88; }
+
+  .login-error {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* ── PANEL PRINCIPAL ── */
+  #panel-screen { display: none; }
+
+  .topbar {
+    background: var(--surface);
+    border-bottom: 0.5px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-logo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+  }
+
+  .topbar-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    background: var(--surface2);
+    border: 0.5px solid var(--border);
+    padding: 4px 10px;
+    border-radius: 6px;
+  }
+
+  .panel-body {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 36px 24px 80px;
+  }
+
+  .panel-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .panel-sub {
+    font-size: 13px;
+    color: var(--concrete);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* ── FIELDS ── */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  .field-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 8px;
+    display: block;
+  }
+
+  .field-hint {
+    font-size: 11px;
+    color: rgba(155,155,159,0.6);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  .field input[type="text"],
+  .field input[type="password"],
+  .field input[type="url"],
+  .field select {
+    width: 100%;
+    padding: 13px 16px;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .field input:focus,
+  .field select:focus { border-color: var(--gold); }
+  .field input::placeholder { color: rgba(155,155,159,0.4); }
+
+  .field select option {
+    background: var(--surface2);
+    color: var(--white);
+  }
+
+  /* ── SEPARADORES ── */
+  .section-sep {
+    border: none;
+    border-top: 0.5px solid var(--border);
+    margin: 28px 0;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+
+  /* ── EXTRAS TOGGLE ── */
+  .extras-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    width: fit-content;
+  }
+
+  .extras-toggle input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--gold);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  .extras-toggle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--concrete);
+    letter-spacing: 0.05em;
+    user-select: none;
+  }
+
+  .extras-block { display: none; }
+  .extras-block.visible { display: block; }
+
+  .extra-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 16px;
+    margin-bottom: 12px;
+  }
+
+  .extra-card-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 14px;
+  }
+
+  .extra-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* ── BOTÓN GENERAR ── */
+  .btn-generar {
+    width: 100%;
+    padding: 15px;
+    background: var(--gold);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: opacity 0.2s;
+    margin-top: 8px;
+  }
+
+  .btn-generar:hover { opacity: 0.88; }
+
+  /* ── RESULTADO ── */
+  .result-card {
+    background: var(--gold-dim2);
+    border: 0.5px solid var(--border-gold);
+    border-radius: 12px;
+    padding: 22px 20px;
+    margin-top: 24px;
+    display: none;
+  }
+
+  .result-card.visible { display: block; }
+
+  .result-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+
+  .result-url {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--concrete);
+    word-break: break-all;
+    line-height: 1.6;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 14px;
+    font-family: monospace;
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .btn-copy {
+    flex: 1;
+    min-width: 130px;
+    padding: 12px;
+    background: var(--gold);
+    border: none;
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--charcoal);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+
+  .btn-copy:hover { opacity: 0.88; }
+
+  .btn-preview {
+    flex: 1;
+    min-width: 130px;
+    padding: 12px;
+    background: transparent;
+    border: 0.5px solid var(--border-gold);
+    border-radius: 8px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gold);
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+
+  .btn-preview:hover { background: var(--gold-dim); }
+
+  .copy-feedback {
+    font-size: 11px;
+    color: var(--success);
+    margin-top: 10px;
+    display: none;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+
+  .copy-feedback.visible { display: block; }
+
+  /* ── VALIDACIÓN ── */
+  .field.has-error input,
+  .field.has-error select {
+    border-color: var(--error);
+  }
+
+  .field-error {
+    font-size: 11px;
+    color: var(--error);
+    margin-top: 5px;
+    display: none;
+  }
+
+  .field.has-error .field-error { display: block; }
+
+  /* ── UPLOADER ── */
+  .upload-area {
+    background: var(--surface);
+    border: 0.5px dashed rgba(201,168,76,0.4);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    min-height: 72px;
+    gap: 10px;
+  }
+  .upload-area:hover { border-color: var(--gold); background: var(--gold-dim2); }
+  #upload-placeholder { display: flex; align-items: center; gap: 10px; color: var(--concrete); font-size: 13px; font-weight: 500; }
+  #upload-placeholder svg { color: var(--concrete); flex-shrink: 0; }
+  #upload-preview { display: flex; align-items: center; gap: 12px; width: 100%; }
+  #upload-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
+  #upload-nombre { font-size: 12px; color: var(--concrete); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  #upload-loading { display: flex; align-items: center; gap: 10px; color: var(--concrete); font-size: 13px; }
+  .upload-spinner { width: 18px; height: 18px; border: 2px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+</style>
+</head>
+<body>
+
+<!-- ── LOGIN ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <p class="login-logo">Inmuebles Audiovisuales</p>
+    <h1 class="login-title">Panel de entregas</h1>
+    <label class="login-label" for="inp-pass">Contraseña</label>
+    <input class="login-input" type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
+    <button class="login-btn" onclick="verificarPassword()">Entrar</button>
+    <p class="login-error" id="login-error">Contraseña incorrecta.</p>
+  </div>
+</div>
+
+<!-- ── PANEL PRINCIPAL ── -->
+<div id="panel-screen">
+  <div class="topbar">
+    <span class="topbar-logo">Inmuebles Audiovisuales</span>
+    <span class="topbar-tag">Panel de entregas</span>
+  </div>
+
+  <div class="panel-body">
+    <h1 class="panel-title">Nueva entrega</h1>
+    <p class="panel-sub">Llena los datos para generar el link que le vas a mandar al cliente.</p>
+
+    <!-- Datos del cliente -->
+    <p class="section-label">Cliente y propiedad</p>
+
+    <div class="field" id="field-nombre">
+      <label class="field-label" for="inp-nombre">Nombre del cliente</label>
+      <input type="text" id="inp-nombre" placeholder="Ej. Sofía Ramírez">
+      <p class="field-error">Este campo es obligatorio.</p>
+    </div>
+
+    <div class="field" id="field-direccion">
+      <label class="field-label" for="inp-direccion">Dirección de la propiedad</label>
+      <input type="text" id="inp-direccion" placeholder="Ej. Av. Vasconcelos 245, San Pedro">
+      <p class="field-error">Este campo es obligatorio.</p>
+    </div>
+
+    <div class="field">
+      <label class="field-label">Foto de portada</label>
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('inp-foto-file').click()">
+        <input type="file" id="inp-foto-file" accept="image/*" style="display:none" onchange="subirFoto(this)">
+        <div id="upload-placeholder">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <span>Seleccionar foto</span>
+        </div>
+        <div id="upload-preview" style="display:none">
+          <img id="upload-thumb" src="" alt="portada">
+          <span id="upload-nombre"></span>
+        </div>
+        <div id="upload-loading" style="display:none">
+          <div class="upload-spinner"></div>
+          <span>Subiendo...</span>
+        </div>
+      </div>
+      <input type="hidden" id="inp-portada">
+      <p class="field-error-upload" id="upload-error" style="display:none;color:var(--error);font-size:11px;margin-top:6px;">Error al subir la foto. Intenta de nuevo.</p>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- Material -->
+    <p class="section-label">Material a entregar</p>
+
+    <div class="field" id="field-drive">
+      <label class="field-label" for="inp-drive">Carpeta de Google Drive</label>
+      <input type="url" id="inp-drive" placeholder="https://drive.google.com/...">
+      <p class="field-error">Agrega al menos el link de Drive.</p>
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="inp-drive-label">Texto del botón de Drive</label>
+      <input type="text" id="inp-drive-label" placeholder="Fotografía y video" value="Fotografía y video">
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- Tour virtual -->
+    <label class="extras-toggle" for="chk-tour">
+      <input type="checkbox" id="chk-tour" onchange="toggleTour()">
+      <span class="extras-toggle-label">Incluir tour virtual</span>
+    </label>
+
+    <div class="extras-block" id="block-tour">
+      <div class="field">
+        <label class="field-label" for="inp-tour">Link de Cloudpano</label>
+        <input type="url" id="inp-tour" placeholder="https://app.cloudpano.com/...">
+      </div>
+      <div class="field">
+        <label class="field-label" for="inp-tour-label">Texto del botón</label>
+        <input type="text" id="inp-tour-label" placeholder="Recorrido Virtual Inmersivo" value="Recorrido Virtual Inmersivo">
+      </div>
+    </div>
+
+    <hr class="section-sep">
+
+    <!-- Extras -->
+    <label class="extras-toggle" for="chk-extras">
+      <input type="checkbox" id="chk-extras" onchange="toggleExtras()">
+      <span class="extras-toggle-label">Agregar material extra</span>
+    </label>
+
+    <div class="extras-block" id="block-extras">
+      <div class="extra-card">
+        <p class="extra-card-title">Extra 1</p>
+        <div class="field">
+          <label class="field-label">Link</label>
+          <input type="url" id="inp-extra1-url" placeholder="https://...">
+        </div>
+        <div class="extra-row">
+          <div class="field">
+            <label class="field-label">Nombre</label>
+            <input type="text" id="inp-extra1-label" placeholder="Ej. Renders 3D">
+          </div>
+          <div class="field">
+            <label class="field-label">Descripción</label>
+            <input type="text" id="inp-extra1-sub" placeholder="Ej. Archivos PDF">
+          </div>
+        </div>
+      </div>
+
+      <div class="extra-card">
+        <p class="extra-card-title">Extra 2 (opcional)</p>
+        <div class="field">
+          <label class="field-label">Link</label>
+          <input type="url" id="inp-extra2-url" placeholder="https://...">
+        </div>
+        <div class="extra-row">
+          <div class="field">
+            <label class="field-label">Nombre</label>
+            <input type="text" id="inp-extra2-label" placeholder="Ej. Folleto digital">
+          </div>
+          <div class="field">
+            <label class="field-label">Descripción</label>
+            <input type="text" id="inp-extra2-sub" placeholder="Ej. PDF">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="section-sep">
+
+
+    <p class="section-label">Reseña de Google</p>
+
+    <label class="extras-toggle" for="chk-review">
+      <input type="checkbox" id="chk-review" checked>
+      <span class="extras-toggle-label">Incluir invitación a dejar reseña</span>
+    </label>
+
+    <input type="hidden" id="inp-review" value="https://g.page/r/CQTT-o3a_kVcEAE/review">
+
+    <button class="btn-generar" onclick="generarLink()">Generar link de entrega</button>
+
+    <!-- Resultado -->
+    <div class="result-card" id="result-card">
+      <p class="result-label">Link listo</p>
+      <p class="result-url" id="result-url"></p>
+      <div class="btn-row">
+        <button class="btn-copy" onclick="copiarLink()">Copiar link</button>
+        <a class="btn-preview" id="btn-preview" href="#" target="_blank" rel="noopener">Ver página</a>
+      </div>
+      <p class="copy-feedback" id="copy-feedback">Link copiado al portapapeles.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── CONTRASEÑA ──
+  // Cambia esta contraseña por la que quieras usar
+  const PASSWORD = 'ia2024';
+
+  // URL base de la página de entrega — ajusta cuando subas al dominio
+  const BASE_URL = 'https://inmueblesaudiovisuales.com/entrega.html';
+
+  function verificarPassword() {
+    const val = document.getElementById('inp-pass').value;
+    const err = document.getElementById('login-error');
+    if (val === PASSWORD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('panel-screen').style.display = 'block';
+      err.style.display = 'none';
+    } else {
+      err.style.display = 'block';
+      document.getElementById('inp-pass').focus();
+    }
+  }
+
+  // Enter en el campo de contraseña
+  document.getElementById('inp-pass').addEventListener('keydown', e => {
+    if (e.key === 'Enter') verificarPassword();
+  });
+
+  // ── TOGGLES ──
+  function toggleTour() {
+    const on = document.getElementById('chk-tour').checked;
+    document.getElementById('block-tour').classList.toggle('visible', on);
+  }
+
+  function toggleExtras() {
+    const on = document.getElementById('chk-extras').checked;
+    document.getElementById('block-extras').classList.toggle('visible', on);
+  }
+
+  // ── VALIDACIÓN ──
+  function validar() {
+    let ok = true;
+
+    const nombre = document.getElementById('inp-nombre').value.trim();
+    const fieldNombre = document.getElementById('field-nombre');
+    if (!nombre) { fieldNombre.classList.add('has-error'); ok = false; }
+    else fieldNombre.classList.remove('has-error');
+
+    const direccion = document.getElementById('inp-direccion').value.trim();
+    const fieldDireccion = document.getElementById('field-direccion');
+    if (!direccion) { fieldDireccion.classList.add('has-error'); ok = false; }
+    else fieldDireccion.classList.remove('has-error');
+
+    const drive = document.getElementById('inp-drive').value.trim();
+    const fieldDrive = document.getElementById('field-drive');
+    if (!drive) { fieldDrive.classList.add('has-error'); ok = false; }
+    else fieldDrive.classList.remove('has-error');
+
+    return ok;
+  }
+
+  // ── CONVERTIR LINK DE DRIVE A LINK DIRECTO DE IMAGEN ──
+  function driveDirecto(url) {
+    if (!url) return "";
+    if (url.includes("uc?export=view")) return url;
+    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+    if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+    const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+    if (match2) return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
+    return url;
+  }
+
+  // ── SUBIR FOTO A IMGBB ──
+  const IMGBB_KEY = 'e31f66bd10c9c3abff1cd4c7475da580';
+
+  async function subirFoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    document.getElementById('upload-placeholder').style.display = 'none';
+    document.getElementById('upload-preview').style.display = 'none';
+    document.getElementById('upload-loading').style.display = 'flex';
+    document.getElementById('upload-error').style.display = 'none';
+    document.getElementById('inp-portada').value = '';
+
+    try {
+      const base64 = await new Promise((res, rej) => {
+        const r = new FileReader();
+        r.onload = () => res(r.result.split(',')[1]);
+        r.onerror = rej;
+        r.readAsDataURL(file);
+      });
+
+      const form = new FormData();
+      form.append('key', IMGBB_KEY);
+      form.append('image', base64);
+
+      const resp = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: form });
+      const data = await resp.json();
+
+      if (!data.success) throw new Error('imgbb error');
+
+      const url = data.data.url;
+      document.getElementById('inp-portada').value = url;
+
+      const thumb = document.getElementById('upload-thumb');
+      thumb.src = url;
+      document.getElementById('upload-nombre').textContent = file.name;
+      document.getElementById('upload-loading').style.display = 'none';
+      document.getElementById('upload-preview').style.display = 'flex';
+
+    } catch(e) {
+      document.getElementById('upload-loading').style.display = 'none';
+      document.getElementById('upload-placeholder').style.display = 'flex';
+      document.getElementById('upload-error').style.display = 'block';
+    }
+  }
+
+  // ── GENERAR LINK ──
+  async function generarLink() {
+    if (!validar()) {
+      const firstError = document.querySelector('.has-error');
+      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    const btn = document.querySelector('.btn-generar');
+    btn.textContent = 'Generando...';
+    btn.disabled = true;
+
+    const p = new URLSearchParams();
+
+    const nombre     = document.getElementById('inp-nombre').value.trim();
+    const direccion  = document.getElementById('inp-direccion').value.trim();
+    const portada    = document.getElementById('inp-portada').value.trim();
+    const drive      = document.getElementById('inp-drive').value.trim();
+    const driveLabel = document.getElementById('inp-drive-label').value.trim() || 'Fotografía y video';
+    const review     = document.getElementById('chk-review').checked ? document.getElementById('inp-review').value : '';
+
+    p.set('nombre', nombre);
+    p.set('direccion', direccion);
+    if (portada) p.set('portada', portada);
+    p.set('drive', drive);
+    if (driveLabel !== 'Fotografía y video') p.set('drive_label', driveLabel);
+    if (review) p.set('review', review);
+
+    // Tour
+    if (document.getElementById('chk-tour').checked) {
+      const tour = document.getElementById('inp-tour').value.trim();
+      const tourLabel = document.getElementById('inp-tour-label').value.trim();
+      if (tour) {
+        p.set('tour', tour);
+        if (tourLabel && tourLabel !== 'Recorrido Virtual Inmersivo') p.set('tour_label', tourLabel);
+      }
+    }
+
+    // Extras
+    if (document.getElementById('chk-extras').checked) {
+      const e1url = document.getElementById('inp-extra1-url').value.trim();
+      if (e1url) {
+        p.set('extra1_url', e1url);
+        const e1label = document.getElementById('inp-extra1-label').value.trim();
+        const e1sub   = document.getElementById('inp-extra1-sub').value.trim();
+        if (e1label) p.set('extra1_label', e1label);
+        if (e1sub)   p.set('extra1_sub', e1sub);
+      }
+      const e2url = document.getElementById('inp-extra2-url').value.trim();
+      if (e2url) {
+        p.set('extra2_url', e2url);
+        const e2label = document.getElementById('inp-extra2-label').value.trim();
+        const e2sub   = document.getElementById('inp-extra2-sub').value.trim();
+        if (e2label) p.set('extra2_label', e2label);
+        if (e2sub)   p.set('extra2_sub', e2sub);
+      }
+    }
+
+    const urlLarga = `${BASE_URL}?${p.toString()}`;
+    const urlFinal = urlLarga;
+
+    btn.textContent = 'Generar link de entrega';
+    btn.disabled = false;
+
+    document.getElementById('result-url').textContent = urlFinal;
+    document.getElementById('btn-preview').href = urlLarga;
+    document.getElementById('result-card').classList.add('visible');
+    document.getElementById('copy-feedback').classList.remove('visible');
+    document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  // ── COPIAR ──
+  function copiarLink() {
+    const url = document.getElementById('result-url').textContent;
+    navigator.clipboard.writeText(url).then(() => {
+      const fb = document.getElementById('copy-feedback');
+      fb.classList.add('visible');
+      setTimeout(() => fb.classList.remove('visible'), 3000);
+    });
+  }
+</script>
+
+</body>
+</html>

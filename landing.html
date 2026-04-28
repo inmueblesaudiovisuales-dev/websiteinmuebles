@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propiedad · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" id="font-link"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.12);
+    --charcoal: #1C1C1E;
+    --surface: #242426;
+    --surface2: #2c2c2e;
+    --border: rgba(255,255,255,0.07);
+    --border-gold: rgba(201,168,76,0.25);
+    --concrete: #9B9B9F;
+    --white: #FAFAFA;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--charcoal);
+    color: var(--white);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  img { display: block; max-width: 100%; }
+  a { text-decoration: none; }
+
+  /* ── NAV ── */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(28,28,30,0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 0.5px solid rgba(201,168,76,0.15);
+    padding: 0 24px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-brand img {
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .nav-brand-name {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.04em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--gold); }
+
+  @media (max-width: 640px) { .nav-links { display: none; } }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    background: #000;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.4) 60%, rgba(0,0,0,0.7) 100%);
+  }
+
+  .hero-content {
+    position: relative;
+    max-width: 720px;
+    width: 100%;
+    padding: 100px 24px 80px;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .hero-pill {
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #1C1C1E;
+    background: var(--gold);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 22px;
+  }
+
+  .hero-headline {
+    font-size: clamp(28px, 6vw, 58px);
+    font-weight: 800;
+    color: var(--white);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  }
+
+  .hero-sub {
+    font-size: clamp(14px, 2vw, 18px);
+    font-weight: 400;
+    color: rgba(250,250,250,0.72);
+    line-height: 1.6;
+    margin-bottom: 32px;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
+  }
+
+  .hero-precio {
+    font-size: clamp(26px, 5vw, 48px);
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+  }
+
+  .hero-pnota {
+    font-size: 13px;
+    color: rgba(255,255,255,0.45);
+    margin-bottom: 32px;
+  }
+
+  .hero-ubicacion {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 36px;
+  }
+
+  .hero-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--gold);
+    color: #1C1C1E;
+    padding: 15px 34px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+  }
+
+  .hero-cta:hover { opacity: 0.88; }
+
+  /* ── SECCIONES ── */
+  .sec {
+    padding: 80px 24px;
+  }
+
+  .sec-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .sec-title {
+    font-size: clamp(20px, 3vw, 30px);
+    font-weight: 700;
+    color: var(--charcoal);
+    text-align: center;
+    margin-bottom: 40px;
+    letter-spacing: -0.01em;
+  }
+
+  .sec-title.light { color: var(--white); }
+
+  .sec-dark { background: var(--charcoal); }
+  .sec-light { background: #fff; }
+  .sec-gray { background: #f2f2f2; }
+
+  /* ── GALERÍA ── */
+  .galeria-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .galeria-grid .foto-hero {
+    grid-column: span 2;
+    grid-row: span 2;
+  }
+
+  .foto-wrap {
+    overflow: hidden;
+    border-radius: 10px;
+    aspect-ratio: 4/3;
+    background: var(--surface);
+  }
+
+  .foto-wrap.tall { aspect-ratio: 1; }
+
+  .foto-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
+  }
+
+  .foto-wrap:hover img { transform: scale(1.04); }
+
+  @media (max-width: 640px) {
+    .galeria-grid { grid-template-columns: 1fr 1fr; }
+    .galeria-grid .foto-hero { grid-column: span 2; grid-row: span 1; }
+    .foto-wrap.tall { aspect-ratio: 4/3; }
+  }
+
+  /* ── CARACTERÍSTICAS ── */
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .spec-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 18px 16px;
+    border-top: 3px solid var(--gold);
+  }
+
+  .spec-label {
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #999;
+    margin-bottom: 6px;
+  }
+
+  .spec-val {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--charcoal);
+  }
+
+  /* ── DESCRIPCIÓN ── */
+  .desc-body {
+    max-width: 720px;
+    margin: 0 auto;
+  }
+
+  .desc-body p {
+    font-size: 16px;
+    line-height: 1.85;
+    color: #444;
+    margin-bottom: 22px;
+  }
+
+  .desc-body p:last-child { margin-bottom: 0; }
+
+  /* ── VIDEO ── */
+  .video-wrap {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .video-wrap iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  /* ── TOUR ── */
+  .tour-wrap {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--border-gold);
+  }
+
+  .tour-wrap iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  /* ── AMENIDADES ── */
+  .amen-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .amen-tag {
+    background: #f2f2f2;
+    border-radius: 50px;
+    padding: 10px 22px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+    border-left: 3px solid var(--gold);
+  }
+
+  /* ── MAPA ── */
+  .mapa-wrap {
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(201,168,76,0.2);
+    height: 400px;
+  }
+
+  .mapa-wrap iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  /* ── AGENTE ── */
+  .agente-card {
+    max-width: 480px;
+    margin: 0 auto;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border: 0.5px solid rgba(255,255,255,0.1);
+    border-radius: 16px;
+    padding: 40px 32px;
+  }
+
+  .agente-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 800;
+    color: #1C1C1E;
+    margin: 0 auto 16px;
+    border: 3px solid var(--gold);
+    overflow: hidden;
+  }
+
+  .agente-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .agente-nombre {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 4px;
+  }
+
+  .agente-agencia {
+    font-size: 12px;
+    color: var(--gold);
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.03em;
+  }
+
+  .agente-bio {
+    font-size: 13px;
+    color: rgba(255,255,255,0.5);
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .agente-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .btn-wa {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--gold);
+    color: #1C1C1E;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+  }
+
+  .btn-wa:hover { opacity: 0.88; }
+
+  .agente-link {
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    padding: 6px;
+    display: block;
+    transition: color 0.15s;
+  }
+
+  .agente-link:hover { color: var(--gold); }
+
+  /* ── FLOAT WA ── */
+  .float-wa {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999;
+    width: 56px;
+    height: 56px;
+    background: #25D366;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 20px rgba(37,211,102,0.4);
+    transition: transform 0.2s;
+  }
+
+  .float-wa:hover { transform: scale(1.1); }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    padding: 28px 24px;
+    background: #111;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(155,155,159,0.3);
+  }
+
+  /* ── EMPTY ── */
+  .empty-state {
+    text-align: center;
+    padding: 100px 24px;
+    color: var(--concrete);
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-brand" id="nav-brand"></div>
+  <ul class="nav-links" id="nav-links"></ul>
+</nav>
+
+<div class="hero" id="hero">
+  <div class="hero-overlay"></div>
+  <div class="hero-content" id="hero-content"></div>
+</div>
+
+<div id="page-content"></div>
+
+<div class="footer" id="footer">Inmuebles Audiovisuales · Monterrey, NL</div>
+
+<script>
+  function gp() {
+    const p = new URLSearchParams(window.location.search);
+    const g = k => p.get(k) || '';
+    return {
+      tipo: g('tipo'), op: g('op'),
+      colonia: g('colonia'), municipio: g('municipio'), estado: g('estado'),
+      precio: g('precio'), moneda: g('moneda'), pnota: g('pnota'),
+      hl: g('hl'), shl: g('shl'), desc: g('desc'), amen: g('amen'),
+      sc: g('sc'), st: g('st'), rec: g('rec'), ban: g('ban'), est: g('est'), ant: g('ant'),
+      portada: g('portada'),
+      f1: g('f1'), f2: g('f2'), f3: g('f3'), f4: g('f4'), f5: g('f5'),
+      ag: g('ag'), wa: g('wa'), agencia: g('agencia'), email: g('email'), bio: g('bio'),
+      video: g('video'), tour: g('tour'),
+      mapa: g('mapa'), mapadesc: g('mapadesc'),
+      logo: g('logo'), clnombre: g('clnombre'), font: g('font'),
+      cgold: g('cgold'), cdark: g('cdark'),
+    };
+  }
+
+  const d = gp();
+
+  // ── TEMA ──
+  const gold = d.cgold || '#C9A84C';
+  const dark = d.cdark || '#1C1C1E';
+  const font = d.font  || 'Montserrat';
+
+  if (d.cgold) document.documentElement.style.setProperty('--gold', gold);
+  if (d.cdark) document.documentElement.style.setProperty('--charcoal', dark);
+
+  if (d.font) {
+    const fl = document.getElementById('font-link');
+    fl.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(d.font).replace(/%20/g,'+')}:wght@300;400;500;600;700;800&display=swap`;
+    document.body.style.fontFamily = `'${d.font}', sans-serif`;
+  }
+
+  // ── META ──
+  const metaTitle = [d.hl || (d.tipo + ' ' + d.op), d.colonia, d.municipio].filter(Boolean).join(' — ');
+  document.title = metaTitle + ' · Inmuebles Audiovisuales';
+  if (d.portada) {
+    const og = document.createElement('meta');
+    og.setAttribute('property','og:image'); og.content = d.portada;
+    document.head.appendChild(og);
+  }
+
+  // ── SVGS ──
+  const waIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>`;
+
+  const ctaMsg = encodeURIComponent('Hola, me interesa la propiedad que vi en su página. ¿Pueden darme más información?');
+  const waUrl  = d.wa ? `https://wa.me/${d.wa}?text=${ctaMsg}` : '';
+
+  // ── NAV ──
+  const nb = document.getElementById('nav-brand');
+  if (d.logo) {
+    nb.innerHTML = `<img src="${d.logo}" alt="${d.clnombre || 'Logo'}">`;
+    if (d.clnombre) nb.innerHTML += `<span class="nav-brand-name">${d.clnombre}</span>`;
+  } else {
+    nb.innerHTML = `<div style="width:28px;height:28px;background:${gold};border-radius:6px;display:flex;align-items:center;justify-content:center;font-weight:900;color:${dark};font-size:12px;">IA</div>`;
+  }
+
+  const navLinks = [];
+  const fotos = [d.f1,d.f2,d.f3,d.f4,d.f5].filter(Boolean);
+  const specs = [d.sc&&{k:'Superficie',v:d.sc},d.st&&{k:'Terreno',v:d.st},d.rec&&{k:'Recámaras',v:d.rec},d.ban&&{k:'Baños',v:d.ban},d.est&&{k:'Estacionamientos',v:d.est},d.ant&&{k:'Antigüedad',v:d.ant}].filter(Boolean);
+
+  if (fotos.length) navLinks.push(['#galeria','Galería']);
+  if (specs.length) navLinks.push(['#caracteristicas','Características']);
+  if (d.video)      navLinks.push(['#video','Video']);
+  if (d.tour)       navLinks.push(['#tour','Recorrido 360°']);
+  if (d.mapa)       navLinks.push(['#ubicacion','Ubicación']);
+  navLinks.push(['#agente','Contacto']);
+
+  document.getElementById('nav-links').innerHTML = navLinks.map(([href,label]) =>
+    `<li><a href="${href}">${label}</a></li>`).join('');
+
+  // ── HERO ──
+  if (d.portada) {
+    const hero = document.getElementById('hero');
+    hero.style.backgroundImage = `url('${d.portada}')`;
+  }
+
+  const ubicStr = [d.colonia, d.municipio, d.estado].filter(Boolean).join(' · ');
+
+  document.getElementById('hero-content').innerHTML = `
+    ${d.tipo ? `<div class="hero-pill">${d.tipo}${d.op ? ' · ' + d.op : ''}</div>` : ''}
+    <h1 class="hero-headline">${d.hl || (d.tipo + ' ' + d.op)}</h1>
+    ${d.shl ? `<p class="hero-sub">${d.shl}</p>` : ''}
+    ${d.precio ? `<div class="hero-precio">${d.precio} <span style="font-size:0.45em;font-weight:600;color:rgba(201,168,76,0.7)">${d.moneda}</span></div>` : ''}
+    ${d.pnota ? `<p class="hero-pnota">${d.pnota}</p>` : ''}
+    ${ubicStr ? `<p class="hero-ubicacion">${ubicStr}</p>` : ''}
+    ${waUrl ? `<a href="${waUrl}" target="_blank" class="hero-cta">${waIcon} Quiero más información</a>` : ''}
+  `;
+
+  // ── CONTENIDO ──
+  let html = '';
+
+  // Galería
+  if (fotos.length) {
+    const todas = fotos;
+    html += `<section class="sec sec-light" id="galeria">
+      <div class="sec-inner">
+        <h2 class="sec-title">Galería</h2>
+        <div class="galeria-grid">
+          ${todas.map((url, i) => `
+            <div class="foto-wrap${i === 0 ? ' foto-hero tall' : ''}">
+              <img src="${url}" alt="Foto ${i+1}" loading="${i===0?'eager':'lazy'}">
+            </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Características
+  if (specs.length) {
+    html += `<section class="sec sec-gray" id="caracteristicas">
+      <div class="sec-inner">
+        <h2 class="sec-title">Características</h2>
+        <div class="specs-grid">
+          ${specs.map(s => `<div class="spec-card">
+            <div class="spec-label">${s.k}</div>
+            <div class="spec-val">${s.v}</div>
+          </div>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Descripción
+  if (d.desc) {
+    const parrafos = d.desc.split('\n\n').filter(Boolean);
+    html += `<section class="sec sec-light" id="descripcion">
+      <div class="sec-inner">
+        <h2 class="sec-title">Descripción</h2>
+        <div class="desc-body">
+          ${parrafos.map(p => `<p>${p.replace(/\n/g,' ')}</p>`).join('')}
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Amenidades
+  if (d.amen) {
+    const ams = d.amen.split('\n').filter(Boolean);
+    if (ams.length) {
+      html += `<section class="sec sec-gray">
+        <div class="sec-inner">
+          <h2 class="sec-title">Amenidades</h2>
+          <div class="amen-list">
+            ${ams.map(a => `<div class="amen-tag">${a}</div>`).join('')}
+          </div>
+        </div>
+      </section>`;
+    }
+  }
+
+  // Video
+  if (d.video) {
+    html += `<section class="sec sec-dark" id="video">
+      <div class="sec-inner">
+        <h2 class="sec-title light">Video cinemático</h2>
+        <div class="video-wrap">
+          <iframe src="${d.video}?rel=0&modestbranding=1" frameborder="0" allowfullscreen></iframe>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Tour
+  if (d.tour) {
+    html += `<section class="sec sec-gray" id="tour">
+      <div class="sec-inner">
+        <h2 class="sec-title">Recorrido virtual 360°</h2>
+        <div class="tour-wrap">
+          <iframe src="${d.tour}" frameborder="0" allowfullscreen allow="xr-spatial-tracking;gyroscope;accelerometer"></iframe>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Mapa
+  if (d.mapa) {
+    html += `<section class="sec sec-light" id="ubicacion">
+      <div class="sec-inner">
+        <h2 class="sec-title">Ubicación</h2>
+        ${d.mapadesc ? `<p style="text-align:center;color:#666;font-size:15px;margin-bottom:28px;">${d.mapadesc}</p>` : ''}
+        <div class="mapa-wrap">
+          <iframe src="${d.mapa}" allowfullscreen loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>`;
+  }
+
+  // Agente
+  const agInit = (d.ag[0] || 'A').toUpperCase();
+  html += `<section class="sec sec-dark" id="agente">
+    <div class="sec-inner">
+      <h2 class="sec-title light">Habla con el asesor</h2>
+      <div class="agente-card">
+        <div class="agente-avatar">${agInit}</div>
+        <div class="agente-nombre">${d.ag || 'Asesor inmobiliario'}</div>
+        ${d.agencia ? `<div class="agente-agencia">${d.agencia}</div>` : ''}
+        ${d.bio ? `<div class="agente-bio">${d.bio}</div>` : '<div style="margin-bottom:24px;"></div>'}
+        <div class="agente-btns">
+          ${waUrl ? `<a href="${waUrl}" target="_blank" class="btn-wa">${waIcon} Contactar por WhatsApp</a>` : ''}
+          ${d.email ? `<a href="mailto:${d.email}" class="agente-link">✉ ${d.email}</a>` : ''}
+        </div>
+      </div>
+    </div>
+  </section>`;
+
+  document.getElementById('page-content').innerHTML = html;
+
+  // Float WA
+  if (waUrl) {
+    const fa = document.createElement('a');
+    fa.href = waUrl;
+    fa.target = '_blank';
+    fa.className = 'float-wa';
+    fa.setAttribute('aria-label','WhatsApp');
+    fa.innerHTML = `<svg width="26" height="26" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>`;
+    document.body.appendChild(fa);
+  }
+</script>
+</body>
+</html>
