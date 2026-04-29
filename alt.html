@@ -83,7 +83,6 @@
 }</script>
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
 <script>
 tailwind.config={theme:{extend:{colors:{gold:"#C9A84C",goldL:"#E2C289",charcoal:"#1C1C1E",charcoal2:"#2A2A2D",concrete:"#9B9B9F",concreteL:"#E8E8EA",surface:"#F9F7F4"},fontFamily:{mont:["Montserrat","sans-serif"]}}}}
 </script>
@@ -318,129 +317,6 @@ body.mob-open{overflow:hidden;}
 #mob-wa-bar .label b{color:#C9A84C;display:block;font-size:13px;font-weight:800;letter-spacing:0;}
 #mob-wa-bar .cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:13px 20px;border-radius:9999px;background:#25D366;color:#fff;font-size:12px;font-weight:800;letter-spacing:.06em;text-decoration:none;text-transform:uppercase;box-shadow:0 8px 24px rgba(37,211,102,.45);flex-shrink:0;}
 @media(max-width:767px){#mob-wa-bar{display:flex;}#wa-fab{display:none !important;}body{padding-bottom:78px;}}
-
-/* ════════════════════════════════════════════════════
-   DEMO FEATURES (Fase 1 + Fase 2 del roadmap)
-   ════════════════════════════════════════════════════ */
-
-/* ── LOADING SPLASH ─────────────────────────── */
-#splash{position:fixed;inset:0;z-index:99999;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:18px;transition:opacity .6s ease, visibility 0s linear .6s;}
-#splash.hide{opacity:0;visibility:hidden;pointer-events:none;}
-#splash .splash-logo{width:64px;height:64px;animation:splashPulse 1.4s ease-in-out infinite;}
-#splash .splash-text{font-family:'Montserrat',sans-serif;font-weight:800;font-size:10px;letter-spacing:.4em;color:#C9A84C;text-transform:uppercase;opacity:0;animation:splashFade 1s .2s ease forwards;}
-@keyframes splashPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.05)}}
-@keyframes splashFade{to{opacity:1}}
-
-/* ── CURSOR CUSTOM (desktop only) ─────────────────────────── */
-@media(min-width:1024px) and (hover:hover){
-  #cursor-dot{position:fixed;top:0;left:0;width:8px;height:8px;border-radius:50%;background:#C9A84C;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .15s ease,width .25s ease,height .25s ease,background .2s ease;mix-blend-mode:difference;}
-  #cursor-ring{position:fixed;top:0;left:0;width:36px;height:36px;border:1.5px solid rgba(201,168,76,.5);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .35s cubic-bezier(.16,1,.3,1),width .25s ease,height .25s ease,border-color .25s ease,background .25s ease;}
-  body.cursor-hover #cursor-dot{width:0;height:0;}
-  body.cursor-hover #cursor-ring{width:64px;height:64px;background:rgba(201,168,76,.12);border-color:#C9A84C;}
-  body{cursor:none;}
-  a,button,input,textarea,select,.svc-img-wrap,.t3-card,.bf-slider{cursor:none;}
-}
-
-/* ── ANTES / DESPUÉS SLIDER ─────────────────────────── */
-#before-after{padding:72px 0;background:#FFFFFF;}
-@media(min-width:1024px){#before-after{padding:120px 0;}}
-.bf-header{max-width:1240px;margin:0 auto 40px;padding:0 24px;}
-@media(min-width:768px){.bf-header{padding:0 32px;margin-bottom:56px;}}
-.bf-eyebrow{font-size:10px;font-weight:800;letter-spacing:.22em;color:#C9A84C;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
-.bf-eyebrow::before{content:'';width:28px;height:1px;background:#C9A84C;opacity:.7;}
-.bf-h2{font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,5.5vw,48px);letter-spacing:-.03em;line-height:1.05;color:#1C1C1E;margin:0;max-width:20ch;}
-.bf-sub{font-size:15px;line-height:1.7;color:#9B9B9F;max-width:520px;margin:18px 0 0;}
-.bf-stage{max-width:1240px;margin:0 auto;padding:0 24px;}
-@media(min-width:768px){.bf-stage{padding:0 32px;}}
-.bf-slider{position:relative;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:8px;user-select:none;touch-action:none;background:#1C1C1E;}
-.bf-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}
-.bf-img-after{clip-path:inset(0 0 0 50%);}
-.bf-divider{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#C9A84C;transform:translateX(-50%);box-shadow:0 0 20px rgba(201,168,76,.4);pointer-events:none;}
-.bf-handle{position:absolute;top:50%;left:50%;width:48px;height:48px;border-radius:50%;background:#C9A84C;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;color:#1C1C1E;font-weight:900;font-size:18px;box-shadow:0 8px 24px rgba(0,0,0,.4);pointer-events:none;}
-.bf-label{position:absolute;top:20px;font-size:10px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#fff;background:rgba(28,28,30,.7);padding:8px 14px;backdrop-filter:blur(8px);border-radius:4px;pointer-events:none;}
-.bf-label.left{left:20px;}
-.bf-label.right{right:20px;color:#C9A84C;}
-
-/* ── CASOS DE ÉXITO ─────────────────────────── */
-#casos{padding:80px 0;background:#1C1C1E;color:#fff;position:relative;overflow:hidden;}
-@media(min-width:1024px){#casos{padding:120px 0;}}
-.casos-grid-bg{position:absolute;inset:0;background-image:linear-gradient(rgba(201,168,76,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,168,76,.04) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at center,black 0%,transparent 80%);-webkit-mask-image:radial-gradient(ellipse at center,black 0%,transparent 80%);pointer-events:none;}
-.casos-inner{max-width:1240px;margin:0 auto;padding:0 24px;position:relative;z-index:1;}
-@media(min-width:768px){.casos-inner{padding:0 32px;}}
-.casos-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(28px,5.5vw,48px);letter-spacing:-.03em;line-height:1.05;color:#fff;margin:0 0 18px;max-width:20ch;}
-.casos-sub{font-size:15px;line-height:1.7;color:#9B9B9F;max-width:520px;margin:0 0 56px;}
-.casos-row{display:grid;grid-template-columns:1fr;gap:20px;}
-@media(min-width:768px){.casos-row{grid-template-columns:repeat(2,1fr);gap:24px;}}
-@media(min-width:1024px){.casos-row{grid-template-columns:repeat(3,1fr);gap:28px;}}
-.caso-card{background:#2A2A2D;border:1px solid rgba(201,168,76,.15);border-radius:8px;overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),border-color .35s,box-shadow .35s;}
-.caso-card:hover{transform:translateY(-4px);border-color:#C9A84C;box-shadow:0 20px 40px rgba(0,0,0,.4);}
-.caso-img{aspect-ratio:16/11;background:#1C1C1E;background-size:cover;background-position:center;position:relative;overflow:hidden;}
-.caso-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,30,.7),transparent 50%);pointer-events:none;}
-.caso-tag{position:absolute;top:14px;left:14px;font-size:9px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#1C1C1E;background:#C9A84C;padding:5px 10px;border-radius:3px;z-index:2;}
-.caso-body{padding:28px 24px 32px;}
-.caso-name{font-size:14px;font-weight:700;color:#fff;letter-spacing:-.005em;margin-bottom:6px;}
-.caso-loc{font-size:11px;color:#9B9B9F;letter-spacing:.06em;margin-bottom:24px;text-transform:uppercase;font-weight:700;}
-.caso-stat{display:flex;align-items:flex-end;gap:12px;padding-top:20px;border-top:1px solid rgba(201,168,76,.15);}
-.caso-stat-num{font-family:'Montserrat',sans-serif;font-weight:900;font-size:36px;line-height:1;color:#C9A84C;letter-spacing:-.03em;}
-.caso-stat-lbl{font-size:11px;color:#9B9B9F;line-height:1.3;padding-bottom:4px;text-transform:uppercase;letter-spacing:.1em;font-weight:700;}
-
-/* ── CALCULADORA ─────────────────────────── */
-#calc{padding:72px 0;background:#F9F7F4;}
-@media(min-width:1024px){#calc{padding:120px 0;}}
-.calc-inner{max-width:980px;margin:0 auto;padding:0 24px;}
-@media(min-width:768px){.calc-inner{padding:0 32px;}}
-.calc-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(26px,5vw,42px);letter-spacing:-.03em;line-height:1.05;color:#1C1C1E;margin:0 0 14px;max-width:20ch;}
-.calc-sub{font-size:15px;line-height:1.7;color:#6c6c70;max-width:520px;margin:0 0 40px;}
-.calc-card{background:#fff;border:1px solid #E8E8EA;border-radius:12px;padding:32px 24px;box-shadow:0 12px 40px rgba(28,28,30,.06);}
-@media(min-width:768px){.calc-card{padding:48px;}}
-.calc-input-row{margin-bottom:32px;}
-.calc-label{display:block;font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:#9B9B9F;margin-bottom:14px;}
-.calc-input-wrap{position:relative;display:flex;align-items:center;border-bottom:2px solid #E8E8EA;padding-bottom:6px;transition:border-color .3s;}
-.calc-input-wrap:focus-within{border-bottom-color:#C9A84C;}
-.calc-currency{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(28px,5vw,42px);color:#9B9B9F;margin-right:8px;letter-spacing:-.02em;}
-.calc-input{flex:1;border:none;outline:none;font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(28px,5vw,42px);letter-spacing:-.02em;color:#1C1C1E;background:transparent;width:100%;min-width:0;padding:0;}
-.calc-input:focus{outline:none;}
-.calc-results{margin-top:32px;display:grid;grid-template-columns:1fr;gap:18px;}
-@media(min-width:768px){.calc-results{grid-template-columns:repeat(3,1fr);gap:20px;}}
-.calc-result{padding:24px 20px;background:#F9F7F4;border-left:3px solid #C9A84C;border-radius:4px;}
-.calc-result-lbl{font-size:10px;font-weight:800;letter-spacing:.18em;color:#9B9B9F;text-transform:uppercase;margin-bottom:10px;}
-.calc-result-val{font-family:'Montserrat',sans-serif;font-weight:900;font-size:clamp(22px,3vw,30px);color:#1C1C1E;letter-spacing:-.025em;line-height:1.1;}
-.calc-result-val.danger{color:#C9A84C;}
-.calc-result-note{font-size:11px;color:#6c6c70;margin-top:6px;line-height:1.4;}
-.calc-cta{margin-top:36px;padding-top:32px;border-top:1px solid #E8E8EA;display:flex;flex-direction:column;gap:18px;align-items:flex-start;}
-@media(min-width:768px){.calc-cta{flex-direction:row;justify-content:space-between;align-items:center;}}
-.calc-cta-text{font-size:14px;color:#1C1C1E;font-weight:600;line-height:1.5;}
-.calc-cta-text b{color:#C9A84C;}
-
-/* ── GARANTÍA ─────────────────────────── */
-#garantia{padding:72px 0;background:#FFFFFF;}
-@media(min-width:1024px){#garantia{padding:120px 0;}}
-.gar-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:grid;grid-template-columns:1fr;gap:40px;align-items:center;}
-@media(min-width:768px){.gar-inner{padding:0 32px;}}
-@media(min-width:1024px){.gar-inner{grid-template-columns:1fr 1.4fr;gap:80px;}}
-.gar-seal{display:flex;flex-direction:column;align-items:center;justify-content:center;background:#1C1C1E;border-radius:12px;padding:48px 32px;color:#fff;text-align:center;position:relative;overflow:hidden;}
-.gar-seal::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,rgba(201,168,76,.12),transparent 70%);pointer-events:none;}
-.gar-seal-icon{width:72px;height:72px;border:2px solid #C9A84C;border-radius:50%;display:flex;align-items:center;justify-content:center;margin-bottom:18px;position:relative;z-index:1;}
-.gar-seal-icon svg{width:32px;height:32px;}
-.gar-seal-num{font-family:'Montserrat',sans-serif;font-weight:900;font-size:64px;line-height:1;color:#C9A84C;letter-spacing:-.05em;position:relative;z-index:1;}
-.gar-seal-lbl{font-size:11px;font-weight:800;letter-spacing:.22em;color:#fff;text-transform:uppercase;margin-top:6px;position:relative;z-index:1;}
-.gar-eyebrow{font-size:10px;font-weight:800;letter-spacing:.22em;color:#C9A84C;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
-.gar-eyebrow::before{content:'';width:28px;height:1px;background:#C9A84C;opacity:.7;}
-.gar-h{font-family:'Montserrat',sans-serif;font-weight:700;font-size:clamp(26px,4.5vw,38px);letter-spacing:-.03em;line-height:1.1;color:#1C1C1E;margin:0 0 18px;}
-.gar-body{font-size:15px;line-height:1.75;color:#4a4a4d;margin:0 0 24px;}
-.gar-list{list-style:none;padding:0;margin:0;}
-.gar-list li{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #E8E8EA;font-size:14px;color:#1C1C1E;font-weight:500;line-height:1.5;}
-.gar-list li:last-child{border-bottom:none;}
-.gar-list .check{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:#C9A84C;display:flex;align-items:center;justify-content:center;color:#1C1C1E;font-weight:900;font-size:12px;}
-
-/* ── SECTION REVEAL refinement ─────────────────────────── */
-.section-eyebrow{font-size:10px;font-weight:800;letter-spacing:.22em;color:#C9A84C;text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:14px;}
-.section-eyebrow::before{content:'';width:28px;height:1px;background:#C9A84C;opacity:.7;}
-
-/* ── PACKAGE HOVER MICROINTERACTIONS ─────────────────────────── */
-.pkg-card-hover{transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s,border-color .35s;}
-.pkg-card-hover:hover .btn-gold{box-shadow:0 14px 32px rgba(201,168,76,.5);transform:scale(1.02);}
-.pkg-card-hover .btn-gold{transition:box-shadow .3s,transform .3s,background .25s;}
 </style>
 <style>
 /* ── HAMBURGER BUTTON ── */
@@ -551,20 +427,6 @@ document.addEventListener('keydown', function(e){
 </script>
 </head>
 <body class="bg-[#FAFAFA] text-[#1C1C1E] font-mont">
-
-<!-- Loading splash -->
-<div id="splash">
-  <svg class="splash-logo" viewBox="329 30 292 260" xmlns="http://www.w3.org/2000/svg">
-    <path d="M409.51 281.05h-59.12a20.86 20.86 0 0 1-20.83-20.83V147.84a21.18 21.18 0 0 1 21.16-21.16h27.11a2.6 2.6 0 0 0 1.61-.55l94.3-73.5 79.49 61.73-4 5.21L473.75 61l-90.26 70.35a9.28 9.28 0 0 1-5.66 1.94h-27.11a14.57 14.57 0 0 0-14.56 14.56v112.37a14.25 14.25 0 0 0 14.23 14.23h59.12ZM596.86 281.05H541.8v-6.6h55.06A14.18 14.18 0 0 0 611 260.28V148a15.51 15.51 0 0 0-15.49-15.49H560v-6.6h35.56A22.12 22.12 0 0 1 617.63 148v112.28a20.79 20.79 0 0 1-20.77 20.77" fill="#fff"/>
-    <path d="M489.29 133.28v147.77h-6.5v-142l-45.38 27.78v114.22h-6.5V165a3.26 3.26 0 0 1 1.55-2.77l51.89-31.76a3.24 3.24 0 0 1 4.94 2.77ZM523.59 196.34v84.71h-6.5v-82.83l-27.8-16-4.87-2.81a3.25 3.25 0 0 1 3.24-5.64l1.63.94L522 193.52a3.25 3.25 0 0 1 1.59 2.82M380.9 108.32l-3.96-5.15 96.81-74.58 80.63 62.05-3.97 5.16-76.66-59.01z" fill="#C9A84C"/>
-    <circle cx="576.04" cy="157.87" r="8" fill="#C9A84C"/>
-  </svg>
-  <div class="splash-text">Inmuebles Audiovisuales</div>
-</div>
-
-<!-- Custom cursor (desktop only) -->
-<div id="cursor-ring"></div>
-<div id="cursor-dot"></div>
 <div id="scroll-progress"></div>
 
 <!-- Mobile WhatsApp Bar (sticky) -->
@@ -608,11 +470,6 @@ document.addEventListener('keydown', function(e){
 <section id="hero" class="relative flex items-center justify-center overflow-hidden" style="min-height:100svh">
   <div id="hero-bg" class="absolute inset-0 z-0" style="will-change:opacity,transform;">
     <img id="hero-img" src="fotografia-inmobiliaria-monterrey.webp" alt="Fotografía inmobiliaria profesional en Monterrey" class="w-full h-full object-cover" style="animation:kenBurns 16s cubic-bezier(.16,1,.3,1) forwards;transform-origin:center center;">
-    <!-- DEMO ROADMAP 1.1: en producción reemplazar la imagen anterior con video loop de B-roll:
-    <video autoplay muted loop playsinline poster="fotografia-inmobiliaria-monterrey.webp" class="w-full h-full object-cover" style="position:absolute;inset:0;">
-      <source src="video/hero-broll.mp4" type="video/mp4">
-    </video>
-    -->
     <div id="hero-darken" class="absolute inset-0" style="background:#1C1C1E;opacity:0;pointer-events:none;"></div>
   </div>
   <div class="relative w-full px-6 md:px-8 flex flex-col items-center justify-center" style="z-index:2;padding-top:80px">
@@ -702,27 +559,6 @@ document.addEventListener('keydown', function(e){
       <img src="LogoClientes/Isbra.png" alt="Isbra" class="ticker-logo">
       <img src="LogoClientes/Contel.png" alt="Contel Inmobiliaria" class="ticker-logo">
       <img src="LogoClientes/Rivera.png" alt="Rivera Inmobiliaria" class="ticker-logo">
-    </div>
-  </div>
-</section>
-
-<!-- ════════ ANTES / DESPUÉS · Slider interactivo ════════ -->
-<section id="before-after">
-  <div class="bf-header cine-reveal-r">
-    <div class="bf-eyebrow"><span>El argumento más visual</span></div>
-    <h2 class="bf-h2">La diferencia entre fotos de celular y producción profesional.</h2>
-    <p class="bf-sub">Arrastra el control para comparar. Misma propiedad, misma hora, mismo ángulo. La única diferencia es el equipo y el ojo profesional.</p>
-  </div>
-  <div class="bf-stage cine-reveal-u">
-    <div class="bf-slider" id="bfSlider">
-      <img class="bf-img bf-img-before" src="https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=1600&q=70" alt="Fotografía amateur con celular">
-      <img class="bf-img bf-img-after" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1600&q=80" alt="Fotografía profesional inmobiliaria">
-      <span class="bf-label left">Celular</span>
-      <span class="bf-label right">Profesional</span>
-      <div class="bf-divider" id="bfDivider"></div>
-      <div class="bf-handle" id="bfHandle">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M8 5l-7 7 7 7M16 5l7 7-7 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
-      </div>
     </div>
   </div>
 </section>
@@ -966,105 +802,6 @@ document.addEventListener('keydown', function(e){
   </article>
 </section>
 
-<!-- ════════ CASOS DE ÉXITO · Números reales ════════ -->
-<section id="casos">
-  <div class="casos-grid-bg"></div>
-  <div class="casos-inner">
-    <div class="cine-reveal-r" style="margin-bottom:48px">
-      <div class="section-eyebrow" style="color:#C9A84C"><span>Resultados verificables</span></div>
-      <h2 class="casos-h">Propiedades que se vendieron antes que la competencia.</h2>
-      <p class="casos-sub">Cada producción tiene un objetivo: cerrar más rápido. Estos son casos recientes con datos reales.</p>
-    </div>
-    <div class="casos-row cine-reveal-u">
-
-      <div class="caso-card">
-        <div class="caso-img" style="background-image:url('https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=900&q=70')">
-          <span class="caso-tag">Vendida</span>
-        </div>
-        <div class="caso-body">
-          <div class="caso-name">Casa en Cumbres Elite</div>
-          <div class="caso-loc">San Pedro Garza García</div>
-          <div class="caso-stat">
-            <div class="caso-stat-num">18</div>
-            <div class="caso-stat-lbl">días<br>en el mercado</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="caso-card">
-        <div class="caso-img" style="background-image:url('https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?w=900&q=70')">
-          <span class="caso-tag">Vendida</span>
-        </div>
-        <div class="caso-body">
-          <div class="caso-name">Penthouse Valle Oriente</div>
-          <div class="caso-loc">San Pedro · Valle Oriente</div>
-          <div class="caso-stat">
-            <div class="caso-stat-num">23</div>
-            <div class="caso-stat-lbl">días<br>en el mercado</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="caso-card">
-        <div class="caso-img" style="background-image:url('https://images.unsplash.com/photo-1613553497126-a44624272024?w=900&q=70')">
-          <span class="caso-tag">Vendida</span>
-        </div>
-        <div class="caso-body">
-          <div class="caso-name">Quinta Privada</div>
-          <div class="caso-loc">Montemorelos, NL</div>
-          <div class="caso-stat">
-            <div class="caso-stat-num">31</div>
-            <div class="caso-stat-lbl">días<br>en el mercado</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="caso-card">
-        <div class="caso-img" style="background-image:url('https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=900&q=70')">
-          <span class="caso-tag">Vendida</span>
-        </div>
-        <div class="caso-body">
-          <div class="caso-name">Departamento Frente al Parque</div>
-          <div class="caso-loc">Monterrey · Centro</div>
-          <div class="caso-stat">
-            <div class="caso-stat-num">12</div>
-            <div class="caso-stat-lbl">días<br>en el mercado</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="caso-card">
-        <div class="caso-img" style="background-image:url('https://images.unsplash.com/photo-1598228723793-52759bba239c?w=900&q=70')">
-          <span class="caso-tag">Vendida</span>
-        </div>
-        <div class="caso-body">
-          <div class="caso-name">Terreno Carretera Nacional</div>
-          <div class="caso-loc">Allende, NL</div>
-          <div class="caso-stat">
-            <div class="caso-stat-num">42</div>
-            <div class="caso-stat-lbl">días<br>en el mercado</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="caso-card">
-        <div class="caso-img" style="background-image:url('https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=900&q=70')">
-          <span class="caso-tag">Vendida</span>
-        </div>
-        <div class="caso-body">
-          <div class="caso-name">Casa con Alberca</div>
-          <div class="caso-loc">García, NL</div>
-          <div class="caso-stat">
-            <div class="caso-stat-num">26</div>
-            <div class="caso-stat-lbl">días<br>en el mercado</div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
 <!-- PAQUETES -->
 <section id="paquetes" class="py-20 md:py-24" style="background:#F9F7F4">
   <div class="max-w-[1240px] mx-auto px-6 md:px-8">
@@ -1288,48 +1025,6 @@ document.addEventListener('keydown', function(e){
   </div>
 </section>
 
-<!-- ════════ CALCULADORA · Costo de oportunidad ════════ -->
-<section id="calc">
-  <div class="calc-inner">
-    <div class="cine-reveal-r">
-      <div class="section-eyebrow"><span>Calcula tu costo</span></div>
-      <h2 class="calc-h">¿Cuánto te cuesta NO contratarnos?</h2>
-      <p class="calc-sub">Cada mes extra en el mercado son ingresos que ya no recuperas. Mete el precio de tu propiedad y mira el cálculo.</p>
-    </div>
-    <div class="calc-card cine-reveal-u">
-      <div class="calc-input-row">
-        <label class="calc-label" for="calcPrice">Precio de tu propiedad</label>
-        <div class="calc-input-wrap">
-          <span class="calc-currency">$</span>
-          <input type="text" id="calcPrice" class="calc-input" placeholder="3,500,000" inputmode="numeric">
-        </div>
-      </div>
-      <div class="calc-results">
-        <div class="calc-result">
-          <div class="calc-result-lbl">Cada mes extra</div>
-          <div class="calc-result-val danger" id="calcMonthly">$0</div>
-          <div class="calc-result-note">Costo de oportunidad mensual estimado*</div>
-        </div>
-        <div class="calc-result">
-          <div class="calc-result-lbl">A 3 meses</div>
-          <div class="calc-result-val danger" id="calc3Months">$0</div>
-          <div class="calc-result-note">Promedio de bajada de precio del 3-5%</div>
-        </div>
-        <div class="calc-result">
-          <div class="calc-result-lbl">El paquete Plus se paga en</div>
-          <div class="calc-result-val" id="calcPayback">— días</div>
-          <div class="calc-result-note">De venta acelerada con material profesional</div>
-        </div>
-      </div>
-      <div class="calc-cta">
-        <p class="calc-cta-text">El paquete Plus cuesta <b>$7,500 MXN</b>. Cada semana sin él te cuesta más.</p>
-        <a href="https://wa.me/528127174207?text=Hola%2C%20vi%20la%20calculadora%20en%20su%20sitio%20y%20quiero%20cotizar" class="btn-gold">Cotizar mi paquete</a>
-      </div>
-    </div>
-    <p style="font-size:11px;color:#9B9B9F;margin-top:18px;text-align:center;letter-spacing:.06em">*Estimaciones basadas en datos de National Association of Realtors. Variables reales pueden diferir según condiciones del mercado.</p>
-  </div>
-</section>
-
 <!-- PREGUNTAS FRECUENTES -->
 <!-- CÓMO FUNCIONA -->
 <section id="como-funciona" class="relative overflow-hidden py-14 md:py-24" style="background:#F9F7F4">
@@ -1373,30 +1068,6 @@ document.addEventListener('keydown', function(e){
         <p style="font-size:13px;line-height:1.7;color:#9B9B9F">Recibes un enlace con todo tu material editado y listo para subir a portales y enviárselo a tus clientes.</p>
       </div>
 
-    </div>
-  </div>
-</section>
-
-<!-- ════════ GARANTÍA · Bloque dedicado ════════ -->
-<section id="garantia">
-  <div class="gar-inner">
-    <div class="gar-seal cine-reveal-r">
-      <div class="gar-seal-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-      </div>
-      <div class="gar-seal-num">3</div>
-      <div class="gar-seal-lbl">Días hábiles</div>
-    </div>
-    <div class="cine-reveal-u">
-      <div class="gar-eyebrow"><span>Compromiso real</span></div>
-      <h2 class="gar-h">Si no entregamos en 3 días hábiles, no pagas.</h2>
-      <p class="gar-body">Cobramos por el resultado, no por el esfuerzo. Si no recibes tu material editado y listo para publicar en máximo 3 días hábiles desde la sesión, el paquete es gratis. Llevamos más de 150 producciones cumpliéndolo.</p>
-      <ul class="gar-list">
-        <li><span class="check">✓</span><span>Entrega garantizada en 3 días hábiles desde la sesión.</span></li>
-        <li><span class="check">✓</span><span>Pago en 3 mensualidades sin intereses con tarjeta de crédito.</span></li>
-        <li><span class="check">✓</span><span>Hasta 2 rondas de correcciones menores incluidas.</span></li>
-        <li><span class="check">✓</span><span>Reagendamos sin costo si el clima no permite volar drone.</span></li>
-      </ul>
     </div>
   </div>
 </section>
@@ -1765,109 +1436,6 @@ document.addEventListener('keydown', function(e){
 </a>
 
 <script>
-// ════════════════════════════════════════════════════
-// DEMO FEATURES JS
-// ════════════════════════════════════════════════════
-
-// Splash hide after page load
-window.addEventListener('load', function(){
-  setTimeout(function(){
-    var splash = document.getElementById('splash');
-    if(splash) splash.classList.add('hide');
-  }, 700);
-});
-
-// Lenis smooth scroll (desktop only)
-if(window.Lenis && window.matchMedia('(min-width:1024px)').matches){
-  var lenis = new Lenis({duration:1.1, easing:function(t){return Math.min(1,1.001-Math.pow(2,-10*t))}});
-  function raf(time){lenis.raf(time);requestAnimationFrame(raf);}
-  requestAnimationFrame(raf);
-}
-
-// Custom cursor (desktop only)
-if(window.matchMedia('(min-width:1024px) and (hover:hover)').matches){
-  var cdot = document.getElementById('cursor-dot');
-  var cring = document.getElementById('cursor-ring');
-  var mx = 0, my = 0, rx = 0, ry = 0;
-  document.addEventListener('mousemove', function(e){
-    mx = e.clientX; my = e.clientY;
-    if(cdot){cdot.style.left = mx+'px'; cdot.style.top = my+'px';}
-  });
-  function ringFollow(){
-    rx += (mx - rx) * 0.18;
-    ry += (my - ry) * 0.18;
-    if(cring){cring.style.left = rx+'px'; cring.style.top = ry+'px';}
-    requestAnimationFrame(ringFollow);
-  }
-  ringFollow();
-  // Hover detection on interactive elements
-  document.querySelectorAll('a,button,.svc-img-wrap,.t3-card,.bf-slider,.caso-card,.pkg-card-hover').forEach(function(el){
-    el.addEventListener('mouseenter', function(){document.body.classList.add('cursor-hover')});
-    el.addEventListener('mouseleave', function(){document.body.classList.remove('cursor-hover')});
-  });
-}
-
-// Antes/Después slider drag
-(function(){
-  var slider = document.getElementById('bfSlider');
-  if(!slider) return;
-  var after = slider.querySelector('.bf-img-after');
-  var divider = document.getElementById('bfDivider');
-  var handle = document.getElementById('bfHandle');
-  var dragging = false;
-  function setPos(pct){
-    pct = Math.max(0, Math.min(100, pct));
-    after.style.clipPath = 'inset(0 0 0 '+pct+'%)';
-    divider.style.left = pct+'%';
-    handle.style.left = pct+'%';
-  }
-  function getPct(e){
-    var rect = slider.getBoundingClientRect();
-    var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-    return (x / rect.width) * 100;
-  }
-  slider.addEventListener('mousedown', function(e){dragging=true; setPos(getPct(e));});
-  slider.addEventListener('touchstart', function(e){dragging=true; setPos(getPct(e));},{passive:true});
-  document.addEventListener('mousemove', function(e){if(dragging) setPos(getPct(e));});
-  document.addEventListener('touchmove', function(e){if(dragging) setPos(getPct(e));},{passive:true});
-  document.addEventListener('mouseup', function(){dragging=false;});
-  document.addEventListener('touchend', function(){dragging=false;});
-  setPos(50);
-})();
-
-// Calculadora costo de oportunidad
-(function(){
-  var input = document.getElementById('calcPrice');
-  if(!input) return;
-  var monthlyEl = document.getElementById('calcMonthly');
-  var threeEl = document.getElementById('calc3Months');
-  var paybackEl = document.getElementById('calcPayback');
-  function fmt(n){return '$' + Math.round(n).toLocaleString('es-MX');}
-  function calc(){
-    var raw = input.value.replace(/[^\d]/g,'');
-    var price = parseInt(raw) || 0;
-    if(price > 0){
-      input.value = parseInt(raw).toLocaleString('es-MX');
-    } else {
-      input.value = '';
-    }
-    // Estimaciones: comisión perdida + bajada de precio típica
-    // Cada mes extra: ~0.5% del valor en costo de oportunidad (intereses + bajadas progresivas)
-    var monthly = price * 0.005;
-    var threeMonths = price * 0.035; // 3.5% típico de bajadas a 3 meses
-    var payback = price > 0 ? Math.ceil(7500 / (monthly / 30)) : 0;
-    monthlyEl.textContent = fmt(monthly);
-    threeEl.textContent = fmt(threeMonths);
-    paybackEl.textContent = price > 0 ? payback + ' días' : '— días';
-  }
-  input.addEventListener('input', calc);
-  // Default value for demo effect
-  input.value = '3,500,000';
-  calc();
-})();
-
-// ════════════════════════════════════════════════════
-
 // Header scroll behavior
 window.addEventListener('scroll', function(){
   var header = document.getElementById('site-header');
