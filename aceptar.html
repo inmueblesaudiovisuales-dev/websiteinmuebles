@@ -515,6 +515,61 @@
     animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both;
   }
 
+  /* ── Botones de orientación de video ── */
+  .orientacion-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .orientacion-btn {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 12px 14px;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    user-select: none;
+  }
+  .orientacion-btn:hover {
+    border-color: var(--gold);
+  }
+  .orientacion-btn.active {
+    border-color: var(--gold);
+    border-width: 2px;
+    background: rgba(201, 168, 76, 0.08);
+    padding: 15px 11px 13px;
+  }
+  .orientacion-btn .img-wrap {
+    width: 100%;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .orientacion-btn .img-wrap img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+  }
+  .orientacion-btn .titulo {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .orientacion-btn .descripcion {
+    font-size: 11px;
+    color: var(--concrete);
+    font-weight: 500;
+    line-height: 1.5;
+  }
+
   /* ── Acordeones de método ── */
   .metodo-acc {
     border: 1.5px solid var(--border);
@@ -730,14 +785,25 @@
       <p class="form-section-title">Producción</p>
 
       <div class="field" id="field-orientacion">
-        <label for="inp-orientacion">Orientación del video *</label>
-        <select id="inp-orientacion">
-          <option value="">Selecciona una opción</option>
-          <option value="Horizontal (16:9) — YouTube, sitios web y pantallas">Horizontal — YouTube, sitios web y pantallas</option>
-          <option value="Vertical (9:16) — Reels, TikTok e Instagram">Vertical — Reels, TikTok e Instagram</option>
-        </select>
-        <img src="https://inmueblesaudiovisuales.com/orientacion-video.svg" alt="Referencia visual de orientación horizontal y vertical" style="display:block;width:100%;max-width:380px;margin:14px auto 0;border-radius:8px">
-        <span class="field-error">Selecciona una opción</span>
+        <label>Orientación del video *</label>
+        <div class="orientacion-grid">
+          <div class="orientacion-btn" data-value="Horizontal (16:9) — YouTube, sitios web y pantallas" onclick="seleccionarOrientacion(this)">
+            <div class="img-wrap">
+              <img src="https://inmueblesaudiovisuales.com/orientacion-horizontal.svg" alt="Orientación horizontal">
+            </div>
+            <div class="titulo">HORIZONTAL</div>
+            <div class="descripcion">YouTube · Sitios web · Pantallas</div>
+          </div>
+          <div class="orientacion-btn" data-value="Vertical (9:16) — Reels, TikTok e Instagram" onclick="seleccionarOrientacion(this)">
+            <div class="img-wrap">
+              <img src="https://inmueblesaudiovisuales.com/orientacion-vertical.svg" alt="Orientación vertical">
+            </div>
+            <div class="titulo">VERTICAL</div>
+            <div class="descripcion">Reels · TikTok · Instagram</div>
+          </div>
+        </div>
+        <input type="hidden" id="inp-orientacion" value="">
+        <span class="field-error" style="margin-top:8px">Selecciona una opción</span>
       </div>
 
       <!-- ── Bloque RESIDENCIAL: solo se muestra si tipoPropiedad === 'Residencial' ── -->
@@ -991,6 +1057,15 @@
     } catch (err) {
       showState('state-invalid');
     }
+  }
+
+  function seleccionarOrientacion(btn) {
+    document.querySelectorAll('.orientacion-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('inp-orientacion').value = btn.dataset.value;
+    // Quitar el estado de error del campo si lo tenía
+    const field = document.getElementById('field-orientacion');
+    if (field) field.classList.remove('has-error');
   }
 
   function actualizarNombreArchivo(inputId, labelId) {

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Orientación vertical de video">
+  <title>Orientación vertical</title>
+  <desc>Celular en orientación vertical con botón de play.</desc>
+
+  <rect x="60" y="10" width="120" height="220" rx="16" fill="#1C1C1E"/>
+  <rect x="70" y="20" width="100" height="200" rx="6" fill="#FAFAFA"/>
+  <circle cx="120" cy="120" r="28" fill="#C9A84C"/>
+  <path d="M 113 108 L 113 132 L 133 120 Z" fill="#1C1C1E"/>
+  <circle cx="120" cy="28" r="2" fill="#3a3a3c"/>
+</svg>
