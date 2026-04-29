@@ -515,6 +515,39 @@
     animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both;
   }
 
+  /* ── Barra de progreso ── */
+  .progress-wrap {
+    margin-top: 18px;
+    animation: fadeIn .3s ease;
+  }
+  .progress-text {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal);
+    text-align: center;
+    margin-bottom: 10px;
+    letter-spacing: 0.3px;
+    transition: opacity .2s ease;
+  }
+  .progress-track {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--gold);
+    border-radius: 3px;
+    transition: width .4s cubic-bezier(.4, 0, .2, 1);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
+  }
+
   /* ── Botones de orientación de video ── */
   .orientacion-grid {
     display: grid;
@@ -943,6 +976,13 @@
         Confirmar información y generar contrato →
       </button>
 
+      <div id="progress-wrap" class="progress-wrap" style="display:none">
+        <div class="progress-text" id="progress-text">Procesando información...</div>
+        <div class="progress-track">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+      </div>
+
       <p style="font-size:11px;color:var(--concrete);text-align:center;margin-top:14px;line-height:1.6">
         Al confirmar, recibirás una copia del contrato en tu correo electrónico.
       </p>
@@ -1185,6 +1225,47 @@
     btn.disabled = true;
     btn.textContent = 'Generando contrato...';
 
+    // Mostrar barra de progreso con etapas
+    const progressWrap = document.getElementById('progress-wrap');
+    const progressBar  = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    progressWrap.style.display = 'block';
+
+    // Detectar si hay archivos para ajustar timing
+    const tieneArchivos = (document.getElementById('inp-file-logo').files.length > 0) ||
+                          (document.getElementById('inp-file-perimetro') && document.getElementById('inp-file-perimetro').files.length > 0);
+
+    let progressTimers = [];
+    function setEtapa(pct, texto) {
+      progressBar.style.width  = pct + '%';
+      progressText.textContent = texto;
+    }
+
+    function iniciarProgreso() {
+      const etapas = tieneArchivos ? [
+        { pct:  8, texto: 'Procesando información...',   delay: 0    },
+        { pct: 28, texto: 'Subiendo archivos...',         delay: 600  },
+        { pct: 55, texto: 'Subiendo archivos...',         delay: 3500 },
+        { pct: 75, texto: 'Generando tu contrato...',     delay: 8000 },
+        { pct: 88, texto: 'Generando tu contrato...',     delay: 14000},
+        { pct: 95, texto: 'Casi listo...',                delay: 22000},
+      ] : [
+        { pct: 12, texto: 'Procesando información...',    delay: 0    },
+        { pct: 38, texto: 'Procesando información...',    delay: 1500 },
+        { pct: 65, texto: 'Generando tu contrato...',     delay: 5000 },
+        { pct: 85, texto: 'Generando tu contrato...',     delay: 10000},
+        { pct: 95, texto: 'Casi listo...',                delay: 16000},
+      ];
+      etapas.forEach(e => {
+        progressTimers.push(setTimeout(() => setEtapa(e.pct, e.texto), e.delay));
+      });
+    }
+    function detenerProgreso() {
+      progressTimers.forEach(t => clearTimeout(t));
+      progressTimers = [];
+    }
+    iniciarProgreso();
+
     try {
       // Leer archivos opcionales en paralelo (logo siempre, perímetro solo si es terreno)
       const esTerreno = (window.tipoPropiedad || 'Residencial') === 'Terreno';
@@ -1222,6 +1303,11 @@
 
       const data = await res.json();
 
+      // Detener timers de progreso pendientes y completar al 100%
+      detenerProgreso();
+      setEtapa(100, '¡Listo!');
+      await new Promise(r => setTimeout(r, 400));
+
       if (data.ok) {
         showState('state-success');
       } else {
@@ -1229,15 +1315,20 @@
           showState('state-expired');
         } else {
           alert('Ocurrió un error: ' + (data.error || 'intenta de nuevo'));
+          progressWrap.style.display = 'none';
+          progressBar.style.width = '0%';
           btn.disabled = false;
-          btn.textContent = 'Confirmar y generar contrato →';
+          btn.textContent = 'Confirmar información y generar contrato →';
         }
       }
 
     } catch (err) {
+      detenerProgreso();
       alert('Error de conexión. Verifica tu internet e intenta de nuevo.');
+      progressWrap.style.display = 'none';
+      progressBar.style.width = '0%';
       btn.disabled = false;
-      btn.textContent = 'Confirmar y generar contrato →';
+      btn.textContent = 'Confirmar información y generar contrato →';
     }
   }
 
