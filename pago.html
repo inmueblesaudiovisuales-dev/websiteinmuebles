@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Opciones de pago · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.10);
+    --charcoal: #1C1C1E;
+    --concrete: #9B9B9F;
+    --surface: #F9F7F4;
+    --white: #FAFAFA;
+    --border: rgba(28,28,30,0.1);
+    --error: #E05252;
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--surface);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--charcoal);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  header img { height: 36px; width: auto; }
+
+  /* ── ESTADOS ── */
+  #state-loading,
+  #state-error,
+  #state-main { display: none; }
+
+  /* ── CARD ── */
+  .card {
+    max-width: 480px;
+    margin: 32px auto 48px;
+    padding: 0 16px;
+  }
+
+  .greeting {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .monto-label {
+    font-size: 13px;
+    color: var(--concrete);
+    margin-bottom: 6px;
+  }
+  .monto-valor {
+    font-size: 32px;
+    font-weight: 800;
+    color: var(--gold);
+    margin-bottom: 28px;
+    letter-spacing: -0.5px;
+  }
+
+  /* ── OPCIONES ── */
+  .opcion {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 16px;
+  }
+  .opcion-titulo {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 16px;
+  }
+
+  /* Botón tarjeta */
+  .btn-pago {
+    display: block;
+    width: 100%;
+    background: var(--gold);
+    color: var(--charcoal);
+    text-decoration: none;
+    text-align: center;
+    padding: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-pago:hover { background: #b8962e; }
+
+  /* Separador */
+  .separador {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0;
+    color: var(--concrete);
+    font-size: 12px;
+  }
+  .separador::before,
+  .separador::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* Datos bancarios */
+  .datos-banco {
+    background: #1C1C1E;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .dato-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .dato-fila:last-child { border-bottom: none; }
+  .dato-etiqueta {
+    font-size: 11px;
+    color: rgba(255,255,255,0.45);
+    font-weight: 500;
+  }
+  .dato-valor {
+    font-size: 13px;
+    color: #fff;
+    font-weight: 600;
+    font-family: 'Courier New', Courier, monospace;
+    letter-spacing: 0.5px;
+  }
+  .dato-valor.clabe {
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  /* Botón copiar */
+  .btn-copiar {
+    width: 100%;
+    background: transparent;
+    border: 1.5px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    padding: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 16px;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-copiar:hover { background: var(--gold-dim); }
+  .btn-copiar.copiado {
+    background: var(--gold-dim);
+    color: var(--gold);
+  }
+
+  /* Instrucción WhatsApp */
+  .instruccion-ws {
+    font-size: 12px;
+    color: var(--concrete);
+    line-height: 1.6;
+  }
+  .instruccion-ws a {
+    color: var(--gold);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  /* ── ESTADO LOADING ── */
+  .spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 16px;
+    color: var(--concrete);
+    font-size: 13px;
+  }
+  .spinner-ring {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── ESTADO ERROR ── */
+  .error-card {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    margin: 32px auto;
+    max-width: 400px;
+  }
+  .error-icon { font-size: 40px; margin-bottom: 16px; }
+  .error-titulo { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .error-msg { font-size: 13px; color: var(--concrete); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--concrete);
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">
+</header>
+
+<!-- Estado: cargando -->
+<div id="state-loading">
+  <div class="spinner">
+    <div class="spinner-ring"></div>
+    <span>Cargando opciones de pago...</span>
+  </div>
+</div>
+
+<!-- Estado: error -->
+<div id="state-error">
+  <div class="card">
+    <div class="error-card">
+      <div class="error-icon">⚠️</div>
+      <div class="error-titulo">No se pudo cargar esta página</div>
+      <div class="error-msg" id="error-msg">El enlace puede haber expirado o ser inválido.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Estado: contenido principal -->
+<div id="state-main">
+  <div class="card">
+
+    <div class="greeting" id="greeting"></div>
+    <div class="monto-label">Anticipo a pagar</div>
+    <div class="monto-valor" id="monto"></div>
+
+    <!-- Opción 1: Tarjeta -->
+    <div class="opcion">
+      <div class="opcion-titulo">Pago con tarjeta</div>
+      <a id="btn-stripe" href="#" class="btn-pago" target="_blank" rel="noopener">
+        PAGAR CON TARJETA →
+      </a>
+    </div>
+
+    <!-- Opción 2: Transferencia -->
+    <div class="opcion">
+      <div class="opcion-titulo">Transferencia bancaria</div>
+
+      <div class="datos-banco">
+        <div class="dato-fila">
+          <span class="dato-etiqueta">Banco</span>
+          <span class="dato-valor">Banamex</span>
+        </div>
+        <div class="dato-fila">
+          <span class="dato-etiqueta">CLABE</span>
+          <span class="dato-valor clabe" id="clabe">002580905411451243</span>
+        </div>
+        <div class="dato-fila">
+          <span class="dato-etiqueta">Número de cuenta</span>
+          <span class="dato-valor">1145124</span>
+        </div>
+        <div class="dato-fila">
+          <span class="dato-etiqueta">Titular</span>
+          <span class="dato-valor" style="font-family:'Montserrat',sans-serif;letter-spacing:0">Bruno Gutierrez Salazar</span>
+        </div>
+      </div>
+
+      <button class="btn-copiar" id="btn-copiar" onclick="copiarClabe()">
+        COPIAR CLABE
+      </button>
+
+      <p class="instruccion-ws">
+        Una vez realizada la transferencia, envíanos el comprobante por
+        <a href="https://wa.me/5218127174207" target="_blank" rel="noopener">WhatsApp</a>
+        indicando el monto y tu nombre para confirmar tu fecha.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<footer>© 2026 Inmuebles Audiovisuales · Monterrey, NL</footer>
+
+<script>
+  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxmlslBHKqyqEWUmS9fe8JB8z-CP5GsDPdx9r5d4v-kjEcaIqoVR7fewrEVWI_bAkrOIw/exec';
+
+  function mostrar(id) {
+    ['state-loading','state-error','state-main'].forEach(function(s) {
+      document.getElementById(s).style.display = s === id ? 'block' : 'none';
+    });
+  }
+
+  function copiarClabe() {
+    const clabe = document.getElementById('clabe').textContent.trim();
+    navigator.clipboard.writeText(clabe).then(function() {
+      const btn = document.getElementById('btn-copiar');
+      btn.textContent = 'COPIADO';
+      btn.classList.add('copiado');
+      setTimeout(function() {
+        btn.textContent = 'COPIAR CLABE';
+        btn.classList.remove('copiado');
+      }, 2500);
+    }).catch(function() {
+      // Fallback para navegadores que no soporten clipboard API
+      const ta = document.createElement('textarea');
+      ta.value = clabe;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      const btn = document.getElementById('btn-copiar');
+      btn.textContent = 'COPIADO';
+      btn.classList.add('copiado');
+      setTimeout(function() {
+        btn.textContent = 'COPIAR CLABE';
+        btn.classList.remove('copiado');
+      }, 2500);
+    });
+  }
+
+  (function init() {
+    mostrar('state-loading');
+
+    const params = new URLSearchParams(window.location.search);
+    const token  = params.get('token');
+
+    if (!token) {
+      document.getElementById('error-msg').textContent = 'No se encontró el token de pago en el enlace.';
+      mostrar('state-error');
+      return;
+    }
+
+    fetch(WEB_APP_URL + '?action=datoPago&token=' + encodeURIComponent(token))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (!data.ok) {
+          document.getElementById('error-msg').textContent = data.error || 'Enlace inválido o expirado.';
+          mostrar('state-error');
+          return;
+        }
+
+        document.getElementById('greeting').textContent = 'Hola, ' + data.nombre + '.';
+        document.getElementById('monto').textContent    = data.anticipo;
+
+        const btnStripe = document.getElementById('btn-stripe');
+        if (data.linkPago) {
+          btnStripe.href = data.linkPago;
+        } else {
+          btnStripe.style.display = 'none';
+        }
+
+        mostrar('state-main');
+      })
+      .catch(function() {
+        document.getElementById('error-msg').textContent = 'Hubo un problema de conexión. Intenta de nuevo en unos momentos.';
+        mostrar('state-error');
+      });
+  })();
+</script>
+
+</body>
+</html>
