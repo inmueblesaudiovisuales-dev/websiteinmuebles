@@ -514,6 +514,92 @@
   .center-wrap > * {
     animation: fadeUp .4s cubic-bezier(.22,1,.36,1) both;
   }
+
+  /* ── Acordeones de método ── */
+  .metodo-acc {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background: #fff;
+    overflow: hidden;
+    transition: border-color .2s ease;
+  }
+  .metodo-acc[open] {
+    border-color: var(--gold);
+  }
+  .metodo-acc summary {
+    padding: 14px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    user-select: none;
+    line-height: 1.4;
+  }
+  .metodo-acc summary::-webkit-details-marker { display: none; }
+  .metodo-acc summary::before {
+    content: '';
+    width: 10px;
+    height: 10px;
+    border-right: 2px solid var(--concrete);
+    border-bottom: 2px solid var(--concrete);
+    transform: rotate(-45deg);
+    transition: transform .2s ease, border-color .2s ease;
+    flex-shrink: 0;
+    margin-left: 2px;
+  }
+  .metodo-acc[open] summary::before {
+    transform: rotate(45deg);
+    border-color: var(--gold);
+  }
+  .metodo-acc .badge-recomendado {
+    display: inline-block;
+    background: var(--gold);
+    color: var(--charcoal);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    margin-left: auto;
+  }
+  .metodo-acc .badge-rapido {
+    display: inline-block;
+    background: #FFF4DB;
+    color: #8A6D14;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    padding: 3px 7px;
+    border-radius: 3px;
+    margin-left: auto;
+  }
+  .metodo-acc .acc-body {
+    padding: 0 16px 16px 38px;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--charcoal);
+  }
+  .metodo-acc .acc-body p {
+    color: var(--concrete);
+    font-size: 12px;
+    margin: 0 0 12px;
+    line-height: 1.55;
+  }
+  .metodo-acc .acc-body ol {
+    padding-left: 18px;
+    margin: 0;
+  }
+  .metodo-acc .acc-body ol li {
+    margin-bottom: 6px;
+    padding-left: 4px;
+  }
+  .metodo-acc .acc-body ol li:last-child { margin-bottom: 0; }
+  .metodo-acc .acc-body strong { color: var(--charcoal); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -691,7 +777,42 @@
           <label>Screenshot del perímetro o levantamiento topográfico</label>
           <p class="field-hint" style="margin-top:0;margin-bottom:10px">Sin esta referencia no podemos garantizar capturar los límites correctos. Si el archivo es muy pesado, mándalo a <strong>inmueblesaudiovisuales@gmail.com</strong>.</p>
           <img src="https://inmueblesaudiovisuales.com/perimetro-terreno.svg" alt="Ejemplo de un terreno con su perímetro delineado en un mapa" style="display:block;width:100%;max-width:380px;margin:0 auto 14px;border-radius:8px">
-          <div class="file-upload-wrap">
+
+          <details class="metodo-acc">
+            <summary>
+              Método con Google Earth
+              <span class="badge-recomendado">RECOMENDADO</span>
+            </summary>
+            <div class="acc-body">
+              <p>Garantiza que capturemos los límites exactos al grabar.</p>
+              <ol>
+                <li>Abre <strong>Google Earth</strong> (app gratis o <strong>earth.google.com</strong>)</li>
+                <li>Busca la dirección del terreno</li>
+                <li>Toca <strong>Medir</strong></li>
+                <li>Marca cada esquina hasta cerrar el contorno</li>
+                <li>Toma screenshot y súbelo aquí</li>
+              </ol>
+            </div>
+          </details>
+
+          <details class="metodo-acc">
+            <summary>
+              Método rápido (screenshot dibujado a mano)
+              <span class="badge-rapido">MENOS PRECISO</span>
+            </summary>
+            <div class="acc-body">
+              <p>Más rápido, pero los límites pueden no quedar exactos al grabar.</p>
+              <ol>
+                <li>Abre <strong>Google Maps</strong> en tu celular</li>
+                <li>Localiza el terreno</li>
+                <li>Toma screenshot</li>
+                <li>Edita el screenshot y dibuja el contorno con las herramientas de marcado de tu celular</li>
+                <li>Súbelo aquí</li>
+              </ol>
+            </div>
+          </details>
+
+          <div class="file-upload-wrap" style="margin-top:14px">
             <label class="file-upload-label" for="inp-file-perimetro">
               <span class="file-upload-btn">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
