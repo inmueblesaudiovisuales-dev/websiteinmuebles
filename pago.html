@@ -345,7 +345,7 @@
     var num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
     if (isNaN(num)) return String(val);
     return new Intl.NumberFormat('es-MX', {
-      style: 'currency', currency: 'MXN', minimumFractionDigits: 0
+      style: 'currency', currency: 'MXN', minimumFractionDigits: 0, maximumFractionDigits: 0
     }).format(num);
   }
 
