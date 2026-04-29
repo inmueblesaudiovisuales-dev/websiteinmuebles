@@ -996,12 +996,12 @@
     const input = document.getElementById(inputId);
     const label = document.getElementById(labelId);
     if (input.files && input.files[0]) {
-      // Validar tamaño máximo: 5 MB
-      const MAX_BYTES = 5 * 1024 * 1024;
+      // Validar tamaño máximo: 25 MB
+      const MAX_BYTES = 25 * 1024 * 1024;
       const archivo = input.files[0];
       if (archivo.size > MAX_BYTES) {
         const tamMB = (archivo.size / (1024 * 1024)).toFixed(1);
-        alert('El archivo "' + archivo.name + '" pesa ' + tamMB + ' MB. El máximo permitido es 5 MB. Por favor sube uno más liviano.');
+        alert('El archivo "' + archivo.name + '" pesa ' + tamMB + ' MB. El máximo permitido es 25 MB. Por favor sube uno más liviano.');
         input.value = '';
         label.textContent = 'Ningún archivo';
         label.classList.remove('has-file');
@@ -1024,11 +1024,11 @@
       }
       const archivo = input.files[0];
 
-      // Validar tamaño máximo: 5 MB
-      const MAX_BYTES = 5 * 1024 * 1024;
+      // Validar tamaño máximo: 25 MB
+      const MAX_BYTES = 25 * 1024 * 1024;
       if (archivo.size > MAX_BYTES) {
         const tamMB = (archivo.size / (1024 * 1024)).toFixed(1);
-        alert('El archivo "' + archivo.name + '" pesa ' + tamMB + ' MB. El máximo permitido es 5 MB. Por favor sube uno más liviano.');
+        alert('El archivo "' + archivo.name + '" pesa ' + tamMB + ' MB. El máximo permitido es 25 MB. Por favor sube uno más liviano.');
         // Limpiar input y etiqueta
         input.value = '';
         const labelMap = {
