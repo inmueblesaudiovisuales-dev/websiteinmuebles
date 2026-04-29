@@ -567,17 +567,6 @@
     border-radius: 3px;
     margin-left: auto;
   }
-  .metodo-acc .badge-rapido {
-    display: inline-block;
-    background: #FFF4DB;
-    color: #8A6D14;
-    font-size: 9px;
-    font-weight: 700;
-    letter-spacing: 1px;
-    padding: 3px 7px;
-    border-radius: 3px;
-    margin-left: auto;
-  }
   .metodo-acc .acc-body {
     padding: 0 16px 16px 38px;
     font-size: 13px;
@@ -784,13 +773,14 @@
               <span class="badge-recomendado">RECOMENDADO</span>
             </summary>
             <div class="acc-body">
-              <p>Garantiza que capturemos los límites exactos al grabar.</p>
+              <p>Mejor aproximación del perímetro.</p>
               <ol>
                 <li>Abre <strong>Google Earth</strong> (app gratis o <strong>earth.google.com</strong>)</li>
                 <li>Busca la dirección del terreno</li>
-                <li>Toca <strong>Medir</strong></li>
+                <li>Selecciona la herramienta <strong>Medir</strong></li>
                 <li>Marca cada esquina hasta cerrar el contorno</li>
-                <li>Toma screenshot y súbelo aquí</li>
+                <li>Toma screenshot del contorno cerrado</li>
+                <li>Súbelo aquí</li>
               </ol>
             </div>
           </details>
@@ -798,15 +788,14 @@
           <details class="metodo-acc">
             <summary>
               Método rápido (screenshot dibujado a mano)
-              <span class="badge-rapido">MENOS PRECISO</span>
             </summary>
             <div class="acc-body">
-              <p>Más rápido, pero los límites pueden no quedar exactos al grabar.</p>
+              <p>Aproximación más general del perímetro.</p>
               <ol>
                 <li>Abre <strong>Google Maps</strong> en tu celular</li>
-                <li>Localiza el terreno</li>
-                <li>Toma screenshot</li>
-                <li>Edita el screenshot y dibuja el contorno con las herramientas de marcado de tu celular</li>
+                <li>Busca la dirección del terreno</li>
+                <li>Toma screenshot del terreno</li>
+                <li>Dibuja el contorno con las herramientas de marcado de tu celular</li>
                 <li>Súbelo aquí</li>
               </ol>
             </div>
@@ -820,7 +809,8 @@
               </span>
               <span class="file-upload-name" id="nombre-file-perimetro">Ningún archivo</span>
             </label>
-            <input type="file" id="inp-file-perimetro" class="file-input-hidden" accept="image/jpeg,image/png,image/webp,application/pdf" onchange="actualizarNombreArchivo('inp-file-perimetro','nombre-file-perimetro')">
+            <input type="file" id="inp-file-perimetro" class="file-input-hidden" accept="image/jpeg,image/png,image/webp,application/pdf,.kml,.kmz" onchange="actualizarNombreArchivo('inp-file-perimetro','nombre-file-perimetro')">
+            <p class="field-hint" style="margin-top:8px">También puedes subir un archivo KML o KMZ si ya lo tienes.</p>
           </div>
         </div>
 
