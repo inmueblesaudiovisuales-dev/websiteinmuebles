@@ -16,8 +16,8 @@
     --concrete: #9B9B9F;
     --surface: #F9F7F4;
     --white: #FAFAFA;
+    --bg-chip: #F1F0ED;
     --border: rgba(28,28,30,0.1);
-    --error: #E05252;
   }
 
   body {
@@ -37,12 +37,8 @@
   }
   header img { height: 36px; width: auto; }
 
-  /* ── ESTADOS ── */
-  #state-loading,
-  #state-error,
-  #state-main { display: none; }
+  #state-loading, #state-error, #state-main { display: none; }
 
-  /* ── CARD ── */
   .card {
     max-width: 480px;
     margin: 32px auto 48px;
@@ -53,22 +49,44 @@
     font-size: 22px;
     font-weight: 700;
     color: var(--charcoal);
-    margin-bottom: 4px;
-  }
-  .monto-label {
-    font-size: 13px;
-    color: var(--concrete);
-    margin-bottom: 6px;
-  }
-  .monto-valor {
-    font-size: 32px;
-    font-weight: 800;
-    color: var(--gold);
-    margin-bottom: 28px;
-    letter-spacing: -0.5px;
+    margin-bottom: 16px;
   }
 
-  /* ── OPCIONES ── */
+  /* ── Resumen de pagos ── */
+  .resumen {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+  }
+  .resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .resumen-fila:last-child { border-bottom: none; }
+  .resumen-label {
+    font-size: 12px;
+    color: var(--concrete);
+    font-weight: 500;
+    flex: 1;
+  }
+  .resumen-valor {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
+    white-space: nowrap;
+  }
+  .resumen-valor.destacado {
+    font-size: 20px;
+    color: var(--gold);
+  }
+
+  /* ── Opciones ── */
   .opcion {
     background: var(--white);
     border: 1.5px solid var(--border);
@@ -85,7 +103,6 @@
     margin-bottom: 16px;
   }
 
-  /* Botón tarjeta */
   .btn-pago {
     display: block;
     width: 100%;
@@ -105,82 +122,76 @@
   }
   .btn-pago:hover { background: #b8962e; }
 
-  /* Separador */
-  .separador {
+  /* ── Transferencia ── */
+  .dato-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--concrete);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .clabe-row {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin: 20px 0;
-    color: var(--concrete);
-    font-size: 12px;
-  }
-  .separador::before,
-  .separador::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
-  }
-
-  /* Datos bancarios */
-  .datos-banco {
-    background: #1C1C1E;
+    gap: 10px;
+    background: var(--bg-chip);
+    border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 16px 18px;
+    padding: 12px 14px;
     margin-bottom: 16px;
   }
-  .dato-fila {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 7px 0;
-    border-bottom: 1px solid rgba(255,255,255,0.07);
-  }
-  .dato-fila:last-child { border-bottom: none; }
-  .dato-etiqueta {
-    font-size: 11px;
-    color: rgba(255,255,255,0.45);
-    font-weight: 500;
-  }
-  .dato-valor {
-    font-size: 13px;
-    color: #fff;
+  .clabe-num {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 15px;
     font-weight: 600;
+    color: var(--charcoal);
+    flex: 1;
+    letter-spacing: 1.5px;
+  }
+  .btn-copiar-inline {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--charcoal);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.4px;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-copiar-inline:hover { background: var(--bg-chip); }
+  .btn-copiar-inline.copiado { background: var(--gold-dim); color: var(--gold); border-color: var(--gold); }
+
+  .datos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .dato-chip {
+    background: var(--bg-chip);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .dato-val {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin: 0;
+  }
+  .dato-val.mono {
     font-family: 'Courier New', Courier, monospace;
     letter-spacing: 0.5px;
   }
-  .dato-valor.clabe {
-    font-size: 14px;
-    letter-spacing: 1px;
-  }
-
-  /* Botón copiar */
-  .btn-copiar {
-    width: 100%;
-    background: transparent;
-    border: 1.5px solid var(--gold);
-    color: var(--gold);
-    font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.6px;
-    padding: 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-bottom: 16px;
-    transition: background 0.15s, color 0.15s;
-  }
-  .btn-copiar:hover { background: var(--gold-dim); }
-  .btn-copiar.copiado {
-    background: var(--gold-dim);
-    color: var(--gold);
-  }
-
-  /* Instrucción WhatsApp */
   .instruccion-ws {
     font-size: 12px;
     color: var(--concrete);
-    line-height: 1.6;
+    line-height: 1.7;
+    margin-top: 4px;
   }
   .instruccion-ws a {
     color: var(--gold);
@@ -188,7 +199,7 @@
     text-decoration: none;
   }
 
-  /* ── ESTADO LOADING ── */
+  /* ── Loading ── */
   .spinner {
     display: flex;
     flex-direction: column;
@@ -209,7 +220,7 @@
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── ESTADO ERROR ── */
+  /* ── Error ── */
   .error-card {
     background: var(--white);
     border-radius: 12px;
@@ -222,7 +233,7 @@
   .error-titulo { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
   .error-msg { font-size: 13px; color: var(--concrete); }
 
-  /* ── FOOTER ── */
+  /* ── Footer ── */
   footer {
     background: var(--white);
     border-top: 1px solid var(--border);
@@ -240,7 +251,6 @@
   <img src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">
 </header>
 
-<!-- Estado: cargando -->
 <div id="state-loading">
   <div class="spinner">
     <div class="spinner-ring"></div>
@@ -248,7 +258,6 @@
   </div>
 </div>
 
-<!-- Estado: error -->
 <div id="state-error">
   <div class="card">
     <div class="error-card">
@@ -259,48 +268,57 @@
   </div>
 </div>
 
-<!-- Estado: contenido principal -->
 <div id="state-main">
   <div class="card">
 
     <div class="greeting" id="greeting"></div>
-    <div class="monto-label">Anticipo a pagar</div>
-    <div class="monto-valor" id="monto"></div>
 
-    <!-- Opción 1: Tarjeta -->
+    <div class="resumen">
+      <div class="resumen-fila">
+        <span class="resumen-label">Total del paquete</span>
+        <span class="resumen-valor" id="precio-total"></span>
+      </div>
+      <div class="resumen-fila">
+        <span class="resumen-label">Anticipo a pagar ahora (50%)</span>
+        <span class="resumen-valor destacado" id="monto-anticipo"></span>
+      </div>
+      <div class="resumen-fila">
+        <span class="resumen-label">Saldo restante — se liquida al entregar el material</span>
+        <span class="resumen-valor" id="monto-saldo"></span>
+      </div>
+    </div>
+
     <div class="opcion">
       <div class="opcion-titulo">Pago con tarjeta</div>
       <a id="btn-stripe" href="#" class="btn-pago" target="_blank" rel="noopener">
-        PAGAR CON TARJETA →
+        PAGAR ANTICIPO CON TARJETA →
       </a>
     </div>
 
-    <!-- Opción 2: Transferencia -->
     <div class="opcion">
       <div class="opcion-titulo">Transferencia bancaria</div>
 
-      <div class="datos-banco">
-        <div class="dato-fila">
-          <span class="dato-etiqueta">Banco</span>
-          <span class="dato-valor">Banamex</span>
+      <p class="dato-label">CLABE</p>
+      <div class="clabe-row">
+        <span class="clabe-num">0025 8090 5411 4512 43</span>
+        <button class="btn-copiar-inline" id="btn-copiar" onclick="copiarClabe()">Copiar</button>
+      </div>
+
+      <div class="datos-grid">
+        <div class="dato-chip" style="margin-bottom:0">
+          <p class="dato-label">Banco</p>
+          <p class="dato-val">Banamex</p>
         </div>
-        <div class="dato-fila">
-          <span class="dato-etiqueta">CLABE</span>
-          <span class="dato-valor clabe" id="clabe">002580905411451243</span>
-        </div>
-        <div class="dato-fila">
-          <span class="dato-etiqueta">Número de cuenta</span>
-          <span class="dato-valor">1145124</span>
-        </div>
-        <div class="dato-fila">
-          <span class="dato-etiqueta">Titular</span>
-          <span class="dato-valor" style="font-family:'Montserrat',sans-serif;letter-spacing:0">Bruno Gutierrez Salazar</span>
+        <div class="dato-chip" style="margin-bottom:0">
+          <p class="dato-label">Número de cuenta</p>
+          <p class="dato-val mono">1145124</p>
         </div>
       </div>
 
-      <button class="btn-copiar" id="btn-copiar" onclick="copiarClabe()">
-        COPIAR CLABE
-      </button>
+      <div class="dato-chip">
+        <p class="dato-label">Titular</p>
+        <p class="dato-val">Bruno Gutierrez Salazar</p>
+      </div>
 
       <p class="instruccion-ws">
         Una vez realizada la transferencia, envíanos el comprobante por
@@ -315,7 +333,7 @@
 <footer>© 2026 Inmuebles Audiovisuales · Monterrey, NL</footer>
 
 <script>
-  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxmlslBHKqyqEWUmS9fe8JB8z-CP5GsDPdx9r5d4v-kjEcaIqoVR7fewrEVWI_bAkrOIw/exec';
+  var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxmlslBHKqyqEWUmS9fe8JB8z-CP5GsDPdx9r5d4v-kjEcaIqoVR7fewrEVWI_bAkrOIw/exec';
 
   function mostrar(id) {
     ['state-loading','state-error','state-main'].forEach(function(s) {
@@ -323,41 +341,51 @@
     });
   }
 
+  function formatMXN(val) {
+    var num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+    if (isNaN(num)) return String(val);
+    return new Intl.NumberFormat('es-MX', {
+      style: 'currency', currency: 'MXN', minimumFractionDigits: 0
+    }).format(num);
+  }
+
   function copiarClabe() {
-    const clabe = document.getElementById('clabe').textContent.trim();
-    navigator.clipboard.writeText(clabe).then(function() {
-      const btn = document.getElementById('btn-copiar');
-      btn.textContent = 'COPIADO';
+    var clabe = '002580905411451243';
+    var btn = document.getElementById('btn-copiar');
+    function marcarCopiado() {
+      btn.textContent = 'Copiado';
       btn.classList.add('copiado');
       setTimeout(function() {
-        btn.textContent = 'COPIAR CLABE';
+        btn.textContent = 'Copiar';
         btn.classList.remove('copiado');
       }, 2500);
-    }).catch(function() {
-      // Fallback para navegadores que no soporten clipboard API
-      const ta = document.createElement('textarea');
-      ta.value = clabe;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      const btn = document.getElementById('btn-copiar');
-      btn.textContent = 'COPIADO';
-      btn.classList.add('copiado');
-      setTimeout(function() {
-        btn.textContent = 'COPIAR CLABE';
-        btn.classList.remove('copiado');
-      }, 2500);
-    });
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(clabe).then(marcarCopiado).catch(function() {
+        fallbackCopy(clabe, marcarCopiado);
+      });
+    } else {
+      fallbackCopy(clabe, marcarCopiado);
+    }
+  }
+
+  function fallbackCopy(texto, cb) {
+    var ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+    cb();
   }
 
   (function init() {
     mostrar('state-loading');
 
-    const params = new URLSearchParams(window.location.search);
-    const token  = params.get('token');
+    var params = new URLSearchParams(window.location.search);
+    var token  = params.get('token');
 
     if (!token) {
       document.getElementById('error-msg').textContent = 'No se encontró el token de pago en el enlace.';
@@ -374,10 +402,12 @@
           return;
         }
 
-        document.getElementById('greeting').textContent = 'Hola, ' + data.nombre + '.';
-        document.getElementById('monto').textContent    = data.anticipo;
+        document.getElementById('greeting').textContent       = 'Hola, ' + data.nombre + '.';
+        document.getElementById('precio-total').textContent   = formatMXN(data.precio);
+        document.getElementById('monto-anticipo').textContent = formatMXN(data.anticipo);
+        document.getElementById('monto-saldo').textContent    = formatMXN(data.anticipo);
 
-        const btnStripe = document.getElementById('btn-stripe');
+        var btnStripe = document.getElementById('btn-stripe');
         if (data.linkPago) {
           btnStripe.href = data.linkPago;
         } else {
