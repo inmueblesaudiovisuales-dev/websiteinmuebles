@@ -576,12 +576,12 @@ function crearPropForm(prop, index) {
     '<div class="prop-form-header">' +
       '<div class="prop-form-num">' + n + '</div>' +
       '<div>' +
-        '<p class="prop-form-titulo">Propiedad ' + n + ' — ' + (prop.paquete || '—') + '</p>' +
-        '<p class="prop-form-sub">' + formatFechaLegible(prop.fechaSesion) + '</p>' +
+        '<p class="prop-form-titulo">Propiedad ' + n + '</p>' +
+        '<p class="prop-form-sub">' + (prop.paquete || '') + (prop.paquete && prop.fechaSesion ? ' · ' : '') + formatFechaLegible(prop.fechaSesion) + '</p>' +
       '</div>' +
     '</div>' +
 
-    '<p class="form-section-title">Datos de la propiedad ' + n + '</p>' +
+    '<p class="form-section-title">Datos de la propiedad</p>' +
 
     '<div class="field" id="field-direccion-' + n + '">' +
       '<label for="inp-direccion-' + n + '">Domicilio completo *</label>' +
@@ -770,7 +770,6 @@ function submitForm() {
 
   fetch(WEB_APP_URL, {
     method : 'POST',
-    headers: { 'Content-Type': 'application/json' },
     body   : JSON.stringify(payload),
   })
     .then(function(r) { return r.json(); })
