@@ -366,7 +366,7 @@ function formatFechaLegible(fechaStr) {
 }
 
 // ── RESUMEN POR PROPIEDAD ─────────────────────────────────────────────────────
-function crearPropResumen(prop, index) {
+function crearPropResumen(prop, index, esPaquete) {
   var div = document.createElement('div');
   div.className = 'prop-resumen';
   var entregables = (prop.entregables || '').split('·').map(function(e) { return e.trim(); }).filter(Boolean);
@@ -374,7 +374,7 @@ function crearPropResumen(prop, index) {
   var fecha = formatFechaLegible(prop.fechaSesion);
   div.innerHTML =
     '<div class="prop-resumen-header">' +
-      '<div class="prop-badge">' + (index + 1) + '</div>' +
+      (!esPaquete ? '<div class="prop-badge">' + (index + 1) + '</div>' : '') +
       '<span class="prop-resumen-nombre">' + (prop.paquete || '') + '</span>' +
     '</div>' +
     (fecha ? '<p class="prop-resumen-fecha">' + fecha + '</p>' : '') +
@@ -574,7 +574,13 @@ function init() {
       document.getElementById('inp-nombre').value              = data.nombreCliente || '';
       document.getElementById('txt-tipo-contrato').textContent = data.tipoContrato || '';
       document.getElementById('txt-nombre').textContent        = data.nombreCliente || '';
-      document.getElementById('txt-num-props').textContent     = numProps + ' propiedad' + (numProps > 1 ? 'es' : '');
+      var esPaquete = (data.tipoContrato || '') === 'Paquete estándar';
+      if (esPaquete) {
+        var filaPropiedades = document.getElementById('txt-num-props').closest('.summary-row');
+        if (filaPropiedades) filaPropiedades.style.display = 'none';
+      } else {
+        document.getElementById('txt-num-props').textContent = numProps + ' propiedad' + (numProps > 1 ? 'es' : '');
+      }
 
       var precio = parseFloat(String(data.precioTotal || '').replace(/[^0-9.]/g, '')) || 0;
       if (precio > 0) {
@@ -583,7 +589,7 @@ function init() {
       }
 
       var propsResumen = document.getElementById('props-resumen');
-      propiedades.forEach(function(p, i) { propsResumen.appendChild(crearPropResumen(p, i)); });
+      propiedades.forEach(function(p, i) { propsResumen.appendChild(crearPropResumen(p, i, esPaquete)); });
 
       var propsForms = document.getElementById('props-forms');
       propiedades.forEach(function(p, i) { propsForms.appendChild(crearPropForm(p, i)); });

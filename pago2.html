@@ -207,6 +207,56 @@
     text-decoration: none;
   }
 
+  /* ── CONCEPTO ── */
+  .concepto-box {
+    background: var(--bg-chip);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 28px;
+  }
+  .concepto-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--concrete); margin-bottom: 8px;
+  }
+  .concepto-hint {
+    font-size: 11px; color: var(--concrete); line-height: 1.6; margin-bottom: 10px;
+  }
+  .concepto-row {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--white); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 14px;
+  }
+  .concepto-val {
+    font-size: 14px; font-weight: 700; color: var(--charcoal);
+    flex: 1; font-family: 'Courier New', Courier, monospace; letter-spacing: 0.5px;
+  }
+
+  /* ── ACORDEÓN ── */
+  .acc-wrap {
+    border: 1px solid var(--border); border-radius: 8px;
+    margin-top: 14px; overflow: hidden; background: var(--white);
+  }
+  .acc-wrap[open] { border-color: var(--gold); }
+  .acc-wrap summary {
+    padding: 12px 16px; cursor: pointer; font-size: 12px;
+    font-weight: 600; color: var(--charcoal);
+    display: flex; align-items: center; gap: 8px;
+    list-style: none; user-select: none;
+  }
+  .acc-wrap summary::-webkit-details-marker { display: none; }
+  .acc-wrap summary::before {
+    content: ''; width: 8px; height: 8px;
+    border-right: 2px solid var(--concrete); border-bottom: 2px solid var(--concrete);
+    transform: rotate(-45deg); transition: transform .2s, border-color .2s;
+    flex-shrink: 0;
+  }
+  .acc-wrap[open] summary::before { transform: rotate(45deg); border-color: var(--gold); }
+  .acc-body { padding: 0 16px 14px 16px; font-size: 12px; color: var(--concrete); line-height: 1.8; }
+  .acc-body ol { padding-left: 18px; margin: 0; }
+  .acc-body ol li { margin-bottom: 4px; }
+  .acc-body strong { color: var(--charcoal); }
+
   /* ── LOADING ── */
   .spinner {
     display: flex; flex-direction: column; align-items: center;
@@ -295,17 +345,34 @@
       </div>
     </div>
 
+    <!-- Concepto de pago -->
+    <div class="concepto-box">
+      <p class="concepto-label">Concepto de pago</p>
+      <p class="concepto-hint">Usa este texto exacto en el campo "Concepto" o "Descripción" de tu transferencia o pago con tarjeta.</p>
+      <div class="concepto-row">
+        <span class="concepto-val" id="txt-concepto"></span>
+        <button class="btn-copiar-inline" id="btn-copiar-concepto" onclick="copiarConcepto()">Copiar</button>
+      </div>
+    </div>
+
     <!-- Opción 1: Tarjeta con Clip -->
     <div class="opcion">
       <div class="opcion-titulo">Pago con tarjeta</div>
       <a id="clip-link" href="https://linkdenegocio.mx/@inmueblesaudiovisuales" target="_blank" rel="noopener" class="clip-link">
         PAGAR CON TARJETA (CLIP) →
       </a>
-      <p class="nota-tiempo">
-        Una vez realizado el pago, envíanos el comprobante por
-        <a href="https://wa.me/5218127174207" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;text-decoration:none">WhatsApp</a>
-        indicando el monto y tu nombre para confirmar tu fecha.
-      </p>
+      <details class="acc-wrap">
+        <summary>¿Cómo pagar con tarjeta paso a paso?</summary>
+        <div class="acc-body">
+          <ol>
+            <li>Haz clic en el botón <strong>PAGAR CON TARJETA (CLIP)</strong></li>
+            <li>Ingresa el monto del anticipo: <strong id="monto-clip"></strong></li>
+            <li>En el campo <strong>Concepto</strong>, escribe exactamente el texto de arriba</li>
+            <li>Completa el pago con tu tarjeta</li>
+            <li>Envíanos el comprobante por <a href="https://wa.me/5218127174207" target="_blank" rel="noopener" style="color:var(--gold);font-weight:600;text-decoration:none">WhatsApp</a> para confirmar tu fecha</li>
+          </ol>
+        </div>
+      </details>
     </div>
 
     <!-- Opción 2: Transferencia bancaria -->
@@ -334,10 +401,12 @@
         <p class="dato-val">Bruno Gutierrez Salazar</p>
       </div>
 
+      <p class="dato-label" style="margin-top:4px">Concepto</p>
+      <p class="instruccion-ws" style="margin-bottom:10px">Usa el mismo concepto que aparece arriba al realizar la transferencia.</p>
       <p class="instruccion-ws">
         Una vez realizada la transferencia, envíanos el comprobante por
         <a href="https://wa.me/5218127174207" target="_blank" rel="noopener">WhatsApp</a>
-        indicando el monto y tu nombre para confirmar tu fecha.
+        para confirmar tu fecha.
       </p>
     </div>
 
@@ -392,6 +461,29 @@
     cb();
   }
 
+  function calcularFolio(fechaStr) {
+    if (!fechaStr) return '';
+    var d = new Date(fechaStr);
+    if (isNaN(d)) return '';
+    var yy = String(d.getFullYear()).slice(-2);
+    var mm = String(d.getMonth() + 1).padStart(2, '0');
+    var dd = String(d.getDate()).padStart(2, '0');
+    return 'IAV-' + yy + mm + '.' + dd;
+  }
+
+  function copiarConcepto() {
+    var texto = document.getElementById('txt-concepto').textContent;
+    var btn = document.getElementById('btn-copiar-concepto');
+    function marcar() {
+      btn.textContent = 'Copiado';
+      btn.classList.add('copiado');
+      setTimeout(function() { btn.textContent = 'Copiar'; btn.classList.remove('copiado'); }, 2500);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(texto).then(marcar).catch(function() { fallback(texto, marcar); });
+    } else { fallback(texto, marcar); }
+  }
+
   (function init() {
     mostrar('state-loading');
 
@@ -421,6 +513,13 @@
         document.getElementById('precio-total').textContent   = formatMXN(precio);
         document.getElementById('monto-anticipo').textContent = formatMXN(anticipo);
         document.getElementById('monto-saldo').textContent    = formatMXN(anticipo);
+
+        // Calcular folio y concepto
+        var folio = calcularFolio(data.fechaSesionP1 || '');
+        var concepto = (data.nombreCliente || '') + (folio ? ' ' + folio : '');
+        document.getElementById('txt-concepto').textContent = concepto;
+        var montoClipEl = document.getElementById('monto-clip');
+        if (montoClipEl) montoClipEl.textContent = formatMXN(anticipo);
 
         mostrar('state-main');
       })
