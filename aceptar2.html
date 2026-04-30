@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirma tu sesión · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.12);
+    --charcoal: #1C1C1E;
+    --concrete: #9B9B9F;
+    --surface: #F9F7F4;
+    --white: #FAFAFA;
+    --border: rgba(28,28,30,0.1);
+    --border-strong: rgba(28,28,30,0.20);
+    --error: #E05252;
+    --success: #34C759;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--surface);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--charcoal);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  header img { height: 36px; width: auto; }
+
+  /* ── ESTADOS ── */
+  #state-loading, #state-invalid, #state-expired, #state-success, #state-form { display: none; }
+
+  .center-wrap {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 36px 20px 80px;
+  }
+
+  /* ── CARDS ── */
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 28px 24px;
+    box-shadow: 0 4px 24px rgba(28,28,30,.07);
+    margin-bottom: 16px;
+  }
+
+  /* ── ESTADOS DE PANTALLA ── */
+  .state-card { text-align: center; }
+  .state-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 16px;
+  }
+  .state-icon.success { background: rgba(52,199,89,0.12); }
+  .state-icon.warning { background: rgba(201,168,76,0.12); }
+  .state-icon.error   { background: rgba(224,82,82,0.12); }
+  .state-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+  .state-desc  { font-size: 14px; color: var(--concrete); line-height: 1.7; }
+
+  /* ── SPINNER ── */
+  .spinner {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 220px; gap: 16px;
+    color: var(--concrete); font-size: 13px;
+  }
+  .spinner-ring {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ── RESUMEN DEL CONTRATO ── */
+  .contract-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 20px; padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .contract-icon {
+    width: 40px; height: 40px;
+    background: var(--gold-dim);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .contract-label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: .14em; text-transform: uppercase; color: var(--concrete);
+  }
+  .contract-title { font-size: 15px; font-weight: 700; color: var(--charcoal); }
+
+  .summary-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 7px 0; border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .summary-row:last-child { border-bottom: none; }
+  .summary-row-label { color: var(--concrete); }
+  .summary-row-value { font-weight: 700; color: var(--charcoal); }
+  .summary-row-value.gold { color: var(--gold); }
+
+  /* ── PROPIEDAD RESUMEN CARD (dentro del bloque de servicio) ── */
+  .prop-resumen {
+    background: var(--surface);
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin-top: 12px;
+  }
+  .prop-resumen-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 8px;
+  }
+  .prop-badge {
+    width: 22px; height: 22px;
+    background: var(--charcoal); color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+  }
+  .prop-resumen-nombre { font-size: 12px; font-weight: 700; color: var(--charcoal); }
+  .prop-resumen-fecha  { font-size: 11px; color: var(--concrete); margin-bottom: 6px; }
+  .prop-entregables-list {
+    font-size: 11px; color: var(--concrete); line-height: 1.8;
+    padding-left: 14px;
+  }
+  .prop-entregables-list li { list-style: disc; }
+
+  /* ── GREETING ── */
+  .greeting {
+    font-size: 22px; font-weight: 800;
+    color: var(--charcoal); margin-bottom: 6px;
+  }
+  .greeting-sub {
+    font-size: 13px; color: var(--concrete);
+    line-height: 1.7; margin-bottom: 24px;
+  }
+
+  /* ── SECCIÓN TÍTULO ── */
+  .form-section-title {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: var(--concrete); margin-bottom: 18px;
+  }
+
+  /* ── PROPIEDAD FORM CARD ── */
+  .prop-form-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 18px; padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .prop-form-num {
+    width: 28px; height: 28px;
+    background: var(--charcoal); color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0;
+  }
+  .prop-form-titulo { font-size: 13px; font-weight: 700; color: var(--charcoal); }
+  .prop-form-sub    { font-size: 11px; color: var(--concrete); }
+
+  /* ── CAMPOS ── */
+  .field { margin-bottom: 18px; }
+  .field:last-child { margin-bottom: 0; }
+
+  .field label {
+    display: block;
+    font-size: 12px; font-weight: 600; color: var(--charcoal);
+    margin-bottom: 7px;
+  }
+
+  .field input[type="text"],
+  .field input[type="email"],
+  .field textarea {
+    width: 100%;
+    padding: 11px 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px; color: var(--charcoal);
+    background: #fff;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .field input:focus, .field textarea:focus { border-color: var(--gold); }
+  .field textarea { resize: vertical; min-height: 90px; }
+
+  .field.has-error input,
+  .field.has-error textarea { border-color: var(--error); }
+
+  .field-error {
+    display: none;
+    font-size: 11px; color: var(--error); margin-top: 5px;
+  }
+  .field.has-error .field-error { display: block; }
+
+  .field-hint {
+    font-size: 11px; color: var(--concrete);
+    margin-top: 6px; line-height: 1.6;
+  }
+
+  /* ── ORIENTACIÓN ── */
+  .orientacion-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-bottom: 4px;
+  }
+  .orientacion-btn {
+    border: 1.5px solid var(--border-strong);
+    border-radius: 12px;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    background: #fff;
+  }
+  .orientacion-btn.active {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+  }
+  .orientacion-btn .img-wrap { margin-bottom: 8px; }
+  .orientacion-btn .img-wrap img { height: 56px; width: auto; margin: 0 auto; display: block; }
+  .orientacion-btn .titulo { font-size: 11px; font-weight: 700; color: var(--charcoal); letter-spacing: .06em; margin-bottom: 2px; }
+  .orientacion-btn .descripcion { font-size: 10px; color: var(--concrete); }
+
+  /* ── ACORDEÓN ── */
+  details.metodo-acc {
+    border: 1px solid var(--border-strong);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  details.metodo-acc summary {
+    padding: 12px 16px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    display: flex; align-items: center; gap: 8px;
+    list-style: none;
+  }
+  details.metodo-acc summary::-webkit-details-marker { display: none; }
+  .badge-recomendado {
+    font-size: 9px; font-weight: 800; letter-spacing: .06em;
+    background: var(--gold-dim); color: var(--gold);
+    padding: 2px 8px; border-radius: 20px;
+  }
+  .acc-body { padding: 0 16px 14px; font-size: 12px; color: var(--concrete); line-height: 1.8; }
+  .acc-body ol { padding-left: 18px; }
+  .acc-body li { margin-bottom: 4px; }
+
+  /* ── CHECKBOX TÉRMINOS ── */
+  .chk-wrap {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 16px; background: var(--surface);
+    border-radius: 10px; margin-bottom: 16px;
+  }
+  .chk-wrap input[type="checkbox"] {
+    width: 18px; height: 18px; flex-shrink: 0;
+    margin-top: 1px; accent-color: var(--gold);
+    cursor: pointer;
+  }
+  .chk-label { font-size: 12px; color: var(--charcoal); line-height: 1.7; }
+  .chk-error { font-size: 11px; color: var(--error); display: none; margin-top: 4px; }
+
+  /* ── BARRA DE PROGRESO ── */
+  .progress-wrap { margin-bottom: 24px; }
+  .progress-label { font-size: 11px; color: var(--concrete); margin-bottom: 6px; }
+  .progress-bar {
+    height: 4px; background: var(--border);
+    border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--gold);
+    border-radius: 2px; transition: width 0.4s ease;
+    width: 0%;
+  }
+  .progress-stages {
+    display: flex; justify-content: space-between;
+    margin-top: 6px;
+  }
+  .progress-stage {
+    font-size: 10px; color: var(--concrete);
+    transition: color 0.3s;
+  }
+  .progress-stage.active { color: var(--gold); font-weight: 700; }
+
+  /* ── BOTÓN SUBMIT ── */
+  .btn-submit {
+    display: block; width: 100%;
+    background: var(--gold); color: var(--charcoal);
+    border: none; border-radius: 10px;
+    padding: 16px; font-family: 'Montserrat', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: .06em;
+    cursor: pointer; transition: background 0.15s; margin-top: 8px;
+  }
+  .btn-submit:hover { background: #b8962e; }
+  .btn-submit:disabled { background: var(--border-strong); color: var(--concrete); cursor: not-allowed; }
+
+  footer {
+    background: var(--white); border-top: 1px solid var(--border);
+    padding: 16px 24px; text-align: center;
+    font-size: 11px; color: var(--concrete);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">
+</header>
+
+<!-- Loading -->
+<div id="state-loading">
+  <div class="center-wrap">
+    <div class="spinner">
+      <div class="spinner-ring"></div>
+      <span>Cargando tu contrato...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Inválido -->
+<div id="state-invalid">
+  <div class="center-wrap">
+    <div class="card state-card">
+      <div class="state-icon error">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#E05252" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </div>
+      <h2 class="state-title">Enlace no válido</h2>
+      <p class="state-desc">Este enlace no existe o ha sido revocado. Pide a Inmuebles Audiovisuales que te envíe uno nuevo.</p>
+      <a href="https://wa.me/5218127174207" style="display:inline-block;margin-top:20px;background:var(--gold);color:var(--charcoal);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:12px 24px;border-radius:6px;text-decoration:none">Escribir a WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- Expirado -->
+<div id="state-expired">
+  <div class="center-wrap">
+    <div class="card state-card">
+      <div class="state-icon warning">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <h2 class="state-title">Enlace expirado</h2>
+      <p class="state-desc">Este enlace ya fue utilizado o expiró. Escríbenos por WhatsApp para recibir uno nuevo.</p>
+      <a href="https://wa.me/5218127174207" style="display:inline-block;margin-top:20px;background:var(--gold);color:var(--charcoal);font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:12px 24px;border-radius:6px;text-decoration:none">Escribir a WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- Éxito -->
+<div id="state-success">
+  <div class="center-wrap">
+    <div class="card state-card">
+      <div class="state-icon success">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#34C759" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2 class="state-title">¡Todo listo!</h2>
+      <p class="state-desc">Tu contrato fue generado y enviado a tu correo electrónico. Revisa tu bandeja de entrada, incluyendo spam.</p>
+      <p class="state-desc" style="margin-top:12px">Para confirmar tu fecha, realiza el pago del anticipo a la brevedad. Trabajamos por orden de confirmación.</p>
+      <p class="state-desc" style="margin-top:12px">Para cualquier duda escríbenos por <a href="https://wa.me/5218127174207" style="color:var(--gold);font-weight:700;text-decoration:none">WhatsApp</a>.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Formulario -->
+<div id="state-form">
+  <div class="center-wrap">
+
+    <p class="greeting">Hola, <span id="txt-saludo">—</span>.</p>
+    <p class="greeting-sub">Revisa los detalles de tu sesión, completa la información de cada propiedad y genera tu contrato.</p>
+
+    <!-- Resumen del contrato -->
+    <div class="card">
+      <div class="contract-header">
+        <div class="contract-icon">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        </div>
+        <div>
+          <div class="contract-label">Resumen de tu contrato</div>
+          <div class="contract-title" id="txt-tipo-contrato">—</div>
+        </div>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">Cliente</span>
+        <span class="summary-row-value" id="txt-nombre">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">Propiedades</span>
+        <span class="summary-row-value" id="txt-num-props">—</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-row-label">Inversión total</span>
+        <span class="summary-row-value" id="txt-precio">—</span>
+      </div>
+      <div class="summary-row" style="border-bottom:none">
+        <span class="summary-row-label">Anticipo requerido (50%)</span>
+        <span class="summary-row-value gold" id="txt-anticipo">—</span>
+      </div>
+
+      <!-- Resumen de cada propiedad -->
+      <div id="props-resumen"></div>
+    </div>
+
+    <!-- Datos personales (una sola vez) -->
+    <div class="card">
+      <p class="form-section-title">Tus datos</p>
+      <input type="hidden" id="inp-nombre">
+
+      <div class="field" id="field-correo">
+        <label for="inp-correo">Correo electrónico *</label>
+        <input type="email" id="inp-correo" placeholder="Aquí recibirás tu contrato">
+        <span class="field-error">Ingresa un correo válido</span>
+      </div>
+
+      <div class="field" id="field-telefono">
+        <label for="inp-telefono">Teléfono móvil *</label>
+        <input type="text" id="inp-telefono" placeholder="Ej: 8127174207" inputmode="tel">
+        <span class="field-error">Este campo es obligatorio</span>
+      </div>
+
+      <div class="field">
+        <label for="inp-agencia">Agencia o empresa (opcional)</label>
+        <input type="text" id="inp-agencia" placeholder="Keller Williams, independiente, etc.">
+      </div>
+    </div>
+
+    <!-- Cards de datos por propiedad (se generan dinámicamente) -->
+    <div id="props-forms"></div>
+
+    <!-- Términos y firma -->
+    <div class="card">
+      <p class="form-section-title">Términos y firma</p>
+
+      <div class="chk-wrap">
+        <input type="checkbox" id="chk-indicaciones">
+        <div>
+          <label class="chk-label" for="chk-indicaciones">
+            He leído y acepto los <a href="#" style="color:var(--gold);font-weight:600;text-decoration:none">Términos y Condiciones</a> del servicio y confirmo que la información proporcionada es correcta.
+          </label>
+          <p class="chk-error" id="chk-indicaciones-error">Debes aceptar los términos para continuar</p>
+        </div>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="progress-wrap" id="progress-wrap" style="display:none">
+        <p class="progress-label" id="progress-label">Generando tu contrato...</p>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-stages">
+          <span class="progress-stage" id="stage-1">Guardando</span>
+          <span class="progress-stage" id="stage-2">Enviando</span>
+          <span class="progress-stage" id="stage-3">Listo</span>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btn-submit" onclick="submitForm()">
+        GENERAR MI CONTRATO →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<footer>© 2026 Inmuebles Audiovisuales · Monterrey, NL · <a href="https://wa.me/5218127174207" style="color:var(--concrete);text-decoration:none">WhatsApp</a></footer>
+
+<script>
+var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwAEsURB3Xx4jnzC7_YgK-_eORHJhAH-y5pQ3uEThwcClWiU-hJifb8mNU1qx7hTIWt/exec'; // reemplazar con URL del deployment nuevo
+var token = new URLSearchParams(window.location.search).get('token') || '';
+var tokenData = null;
+
+function showState(id) {
+  ['state-loading','state-invalid','state-expired','state-success','state-form'].forEach(function(s) {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+
+function formatMXN(val) {
+  var num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+  if (isNaN(num)) return String(val);
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(num);
+}
+
+function formatFechaLegible(fechaStr) {
+  if (!fechaStr) return '—';
+  var d = new Date(fechaStr);
+  if (isNaN(d)) return fechaStr;
+  var dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0');
+  var ampm = h >= 12 ? 'p.m.' : 'a.m.';
+  h = h % 12 || 12;
+  return dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()] + ' de ' + d.getFullYear() + ' · ' + h + ':' + m + ' ' + ampm;
+}
+
+function seleccionarOrientacion(btn, propNum) {
+  document.querySelectorAll('.orientacion-btn[data-prop="' + propNum + '"]').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  btn.classList.add('active');
+  document.getElementById('inp-orientacion-' + propNum).value = btn.dataset.value;
+  var field = document.getElementById('field-orientacion-' + propNum);
+  if (field) field.classList.remove('has-error');
+}
+
+function crearPropResumen(prop, index) {
+  var div = document.createElement('div');
+  div.className = 'prop-resumen';
+  var entregables = (prop.entregables || '').split('·').map(function(e) { return e.trim(); }).filter(Boolean);
+  var liItems = entregables.map(function(e) { return '<li>' + e + '</li>'; }).join('');
+  div.innerHTML =
+    '<div class="prop-resumen-header">' +
+      '<div class="prop-badge">' + (index + 1) + '</div>' +
+      '<span class="prop-resumen-nombre">' + (prop.paquete || '—') + '</span>' +
+    '</div>' +
+    '<p class="prop-resumen-fecha">' + formatFechaLegible(prop.fechaSesion) + '</p>' +
+    (liItems ? '<ul class="prop-entregables-list">' + liItems + '</ul>' : '');
+  return div;
+}
+
+function crearPropForm(prop, index) {
+  var n = index + 1;
+  var esTerreno = (prop.tipo || '').toLowerCase() === 'terreno';
+  var div = document.createElement('div');
+  div.className = 'card';
+
+  var bloqueResidencial = !esTerreno ?
+    '<div class="field">' +
+      '<label for="inp-sobre-' + n + '">Sobre la propiedad (opcional)</label>' +
+      '<textarea id="inp-sobre-' + n + '" placeholder="Recámaras, baños, m², amenidades, lo que la hace especial, dueño, historia, vista, lo que normalmente escribirías al publicarla..."></textarea>' +
+      '<p class="field-hint">Entre más información nos des, mejor podemos enfocar el video.</p>' +
+    '</div>' : '';
+
+  var bloqueTerreno = esTerreno ?
+    '<div class="field">' +
+      '<label for="inp-sobre-' + n + '">Sobre el terreno (opcional)</label>' +
+      '<textarea id="inp-sobre-' + n + '" placeholder="Superficie en m², frente, fondo, zonificación, servicios disponibles, tipo de terreno, documentación..."></textarea>' +
+      '<p class="field-hint">Entre más información nos des, mejor podemos enfocar el video.</p>' +
+    '</div>' +
+    '<div class="field">' +
+      '<label for="inp-acceso-' + n + '">Acceso al terreno (opcional)</label>' +
+      '<input type="text" id="inp-acceso-' + n + '" placeholder="Portón, llave, código, persona de contacto...">' +
+    '</div>' +
+    '<div class="field">' +
+      '<label for="inp-orientacion-frente-' + n + '">Orientación del frente (opcional)</label>' +
+      '<input type="text" id="inp-orientacion-frente-' + n + '" placeholder="Norte, Sur, Oriente, Poniente...">' +
+    '</div>' +
+    '<div class="field">' +
+      '<label>Screenshot del perímetro o levantamiento topográfico</label>' +
+      '<p class="field-hint" style="margin-top:0;margin-bottom:10px">Sin esta referencia no podemos garantizar capturar los límites correctos.</p>' +
+      '<img src="https://inmueblesaudiovisuales.com/perimetro-terreno.svg" style="display:block;width:100%;max-width:340px;margin:0 auto 12px;border-radius:8px">' +
+      '<details class="metodo-acc">' +
+        '<summary>Método con Google Earth <span class="badge-recomendado">RECOMENDADO</span></summary>' +
+        '<div class="acc-body"><ol>' +
+          '<li>Abre <strong>Google Earth</strong> (app gratis o earth.google.com)</li>' +
+          '<li>Busca la dirección del terreno</li>' +
+          '<li>Selecciona la herramienta <strong>Medir</strong></li>' +
+          '<li>Marca cada esquina hasta cerrar el contorno</li>' +
+          '<li>Toma screenshot del contorno cerrado</li>' +
+        '</ol></div>' +
+      '</details>' +
+    '</div>' : '';
+
+  div.innerHTML =
+    '<div class="prop-form-header">' +
+      '<div class="prop-form-num">' + n + '</div>' +
+      '<div>' +
+        '<p class="prop-form-titulo">Propiedad ' + n + ' — ' + (prop.paquete || '—') + '</p>' +
+        '<p class="prop-form-sub">' + formatFechaLegible(prop.fechaSesion) + '</p>' +
+      '</div>' +
+    '</div>' +
+
+    '<p class="form-section-title">Datos de la propiedad ' + n + '</p>' +
+
+    '<div class="field" id="field-direccion-' + n + '">' +
+      '<label for="inp-direccion-' + n + '">Domicilio completo *</label>' +
+      '<input type="text" id="inp-direccion-' + n + '" placeholder="Calle, número, colonia, municipio">' +
+      '<span class="field-error">Este campo es obligatorio</span>' +
+    '</div>' +
+
+    '<div class="field" id="field-mapas-' + n + '">' +
+      '<label for="inp-mapas-' + n + '">Enlace de ubicación *</label>' +
+      '<input type="text" id="inp-mapas-' + n + '" placeholder="Google Maps, Apple Maps, Waze...">' +
+      '<span class="field-error">Ingresa el enlace de ubicación</span>' +
+    '</div>' +
+
+    '<div class="field">' +
+      '<label for="inp-referencias-' + n + '">Referencias de cómo llegar (opcional)</label>' +
+      '<textarea id="inp-referencias-' + n + '" placeholder="Entre calles, portón negro, casa blanca con macetas..."></textarea>' +
+    '</div>' +
+
+    '<div class="field" id="field-orientacion-' + n + '">' +
+      '<label>Orientación del video *</label>' +
+      '<div class="orientacion-grid">' +
+        '<div class="orientacion-btn" data-prop="' + n + '" data-value="Horizontal (16:9) — YouTube, sitios web y pantallas" onclick="seleccionarOrientacion(this,' + n + ')">' +
+          '<div class="img-wrap"><img src="https://inmueblesaudiovisuales.com/orientacion-horizontal.svg" alt="Horizontal"></div>' +
+          '<div class="titulo">HORIZONTAL</div><div class="descripcion">YouTube · Sitios web</div>' +
+        '</div>' +
+        '<div class="orientacion-btn" data-prop="' + n + '" data-value="Vertical (9:16) — Reels, TikTok e Instagram" onclick="seleccionarOrientacion(this,' + n + ')">' +
+          '<div class="img-wrap"><img src="https://inmueblesaudiovisuales.com/orientacion-vertical.svg" alt="Vertical"></div>' +
+          '<div class="titulo">VERTICAL</div><div class="descripcion">Reels · TikTok · Instagram</div>' +
+        '</div>' +
+      '</div>' +
+      '<input type="hidden" id="inp-orientacion-' + n + '" value="">' +
+      '<span class="field-error" style="margin-top:8px">Selecciona una opción</span>' +
+    '</div>' +
+
+    bloqueResidencial +
+    bloqueTerreno;
+
+  return div;
+}
+
+function setProgress(pct, label, activeStage) {
+  document.getElementById('progress-fill').style.width = pct + '%';
+  if (label) document.getElementById('progress-label').textContent = label;
+  ['stage-1','stage-2','stage-3'].forEach(function(s, i) {
+    document.getElementById(s).classList.toggle('active', i + 1 <= activeStage);
+  });
+}
+
+function init() {
+  showState('state-loading');
+  if (!token) { showState('state-invalid'); return; }
+
+  fetch(WEB_APP_URL + '?action=datosToken&token=' + encodeURIComponent(token))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) {
+        if (data.error && (data.error.includes('expirado') || data.error.includes('utilizado'))) {
+          showState('state-expired');
+        } else {
+          showState('state-invalid');
+        }
+        return;
+      }
+
+      tokenData = data;
+      var propiedades = data.propiedades || [];
+      var numProps    = propiedades.length;
+
+      // Nombre corto para saludo
+      document.getElementById('txt-saludo').textContent = (data.nombreCliente || '').split(' ')[0] || 'bienvenido';
+      document.getElementById('inp-nombre').value = data.nombreCliente || '';
+
+      // Resumen
+      document.getElementById('txt-tipo-contrato').textContent = data.tipoContrato || '—';
+      document.getElementById('txt-nombre').textContent        = data.nombreCliente || '—';
+      document.getElementById('txt-num-props').textContent     = numProps + ' propiedad' + (numProps > 1 ? 'es' : '');
+      document.getElementById('txt-precio').textContent        = formatMXN(data.precioTotal);
+      var anticipo = parseFloat(String(data.precioTotal).replace(/[^0-9.]/g, '')) / 2;
+      document.getElementById('txt-anticipo').textContent      = formatMXN(anticipo);
+
+      // Resúmenes de propiedades
+      var propsResumen = document.getElementById('props-resumen');
+      propiedades.forEach(function(p, i) {
+        propsResumen.appendChild(crearPropResumen(p, i));
+      });
+
+      // Forms de propiedades
+      var propsForms = document.getElementById('props-forms');
+      propiedades.forEach(function(p, i) {
+        propsForms.appendChild(crearPropForm(p, i));
+      });
+
+      showState('state-form');
+    })
+    .catch(function() { showState('state-invalid'); });
+}
+
+function submitForm() {
+  var valido = true;
+  var propiedades = tokenData ? tokenData.propiedades || [] : [];
+  var numProps = propiedades.length;
+
+  // Validar datos personales
+  var correo   = document.getElementById('inp-correo').value.trim();
+  var telefono = document.getElementById('inp-telefono').value.trim();
+
+  var validCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+  var validTel    = telefono.replace(/\D/g,'').length >= 8;
+
+  document.getElementById('field-correo').classList.toggle('has-error', !validCorreo);
+  document.getElementById('field-telefono').classList.toggle('has-error', !validTel);
+  if (!validCorreo || !validTel) valido = false;
+
+  // Validar datos por propiedad
+  var propsData = [];
+  for (var i = 0; i < numProps; i++) {
+    var n = i + 1;
+    var dir  = document.getElementById('inp-direccion-' + n) ? document.getElementById('inp-direccion-' + n).value.trim() : '';
+    var maps = document.getElementById('inp-mapas-' + n) ? document.getElementById('inp-mapas-' + n).value.trim() : '';
+    var ori  = document.getElementById('inp-orientacion-' + n) ? document.getElementById('inp-orientacion-' + n).value : '';
+
+    if (!dir || dir.length < 5) {
+      document.getElementById('field-direccion-' + n).classList.add('has-error');
+      valido = false;
+    } else {
+      document.getElementById('field-direccion-' + n).classList.remove('has-error');
+    }
+    if (!maps || maps.length < 5) {
+      document.getElementById('field-mapas-' + n).classList.add('has-error');
+      valido = false;
+    } else {
+      document.getElementById('field-mapas-' + n).classList.remove('has-error');
+    }
+    if (!ori) {
+      document.getElementById('field-orientacion-' + n).classList.add('has-error');
+      valido = false;
+    } else {
+      document.getElementById('field-orientacion-' + n).classList.remove('has-error');
+    }
+
+    propsData.push({
+      direccion         : dir,
+      enlaceUbicacion   : maps,
+      referenciasLlegada: document.getElementById('inp-referencias-' + n)          ? document.getElementById('inp-referencias-' + n).value.trim()          : '',
+      orientacion       : ori,
+      sobrePropiedad    : document.getElementById('inp-sobre-' + n)                 ? document.getElementById('inp-sobre-' + n).value.trim()                 : '',
+      accesoTerreno     : document.getElementById('inp-acceso-' + n)                ? document.getElementById('inp-acceso-' + n).value.trim()                : '',
+      orientacionFrente : document.getElementById('inp-orientacion-frente-' + n)    ? document.getElementById('inp-orientacion-frente-' + n).value.trim()    : '',
+    });
+  }
+
+  // Validar términos
+  var chk = document.getElementById('chk-indicaciones');
+  var chkErr = document.getElementById('chk-indicaciones-error');
+  if (!chk.checked) {
+    chkErr.style.display = 'block';
+    valido = false;
+  } else {
+    chkErr.style.display = 'none';
+  }
+
+  if (!valido) {
+    var primer = document.querySelector('.has-error');
+    if (primer) primer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // Mostrar progreso
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Generando tu contrato...';
+  document.getElementById('progress-wrap').style.display = 'block';
+  setProgress(20, 'Guardando tu información...', 1);
+
+  var payload = {
+    action     : 'firmar',
+    token      : token,
+    nombre     : document.getElementById('inp-nombre').value,
+    correo     : correo,
+    telefono   : telefono,
+    agencia    : document.getElementById('inp-agencia').value.trim(),
+    propiedades: propsData,
+  };
+
+  setTimeout(function() { setProgress(60, 'Enviando tu contrato...', 2); }, 1200);
+
+  fetch(WEB_APP_URL, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify(payload),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) {
+        setProgress(0, '', 0);
+        document.getElementById('progress-wrap').style.display = 'none';
+        btn.disabled = false;
+        btn.textContent = 'GENERAR MI CONTRATO →';
+        alert(data.error || 'Ocurrió un error. Intenta de nuevo.');
+        return;
+      }
+      setProgress(100, '¡Listo!', 3);
+      setTimeout(function() { showState('state-success'); }, 600);
+    })
+    .catch(function() {
+      setProgress(0, '', 0);
+      document.getElementById('progress-wrap').style.display = 'none';
+      btn.disabled = false;
+      btn.textContent = 'GENERAR MI CONTRATO →';
+      alert('Error de conexión. Intenta de nuevo.');
+    });
+}
+
+init();
+</script>
+</body>
+</html>

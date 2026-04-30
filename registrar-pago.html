@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registrar pago · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.12);
+    --charcoal: #1C1C1E;
+    --concrete: #9B9B9F;
+    --surface: #F9F7F4;
+    --white: #FAFAFA;
+    --bg-chip: #F1F0ED;
+    --border: rgba(28,28,30,0.10);
+    --border-strong: rgba(28,28,30,0.20);
+    --error: #E05252;
+    --success: #2D7A4F;
+    --success-bg: #E8F5EE;
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--surface);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--charcoal);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  header img { height: 36px; width: auto; }
+
+  #state-loading, #state-error, #state-main, #state-success, #state-ya-procesado { display: none; }
+
+  .spinner {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 220px; gap: 16px;
+    color: var(--concrete); font-size: 13px;
+  }
+  .spinner-ring {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .card {
+    max-width: 500px;
+    margin: 28px auto 16px;
+    padding: 0 16px;
+  }
+
+  .inner {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 14px;
+  }
+
+  /* ── RESUMEN ── */
+  .cliente-nombre {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .cliente-tipo {
+    font-size: 12px;
+    color: var(--concrete);
+    margin-bottom: 18px;
+  }
+
+  .resumen-fila {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .resumen-fila:last-child { border-bottom: none; }
+  .resumen-label { color: var(--concrete); flex: 1; }
+  .resumen-valor { font-weight: 700; color: var(--charcoal); white-space: nowrap; }
+  .resumen-valor.gold { color: var(--gold); font-size: 18px; }
+
+  /* ── PROPIEDADES ── */
+  .section-title {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 12px;
+  }
+
+  .prop-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .prop-item:last-child { border-bottom: none; }
+  .prop-num {
+    width: 22px; height: 22px;
+    background: var(--charcoal); color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0;
+    margin-top: 1px;
+  }
+  .prop-info { flex: 1; }
+  .prop-paquete { font-size: 12px; font-weight: 700; color: var(--charcoal); margin-bottom: 2px; }
+  .prop-fecha   { font-size: 11px; color: var(--concrete); }
+
+  /* ── CAMPO MONTO ── */
+  .monto-label {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase;
+    color: var(--concrete); margin-bottom: 8px;
+  }
+  .monto-input-wrap {
+    display: flex; align-items: center;
+    background: var(--bg-chip);
+    border: 1.5px solid var(--border-strong);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .monto-input-wrap:focus-within { border-color: var(--gold); background: var(--white); }
+  .monto-prefix {
+    padding: 12px 14px;
+    font-size: 16px; font-weight: 700;
+    color: var(--concrete);
+    border-right: 1px solid var(--border-strong);
+    background: var(--bg-chip);
+    flex-shrink: 0;
+  }
+  .monto-input-wrap:focus-within .monto-prefix { background: var(--white); }
+  #inp-monto {
+    flex: 1;
+    padding: 12px 14px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px; font-weight: 700;
+    color: var(--charcoal);
+    background: transparent;
+    border: none; outline: none;
+  }
+  .monto-hint { font-size: 11px; color: var(--concrete); margin-top: 7px; }
+  .monto-error { font-size: 11px; color: var(--error); margin-top: 5px; display: none; }
+
+  /* ── FORMA DE PAGO ── */
+  .forma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .forma-btn {
+    padding: 10px;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-chip);
+    color: var(--concrete);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer; text-align: center;
+    transition: all 0.15s;
+  }
+  .forma-btn.activo {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--charcoal);
+  }
+
+  /* ── BOTÓN ── */
+  .btn-registrar {
+    display: block; width: 100%;
+    background: var(--gold); color: var(--charcoal);
+    border: none; border-radius: 10px;
+    padding: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: background 0.15s; margin-top: 6px;
+  }
+  .btn-registrar:hover { background: #b8962e; }
+  .btn-registrar:disabled { background: var(--border-strong); color: var(--concrete); cursor: not-allowed; }
+
+  /* ── SUCCESS ── */
+  .success-inner {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 24px;
+    text-align: center;
+  }
+  .success-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--success-bg); color: var(--success);
+    font-size: 12px; font-weight: 700;
+    padding: 6px 14px; border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .success-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+  .success-sub   { font-size: 13px; color: var(--concrete); line-height: 1.7; }
+  .folio-box {
+    background: var(--bg-chip);
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin: 16px 0;
+    font-size: 16px; font-weight: 800;
+    color: var(--charcoal); letter-spacing: 1px;
+  }
+
+  /* ── YA PROCESADO ── */
+  .ya-procesado-inner {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 24px;
+    text-align: center;
+  }
+
+  /* ── ERROR ── */
+  .error-inner {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    padding: 36px 24px;
+    text-align: center;
+  }
+  .error-icon { font-size: 36px; margin-bottom: 14px; }
+  .error-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .error-msg-text { font-size: 13px; color: var(--concrete); }
+
+  footer {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--concrete);
+    margin-top: 32px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">
+</header>
+
+<!-- Loading -->
+<div id="state-loading">
+  <div class="card">
+    <div class="spinner">
+      <div class="spinner-ring"></div>
+      <span>Cargando contrato...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Error -->
+<div id="state-error">
+  <div class="card">
+    <div class="error-inner">
+      <div class="error-icon">⚠️</div>
+      <div class="error-title">No se encontró el contrato</div>
+      <div class="error-msg-text" id="error-msg-text">El enlace puede ser inválido.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Ya procesado -->
+<div id="state-ya-procesado">
+  <div class="card">
+    <div class="ya-procesado-inner">
+      <div style="font-size:36px;margin-bottom:14px">✅</div>
+      <p style="font-size:16px;font-weight:700;margin-bottom:8px">Este pago ya fue registrado</p>
+      <p style="font-size:13px;color:var(--concrete)" id="txt-ya-folio"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Main -->
+<div id="state-main">
+  <div class="card">
+
+    <!-- Resumen del cliente -->
+    <div class="inner">
+      <p class="cliente-nombre" id="txt-cliente-nombre">—</p>
+      <p class="cliente-tipo" id="txt-cliente-tipo">—</p>
+      <div class="resumen-fila">
+        <span class="resumen-label">Total del contrato</span>
+        <span class="resumen-valor" id="txt-precio-total">—</span>
+      </div>
+      <div class="resumen-fila" style="border-bottom:none">
+        <span class="resumen-label">Anticipo esperado (50%)</span>
+        <span class="resumen-valor gold" id="txt-anticipo-esperado">—</span>
+      </div>
+    </div>
+
+    <!-- Propiedades -->
+    <div class="inner">
+      <p class="section-title">Propiedades</p>
+      <div id="props-lista"></div>
+    </div>
+
+    <!-- Registrar pago -->
+    <div class="inner">
+      <p class="section-title">Monto recibido</p>
+
+      <div style="margin-bottom:16px">
+        <p class="monto-label">¿Cuánto te pagaron?</p>
+        <div class="monto-input-wrap">
+          <span class="monto-prefix">$</span>
+          <input type="number" id="inp-monto" placeholder="0" inputmode="decimal" min="0">
+        </div>
+        <p class="monto-hint">MXN. Ingresa el monto exacto recibido.</p>
+        <p class="monto-error" id="monto-error">Ingresa un monto válido mayor a cero.</p>
+      </div>
+
+      <div style="margin-bottom:20px">
+        <p class="monto-label" style="margin-bottom:8px">Forma de pago</p>
+        <div class="forma-grid">
+          <button class="forma-btn activo" onclick="setForma(this, 'Tarjeta (Clip)')">Tarjeta (Clip)</button>
+          <button class="forma-btn" onclick="setForma(this, 'Transferencia bancaria')">Transferencia</button>
+          <button class="forma-btn" onclick="setForma(this, 'Efectivo')">Efectivo</button>
+          <button class="forma-btn" onclick="setForma(this, 'Otro')">Otro</button>
+        </div>
+      </div>
+
+      <button class="btn-registrar" id="btn-registrar" onclick="registrarPago()">
+        REGISTRAR PAGO →
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<!-- Success -->
+<div id="state-success">
+  <div class="card">
+    <div class="success-inner">
+      <div class="success-badge">✓ Pago registrado</div>
+      <p class="success-title">¡Procesando!</p>
+      <p class="success-sub">El sistema está generando el PDF de referencias, el evento en Calendar y el comprobante de pago. El cliente recibirá el correo de confirmación en unos minutos.</p>
+      <div class="folio-box" id="txt-folio-success"></div>
+      <p class="success-sub">El folio del contrato aparece arriba. Guárdalo como referencia.</p>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 Inmuebles Audiovisuales — Uso interno</footer>
+
+<script>
+var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwAEsURB3Xx4jnzC7_YgK-_eORHJhAH-y5pQ3uEThwcClWiU-hJifb8mNU1qx7hTIWt/exec'; // reemplazar con URL del deployment nuevo
+var token = new URLSearchParams(window.location.search).get('token') || '';
+var formaSeleccionada = 'Tarjeta (Clip)';
+var datosContrato = null;
+
+function mostrar(id) {
+  ['state-loading','state-error','state-main','state-success','state-ya-procesado'].forEach(function(s) {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+
+function setForma(btn, forma) {
+  formaSeleccionada = forma;
+  document.querySelectorAll('.forma-btn').forEach(function(b) {
+    b.classList.remove('activo');
+  });
+  btn.classList.add('activo');
+}
+
+function formatMXN(val) {
+  var num = parseFloat(String(val).replace(/[^0-9.]/g, ''));
+  if (isNaN(num)) return String(val);
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(num);
+}
+
+function formatFecha(fechaStr) {
+  if (!fechaStr) return '—';
+  var d = new Date(fechaStr);
+  if (isNaN(d)) return String(fechaStr);
+  var dias  = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+  var meses = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  var h = d.getHours(), m = String(d.getMinutes()).padStart(2,'0');
+  var ampm = h >= 12 ? 'p.m.' : 'a.m.';
+  h = h % 12 || 12;
+  return dias[d.getDay()] + ' ' + d.getDate() + ' ' + meses[d.getMonth()] + ' · ' + h + ':' + m + ' ' + ampm;
+}
+
+function init() {
+  mostrar('state-loading');
+  if (!token) {
+    document.getElementById('error-msg-text').textContent = 'No se encontró el token en el enlace.';
+    mostrar('state-error');
+    return;
+  }
+
+  fetch(WEB_APP_URL + '?action=datosRegistro&token=' + encodeURIComponent(token))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) {
+        document.getElementById('error-msg-text').textContent = data.error || 'Contrato no encontrado.';
+        mostrar('state-error');
+        return;
+      }
+
+      datosContrato = data;
+
+      // Si ya está procesado
+      if (data.estado === 'Procesado') {
+        document.getElementById('txt-ya-folio').textContent = 'Folio: ' + (data.folio || '—') + ' — Monto registrado: ' + formatMXN(data.montoRecibido);
+        mostrar('state-ya-procesado');
+        return;
+      }
+
+      // Llenar resumen
+      document.getElementById('txt-cliente-nombre').textContent = data.nombreCliente || '—';
+      document.getElementById('txt-cliente-tipo').textContent   = data.tipoContrato  || '—';
+      document.getElementById('txt-precio-total').textContent   = formatMXN(data.precioTotal);
+
+      var anticipo = parseFloat(String(data.precioTotal).replace(/[^0-9.]/g, '')) / 2;
+      document.getElementById('txt-anticipo-esperado').textContent = formatMXN(anticipo);
+
+      // Pre-llenar monto con el anticipo esperado
+      document.getElementById('inp-monto').value = Math.round(anticipo);
+
+      // Propiedades
+      var lista = document.getElementById('props-lista');
+      var props = data.propiedades || [];
+      props.forEach(function(p) {
+        var div = document.createElement('div');
+        div.className = 'prop-item';
+        div.innerHTML =
+          '<div class="prop-num">' + p.num + '</div>' +
+          '<div class="prop-info">' +
+            '<p class="prop-paquete">' + (p.paquete || '—') + '</p>' +
+            '<p class="prop-fecha">' + formatFecha(p.fechaSesion) + (p.direccion ? ' · ' + p.direccion : '') + '</p>' +
+          '</div>';
+        lista.appendChild(div);
+      });
+
+      mostrar('state-main');
+    })
+    .catch(function() {
+      document.getElementById('error-msg-text').textContent = 'Error de conexión. Intenta de nuevo.';
+      mostrar('state-error');
+    });
+}
+
+function registrarPago() {
+  var montoStr = document.getElementById('inp-monto').value.trim();
+  var monto = parseFloat(montoStr);
+  var errorEl = document.getElementById('monto-error');
+
+  if (!montoStr || isNaN(monto) || monto <= 0) {
+    errorEl.style.display = 'block';
+    return;
+  }
+  errorEl.style.display = 'none';
+
+  var btn = document.getElementById('btn-registrar');
+  btn.disabled = true;
+  btn.textContent = 'Registrando...';
+
+  fetch(WEB_APP_URL, {
+    method : 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body   : JSON.stringify({
+      action    : 'registrarPago',
+      token     : token,
+      monto     : montoStr,
+      formaPago : formaSeleccionada,
+    }),
+  })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) {
+        btn.disabled = false;
+        btn.textContent = 'REGISTRAR PAGO →';
+        alert(data.error || 'Error al registrar. Intenta de nuevo.');
+        return;
+      }
+      document.getElementById('txt-folio-success').textContent = data.folio || '—';
+      mostrar('state-success');
+    })
+    .catch(function() {
+      btn.disabled = false;
+      btn.textContent = 'REGISTRAR PAGO →';
+      alert('Error de conexión. Intenta de nuevo.');
+    });
+}
+
+init();
+</script>
+</body>
+</html>

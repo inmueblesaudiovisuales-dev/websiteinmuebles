@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configurar propiedades · Inmuebles Audiovisuales</title>
+<meta name="robots" content="noindex">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #C9A84C;
+    --gold-dim: rgba(201,168,76,0.12);
+    --charcoal: #1C1C1E;
+    --concrete: #9B9B9F;
+    --surface: #F9F7F4;
+    --white: #FAFAFA;
+    --bg-chip: #F1F0ED;
+    --border: rgba(28,28,30,0.10);
+    --border-strong: rgba(28,28,30,0.20);
+    --error: #E05252;
+    --success: #2D7A4F;
+    --success-bg: #E8F5EE;
+  }
+
+  body {
+    font-family: 'Montserrat', sans-serif;
+    background: var(--surface);
+    color: var(--charcoal);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  header {
+    background: var(--charcoal);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  header img { height: 36px; width: auto; }
+
+  /* ── ESTADOS ── */
+  #state-loading, #state-error, #state-main, #state-success { display: none; }
+
+  .spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 200px;
+    gap: 16px;
+    color: var(--concrete);
+    font-size: 13px;
+  }
+  .spinner-ring {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .card {
+    max-width: 560px;
+    margin: 28px auto 48px;
+    padding: 0 16px;
+  }
+
+  .page-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 4px;
+  }
+  .page-sub {
+    font-size: 13px;
+    color: var(--concrete);
+    margin-bottom: 24px;
+  }
+
+  /* ── PROPIEDAD CARD ── */
+  .prop-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+  }
+  .prop-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+  .prop-num {
+    width: 28px; height: 28px;
+    background: var(--charcoal);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .prop-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
+  }
+
+  /* ── CAMPOS ── */
+  .field { margin-bottom: 16px; }
+  .field:last-child { margin-bottom: 0; }
+
+  label.field-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--concrete);
+    margin-bottom: 6px;
+  }
+
+  select, input[type="text"], input[type="datetime-local"], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    color: var(--charcoal);
+    background: var(--bg-chip);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+  select:focus, input:focus, textarea:focus {
+    border-color: var(--gold);
+    background: var(--white);
+  }
+  textarea { resize: vertical; min-height: 80px; }
+
+  /* Toggle tipo propiedad */
+  .tipo-toggle {
+    display: flex;
+    gap: 8px;
+  }
+  .tipo-btn {
+    flex: 1;
+    padding: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--bg-chip);
+    color: var(--concrete);
+    cursor: pointer;
+    transition: all 0.15s;
+    text-align: center;
+  }
+  .tipo-btn.activo {
+    border-color: var(--gold);
+    background: var(--gold-dim);
+    color: var(--charcoal);
+  }
+
+  /* ── BOTÓN SUBMIT ── */
+  .btn-submit {
+    display: block;
+    width: 100%;
+    background: var(--gold);
+    color: var(--charcoal);
+    border: none;
+    border-radius: 8px;
+    padding: 16px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s;
+  }
+  .btn-submit:hover { background: #b8962e; }
+  .btn-submit:disabled { background: var(--border-strong); color: var(--concrete); cursor: not-allowed; }
+
+  /* ── ERROR ── */
+  .error-msg-box {
+    background: #FEF2F2;
+    border: 1px solid #FECACA;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--error);
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  /* ── SUCCESS ── */
+  .success-card {
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 28px 24px;
+    text-align: center;
+  }
+  .success-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--success-bg);
+    color: var(--success);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 16px;
+  }
+  .success-title {
+    font-size: 17px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: var(--charcoal);
+  }
+  .success-sub {
+    font-size: 13px;
+    color: var(--concrete);
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+  .link-box {
+    background: var(--bg-chip);
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+    text-align: left;
+  }
+  .link-text {
+    font-size: 12px;
+    color: var(--charcoal);
+    font-family: 'Courier New', monospace;
+    word-break: break-all;
+    flex: 1;
+  }
+  .btn-copiar {
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--white);
+    color: var(--charcoal);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 6px 12px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+    flex-shrink: 0;
+  }
+  .btn-copiar:hover { background: var(--bg-chip); }
+  .btn-copiar.copiado { background: var(--gold-dim); color: var(--gold); border-color: var(--gold); }
+
+  footer {
+    background: var(--white);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--concrete);
+    margin-top: 32px;
+  }
+
+  .error-page {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 40px 24px;
+    text-align: center;
+    margin: 32px auto;
+    max-width: 400px;
+  }
+  .error-page-icon { font-size: 36px; margin-bottom: 14px; }
+  .error-page-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .error-page-msg { font-size: 13px; color: var(--concrete); }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">
+</header>
+
+<!-- Loading -->
+<div id="state-loading">
+  <div class="spinner">
+    <div class="spinner-ring"></div>
+    <span>Cargando...</span>
+  </div>
+</div>
+
+<!-- Error -->
+<div id="state-error">
+  <div class="card">
+    <div class="error-page">
+      <div class="error-page-icon">⚠️</div>
+      <div class="error-page-title">No se pudo cargar</div>
+      <div class="error-page-msg" id="error-msg">El enlace puede ser inválido o haber expirado.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Formulario principal -->
+<div id="state-main">
+  <div class="card">
+    <p class="page-title" id="page-title">Configurar propiedades</p>
+    <p class="page-sub" id="page-sub">Llena los detalles de cada propiedad antes de enviar el link al cliente.</p>
+
+    <div id="error-msg-box" class="error-msg-box"></div>
+    <div id="propiedades-container"></div>
+
+    <button class="btn-submit" id="btn-submit" onclick="enviarConfig()">
+      GENERAR LINK PARA EL CLIENTE →
+    </button>
+  </div>
+</div>
+
+<!-- Success -->
+<div id="state-success">
+  <div class="card">
+    <div class="success-card">
+      <div class="success-badge">✓ Link generado</div>
+      <p class="success-title">Manda este link al cliente por WhatsApp</p>
+      <p class="success-sub">El cliente abrirá este link para llenar los datos de cada propiedad y firmar el contrato.</p>
+      <div class="link-box">
+        <span class="link-text" id="url-cliente"></span>
+        <button class="btn-copiar" id="btn-copiar-url" onclick="copiarUrl()">Copiar</button>
+      </div>
+      <p style="font-size:12px;color:var(--concrete)">El link expira en 72 horas.</p>
+    </div>
+  </div>
+</div>
+
+<footer>© 2026 Inmuebles Audiovisuales · Monterrey, NL</footer>
+
+<script>
+var WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwAEsURB3Xx4jnzC7_YgK-_eORHJhAH-y5pQ3uEThwcClWiU-hJifb8mNU1qx7hTIWt/exec'; // reemplazar con la URL del deployment nuevo
+var token = new URLSearchParams(window.location.search).get('token') || '';
+var numPropiedades = 1;
+var tiposPorPropiedad = [];
+
+// Opciones de paquetes — debe coincidir con PAQUETES2 en el script
+var PAQUETES = [
+  'Residencial Esencial — Fotografía profesional · Video cinemático · Grabación aérea con drone · Fotografía aérea con drone · Amenidades',
+  'Residencial Plus — Fotografía profesional · Video cinemático · Grabación aérea con drone · Fotografía aérea con drone · Amenidades · Recorrido virtual · Narración IA · Redes sociales',
+  'Residencial Premium — Fotografía profesional · Video cinemático · Grabación aérea con drone · Fotografía aérea con drone · Amenidades · Recorrido virtual · Narración IA · Redes sociales · Video cómo llegar · Folleto PDF · Landing page',
+  'Terrenos Esencial — Video cinemático aéreo · Animación perímetro · Fotografía aérea con delimitado · Amenidades',
+  'Terrenos Plus — Video cinemático aéreo · Animación perímetro · Fotografía aérea con delimitado · Amenidades · Visualización IA · Recorrido virtual aéreo · Narración IA',
+  'Terrenos Premium — Video cinemático aéreo · Animación perímetro · Fotografía aérea con delimitado · Amenidades · Visualización IA · Recorrido virtual aéreo · Narración IA · Video cómo llegar · Folleto PDF · Landing page',
+];
+
+var PAQUETES_RESIDENCIAL = PAQUETES.filter(function(p) { return p.startsWith('Residencial'); });
+var PAQUETES_TERRENO     = PAQUETES.filter(function(p) { return p.startsWith('Terrenos'); });
+
+function mostrar(id) {
+  ['state-loading','state-error','state-main','state-success'].forEach(function(s) {
+    document.getElementById(s).style.display = s === id ? 'block' : 'none';
+  });
+}
+
+function setTipo(propNum, tipo) {
+  tiposPorPropiedad[propNum] = tipo;
+  // Actualizar botones
+  var btns = document.querySelectorAll('.tipo-btn[data-prop="' + propNum + '"]');
+  btns.forEach(function(btn) {
+    btn.classList.toggle('activo', btn.dataset.tipo === tipo);
+  });
+  // Actualizar select de paquetes
+  actualizarSelectPaquete(propNum, tipo);
+}
+
+function actualizarSelectPaquete(propNum, tipo) {
+  var select = document.getElementById('paquete-' + propNum);
+  if (!select) return;
+  var opciones = tipo === 'Terreno' ? PAQUETES_TERRENO : PAQUETES_RESIDENCIAL;
+  select.innerHTML = '<option value="">Seleccionar paquete</option>';
+  opciones.forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p;
+    opt.textContent = p.split(' — ')[0]; // Solo mostrar el nombre
+    select.appendChild(opt);
+  });
+  // Actualizar entregables cuando cambia el paquete
+  select.onchange = function() { actualizarEntregables(propNum); };
+}
+
+function actualizarEntregables(propNum) {
+  var select = document.getElementById('paquete-' + propNum);
+  var textarea = document.getElementById('entregables-' + propNum);
+  if (!select || !textarea) return;
+  var val = select.value;
+  if (!val) { textarea.value = ''; return; }
+  var sep = val.indexOf(' — ');
+  textarea.value = sep !== -1 ? val.substring(sep + 3) : '';
+}
+
+function crearPropCard(num) {
+  var div = document.createElement('div');
+  div.className = 'prop-card';
+  div.innerHTML =
+    '<div class="prop-header">' +
+      '<div class="prop-num">' + num + '</div>' +
+      '<p class="prop-title">Propiedad ' + num + '</p>' +
+    '</div>' +
+
+    '<div class="field">' +
+      '<label class="field-label">Tipo de propiedad</label>' +
+      '<div class="tipo-toggle">' +
+        '<button type="button" class="tipo-btn activo" data-prop="' + num + '" data-tipo="Residencial" onclick="setTipo(' + num + ', \'Residencial\')">Residencial</button>' +
+        '<button type="button" class="tipo-btn" data-prop="' + num + '" data-tipo="Terreno" onclick="setTipo(' + num + ', \'Terreno\')">Terreno</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div class="field">' +
+      '<label class="field-label">Paquete</label>' +
+      '<select id="paquete-' + num + '"><option value="">Seleccionar paquete</option></select>' +
+    '</div>' +
+
+    '<div class="field">' +
+      '<label class="field-label">Entregables</label>' +
+      '<textarea id="entregables-' + num + '" placeholder="Se rellena automáticamente al elegir el paquete. Puedes editar."></textarea>' +
+    '</div>' +
+
+    '<div class="field">' +
+      '<label class="field-label">Fecha y hora de sesión</label>' +
+      '<input type="datetime-local" id="fecha-' + num + '">' +
+    '</div>';
+
+  return div;
+}
+
+function init() {
+  mostrar('state-loading');
+  if (!token) {
+    document.getElementById('error-msg').textContent = 'No se encontró el token en el enlace.';
+    mostrar('state-error');
+    return;
+  }
+
+  fetch(WEB_APP_URL + '?action=datosToken&token=' + encodeURIComponent(token))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) {
+        document.getElementById('error-msg').textContent = data.error || 'Enlace inválido o expirado.';
+        mostrar('state-error');
+        return;
+      }
+
+      numPropiedades = data.numPropiedades || 1;
+      document.getElementById('page-title').textContent = 'Configurar ' + numPropiedades + ' propiedad' + (numPropiedades > 1 ? 'es' : '');
+      document.getElementById('page-sub').textContent = 'Contrato para ' + data.nombreCliente + ' — Total: ' + (data.precioTotal || '');
+
+      var container = document.getElementById('propiedades-container');
+      for (var i = 1; i <= numPropiedades; i++) {
+        tiposPorPropiedad[i] = 'Residencial';
+        var card = crearPropCard(i);
+        container.appendChild(card);
+        actualizarSelectPaquete(i, 'Residencial');
+      }
+
+      mostrar('state-main');
+    })
+    .catch(function() {
+      document.getElementById('error-msg').textContent = 'Error de conexión. Intenta de nuevo.';
+      mostrar('state-error');
+    });
+}
+
+function enviarConfig() {
+  var errorBox = document.getElementById('error-msg-box');
+  errorBox.style.display = 'none';
+
+  var propiedades = [];
+  var valido = true;
+
+  for (var i = 1; i <= numPropiedades; i++) {
+    var paqueteVal   = document.getElementById('paquete-' + i) ? document.getElementById('paquete-' + i).value : '';
+    var entregables  = document.getElementById('entregables-' + i) ? document.getElementById('entregables-' + i).value.trim() : '';
+    var fecha        = document.getElementById('fecha-' + i) ? document.getElementById('fecha-' + i).value : '';
+    var tipo         = tiposPorPropiedad[i] || 'Residencial';
+    var sep          = paqueteVal.indexOf(' — ');
+    var paqueteNombre = sep !== -1 ? paqueteVal.substring(0, sep).trim() : paqueteVal;
+
+    if (!paqueteVal || !fecha) {
+      errorBox.textContent = 'Propiedad ' + i + ': completa el paquete y la fecha.';
+      errorBox.style.display = 'block';
+      valido = false;
+      break;
+    }
+
+    propiedades.push({
+      tipo       : tipo,
+      paquete    : paqueteNombre,
+      entregables: entregables,
+      fechaSesion: fecha,
+    });
+  }
+
+  if (!valido) return;
+
+  var btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = 'Guardando...';
+
+  var url = WEB_APP_URL + '?action=guardarConfig&token=' + encodeURIComponent(token) +
+    '&propiedades=' + encodeURIComponent(JSON.stringify(propiedades));
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.ok) {
+        errorBox.textContent = data.error || 'Error al guardar. Intenta de nuevo.';
+        errorBox.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = 'GENERAR LINK PARA EL CLIENTE →';
+        return;
+      }
+      document.getElementById('url-cliente').textContent = data.urlCliente || '';
+      mostrar('state-success');
+    })
+    .catch(function() {
+      errorBox.textContent = 'Error de conexión. Intenta de nuevo.';
+      errorBox.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'GENERAR LINK PARA EL CLIENTE →';
+    });
+}
+
+function copiarUrl() {
+  var url = document.getElementById('url-cliente').textContent.trim();
+  var btn = document.getElementById('btn-copiar-url');
+  navigator.clipboard.writeText(url).then(function() {
+    btn.textContent = 'Copiado';
+    btn.classList.add('copiado');
+    setTimeout(function() {
+      btn.textContent = 'Copiar';
+      btn.classList.remove('copiado');
+    }, 2500);
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = url;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    btn.textContent = 'Copiado';
+    btn.classList.add('copiado');
+    setTimeout(function() { btn.textContent = 'Copiar'; btn.classList.remove('copiado'); }, 2500);
+  });
+}
+
+init();
+</script>
+</body>
+</html>
