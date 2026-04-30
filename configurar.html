@@ -409,7 +409,7 @@ function onPaqueteChange(propNum) {
   var fieldDesc = document.getElementById('field-descripcion-' + propNum);
   if (!select || !textarea) return;
   var val = select.value;
-  if (!val) {
+  if (!val || val === 'custom') {
     // Servicio personalizado — mostrar campo descripción, limpiar entregables
     if (fieldDesc) fieldDesc.style.display = 'block';
     textarea.value = '';
@@ -440,7 +440,7 @@ function crearPropCard(num) {
 
     '<div class="field">' +
       '<label class="field-label">Paquete (opcional)</label>' +
-      '<select id="paquete-' + num + '" onchange="onPaqueteChange(' + num + ')"><option value="">Servicio personalizado</option></select>' +
+      '<select id="paquete-' + num + '" onchange="onPaqueteChange(' + num + ')"><option value="">— Seleccionar —</option><option value="custom">Servicio personalizado</option></select>' +
     '</div>' +
 
     '<div class="field" id="field-descripcion-' + num + '">' +
@@ -488,9 +488,7 @@ function init() {
         var card = crearPropCard(i);
         container.appendChild(card);
         actualizarSelectPaquete(i, 'Residencial');
-        // Ocultar campo descripción por default (servicio personalizado no seleccionado aún)
-        var fd = document.getElementById('field-descripcion-' + i);
-        if (fd) fd.style.display = 'none';
+
       }
 
       mostrar('state-main');
@@ -515,7 +513,7 @@ function enviarConfig() {
     var fecha         = document.getElementById('fecha-' + i) ? document.getElementById('fecha-' + i).value : '';
     var tipo          = tiposPorPropiedad[i] || 'Residencial';
     var sep           = paqueteVal.indexOf(' — ');
-    var paqueteNombre = paqueteVal ? (sep !== -1 ? paqueteVal.substring(0, sep).trim() : paqueteVal) : descripcion;
+    var paqueteNombre = (paqueteVal && paqueteVal !== 'custom') ? (sep !== -1 ? paqueteVal.substring(0, sep).trim() : paqueteVal) : descripcion;
 
     if (!fecha) {
       errorBox.textContent = 'Propiedad ' + i + ': la fecha es obligatoria.';
