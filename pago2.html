@@ -404,7 +404,7 @@
       return;
     }
 
-    fetch(WEB_APP_URL + '?action=datosToken&token=' + encodeURIComponent(token))
+    fetch(WEB_APP_URL + '?action=datosPago&token=' + encodeURIComponent(token))
       .then(function(r) { return r.json(); })
       .then(function(data) {
         if (!data.ok) {
