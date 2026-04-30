@@ -522,9 +522,9 @@ function crearPropResumen(prop, index) {
   div.innerHTML =
     '<div class="prop-resumen-header">' +
       '<div class="prop-badge">' + (index + 1) + '</div>' +
-      '<span class="prop-resumen-nombre">' + (prop.paquete || '—') + '</span>' +
+      '<span class="prop-resumen-nombre">' + (prop.paquete || '') + '</span>' +
     '</div>' +
-    '<p class="prop-resumen-fecha">' + formatFechaLegible(prop.fechaSesion) + '</p>' +
+    (prop.fechaSesion ? '<p class="prop-resumen-fecha">' + formatFechaLegible(prop.fechaSesion) + '</p>' : '') +
     (liItems ? '<ul class="prop-entregables-list">' + liItems + '</ul>' : '');
   return div;
 }
