@@ -145,6 +145,7 @@
     background: var(--white);
   }
   textarea { resize: vertical; min-height: 80px; }
+  .field-descripcion-hidden { display: none; }
 
   /* Toggle tipo propiedad */
   .tipo-toggle {
@@ -399,17 +400,25 @@ function actualizarSelectPaquete(propNum, tipo) {
     select.appendChild(opt);
   });
   // Actualizar entregables cuando cambia el paquete
-  select.onchange = function() { actualizarEntregables(propNum); };
+  select.onchange = function() { onPaqueteChange(propNum); };
 }
 
-function actualizarEntregables(propNum) {
-  var select = document.getElementById('paquete-' + propNum);
+function onPaqueteChange(propNum) {
+  var select   = document.getElementById('paquete-' + propNum);
   var textarea = document.getElementById('entregables-' + propNum);
+  var fieldDesc = document.getElementById('field-descripcion-' + propNum);
   if (!select || !textarea) return;
   var val = select.value;
-  if (!val) { textarea.value = ''; return; }
-  var sep = val.indexOf(' — ');
-  textarea.value = sep !== -1 ? val.substring(sep + 3) : '';
+  if (!val) {
+    // Servicio personalizado — mostrar campo descripción, limpiar entregables
+    if (fieldDesc) fieldDesc.style.display = 'block';
+    textarea.value = '';
+  } else {
+    // Paquete elegido — ocultar campo descripción, auto-llenar entregables
+    if (fieldDesc) fieldDesc.style.display = 'none';
+    var sep = val.indexOf(' — ');
+    textarea.value = sep !== -1 ? val.substring(sep + 3) : '';
+  }
 }
 
 function crearPropCard(num) {
@@ -430,13 +439,18 @@ function crearPropCard(num) {
     '</div>' +
 
     '<div class="field">' +
-      '<label class="field-label">Paquete</label>' +
-      '<select id="paquete-' + num + '"><option value="">Seleccionar paquete</option></select>' +
+      '<label class="field-label">Paquete (opcional)</label>' +
+      '<select id="paquete-' + num + '" onchange="onPaqueteChange(' + num + ')"><option value="">Servicio personalizado</option></select>' +
+    '</div>' +
+
+    '<div class="field" id="field-descripcion-' + num + '">' +
+      '<label class="field-label">Descripción del servicio</label>' +
+      '<input type="text" id="descripcion-' + num + '" placeholder="Ej: Solo fotografía, Video sin drone, Foto + video...">' +
     '</div>' +
 
     '<div class="field">' +
-      '<label class="field-label">Entregables</label>' +
-      '<textarea id="entregables-' + num + '" placeholder="Se rellena automáticamente al elegir el paquete. Puedes editar."></textarea>' +
+      '<label class="field-label">Entregables *</label>' +
+      '<textarea id="entregables-' + num + '" placeholder="Escribe los entregables separados por · o selecciona un paquete arriba."></textarea>' +
     '</div>' +
 
     '<div class="field">' +
@@ -474,6 +488,9 @@ function init() {
         var card = crearPropCard(i);
         container.appendChild(card);
         actualizarSelectPaquete(i, 'Residencial');
+        // Ocultar campo descripción por default (servicio personalizado no seleccionado aún)
+        var fd = document.getElementById('field-descripcion-' + i);
+        if (fd) fd.style.display = 'none';
       }
 
       mostrar('state-main');
@@ -492,15 +509,22 @@ function enviarConfig() {
   var valido = true;
 
   for (var i = 1; i <= numPropiedades; i++) {
-    var paqueteVal   = document.getElementById('paquete-' + i) ? document.getElementById('paquete-' + i).value : '';
-    var entregables  = document.getElementById('entregables-' + i) ? document.getElementById('entregables-' + i).value.trim() : '';
-    var fecha        = document.getElementById('fecha-' + i) ? document.getElementById('fecha-' + i).value : '';
-    var tipo         = tiposPorPropiedad[i] || 'Residencial';
-    var sep          = paqueteVal.indexOf(' — ');
-    var paqueteNombre = sep !== -1 ? paqueteVal.substring(0, sep).trim() : paqueteVal;
+    var paqueteVal    = document.getElementById('paquete-' + i) ? document.getElementById('paquete-' + i).value : '';
+    var descripcion   = document.getElementById('descripcion-' + i) ? document.getElementById('descripcion-' + i).value.trim() : '';
+    var entregables   = document.getElementById('entregables-' + i) ? document.getElementById('entregables-' + i).value.trim() : '';
+    var fecha         = document.getElementById('fecha-' + i) ? document.getElementById('fecha-' + i).value : '';
+    var tipo          = tiposPorPropiedad[i] || 'Residencial';
+    var sep           = paqueteVal.indexOf(' — ');
+    var paqueteNombre = paqueteVal ? (sep !== -1 ? paqueteVal.substring(0, sep).trim() : paqueteVal) : descripcion;
 
-    if (!paqueteVal || !fecha) {
-      errorBox.textContent = 'Propiedad ' + i + ': completa el paquete y la fecha.';
+    if (!fecha) {
+      errorBox.textContent = 'Propiedad ' + i + ': la fecha es obligatoria.';
+      errorBox.style.display = 'block';
+      valido = false;
+      break;
+    }
+    if (!entregables) {
+      errorBox.textContent = 'Propiedad ' + i + ': escribe al menos un entregable.';
       errorBox.style.display = 'block';
       valido = false;
       break;
