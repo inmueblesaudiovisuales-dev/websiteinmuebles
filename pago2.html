@@ -348,11 +348,11 @@
     <!-- Concepto de pago -->
     <div class="concepto-box">
       <p class="concepto-label">Concepto de pago</p>
-      <p class="concepto-hint">Usa este texto exacto en el campo "Concepto" o "Descripción" de tu transferencia o pago con tarjeta.</p>
+      <p class="concepto-hint">En el campo "Concepto" o "Descripción" de tu pago escribe tu <strong style="color:var(--charcoal)">primer nombre + folio</strong>:</p>
       <div class="concepto-row">
         <span class="concepto-val" id="txt-concepto"></span>
-        <button class="btn-copiar-inline" id="btn-copiar-concepto" onclick="copiarConcepto()">Copiar</button>
       </div>
+      <p class="concepto-hint" style="margin-top:8px">Si el campo tiene límite de caracteres, escribe solo el folio: <strong style="color:var(--charcoal)" id="txt-solo-folio"></strong></p>
     </div>
 
     <!-- Opción 1: Tarjeta con Clip -->
@@ -471,19 +471,6 @@
     return 'IAV-' + yy + mm + '.' + dd;
   }
 
-  function copiarConcepto() {
-    var texto = document.getElementById('txt-concepto').textContent;
-    var btn = document.getElementById('btn-copiar-concepto');
-    function marcar() {
-      btn.textContent = 'Copiado';
-      btn.classList.add('copiado');
-      setTimeout(function() { btn.textContent = 'Copiar'; btn.classList.remove('copiado'); }, 2500);
-    }
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(texto).then(marcar).catch(function() { fallback(texto, marcar); });
-    } else { fallback(texto, marcar); }
-  }
-
   (function init() {
     mostrar('state-loading');
 
@@ -518,6 +505,8 @@
         var folio = calcularFolio(data.fechaSesionP1 || '');
         var concepto = (data.nombreCliente || '') + (folio ? ' ' + folio : '');
         document.getElementById('txt-concepto').textContent = concepto;
+        var soloFolioEl = document.getElementById('txt-solo-folio');
+        if (soloFolioEl) soloFolioEl.textContent = folio;
         var montoClipEl = document.getElementById('monto-clip');
         if (montoClipEl) montoClipEl.textContent = formatMXN(anticipo);
 
