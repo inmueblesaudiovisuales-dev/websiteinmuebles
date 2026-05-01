@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Información del servicio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg: #F5F4F1;
+  --white: #FFFFFF;
+  --ink: #111111;
+  --ink2: #2D2D2D;
+  --muted: #888888;
+  --muted2: #BBBBBB;
+  --border: #E4E4E0;
+  --border2: #D0D0CB;
+  --accent: #111111;
+  --error: #C0392B;
+  --success: #27AE60;
+  --tag-bg: #EFEFEC;
+  --tag-on: #111111;
+  --tag-on-text: #FFFFFF;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Header ── */
+.header {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  position: sticky; top: 0; z-index: 100;
+}
+.header-inner {
+  max-width: 720px; margin: 0 auto;
+  height: 56px; display: flex; align-items: center; justify-content: space-between;
+}
+.header-brand {
+  font-size: 13px; font-weight: 600;
+  letter-spacing: .04em; color: var(--ink2);
+}
+.header-step {
+  font-size: 11px; font-weight: 500;
+  color: var(--muted); letter-spacing: .06em;
+}
+
+/* ── Progress ── */
+.progress-track {
+  height: 2px; background: var(--border);
+  position: sticky; top: 56px; z-index: 99;
+}
+.progress-fill {
+  height: 100%; background: var(--ink);
+  transition: width .5s cubic-bezier(.4,0,.2,1); width: 0%;
+}
+
+/* ── Main ── */
+.wrap {
+  max-width: 720px; margin: 0 auto;
+  padding: 56px 40px 100px;
+}
+@media (max-width: 600px) { .wrap { padding: 40px 20px 80px; } }
+
+/* ── Sections ── */
+.section { display: none; }
+.section.active {
+  display: block;
+  animation: up .35s cubic-bezier(.22,1,.36,1) both;
+}
+@keyframes up {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.sec-num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  font-size: 11px; font-weight: 700; color: var(--muted);
+  margin-bottom: 16px;
+}
+.sec-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(22px, 3.5vw, 30px);
+  color: var(--ink); letter-spacing: -.02em;
+  line-height: 1.2; margin-bottom: 6px;
+}
+.sec-desc {
+  font-size: 13px; color: var(--muted);
+  line-height: 1.75; margin-bottom: 40px;
+}
+
+/* ── Divider ── */
+.rule { height: 1px; background: var(--border); margin: 36px 0; }
+
+/* ── Question block ── */
+.q { margin-bottom: 32px; }
+.q-label {
+  font-size: 12px; font-weight: 600;
+  letter-spacing: .05em; color: var(--ink2);
+  margin-bottom: 10px; display: block;
+}
+.q-label .req { color: var(--error); margin-left: 3px; }
+.q-hint { font-size: 11px; color: var(--muted); margin-bottom: 10px; line-height: 1.5; }
+
+/* ── Text inputs ── */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="number"],
+select,
+textarea {
+  width: 100%; padding: 11px 14px;
+  background: var(--white); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--ink);
+  font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 400;
+  outline: none; transition: border-color .18s, box-shadow .18s;
+  -webkit-appearance: none;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--ink); box-shadow: 0 0 0 2px rgba(17,17,17,.07);
+}
+input::placeholder, textarea::placeholder { color: var(--muted2); }
+textarea { resize: vertical; min-height: 72px; line-height: 1.6; }
+select { cursor: pointer; }
+
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media (max-width: 520px) { .field-row { grid-template-columns: 1fr; } }
+
+.field-error-msg {
+  font-size: 11px; color: var(--error); margin-top: 5px; display: none;
+}
+.q.has-error input,
+.q.has-error textarea,
+.q.has-error select { border-color: var(--error); }
+.q.has-error .field-error-msg { display: block; }
+
+/* ── Tags (chips sin emojis) ── */
+.tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 12px; }
+.tag {
+  padding: 7px 14px; border-radius: 4px;
+  border: 1px solid var(--border2); background: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+  color: var(--muted); cursor: pointer;
+  transition: all .15s; user-select: none; line-height: 1;
+}
+.tag:hover { border-color: var(--ink2); color: var(--ink2); }
+.tag.on {
+  background: var(--tag-on); border-color: var(--tag-on);
+  color: var(--tag-on-text);
+}
+
+/* ── Stepper ── */
+.stepper-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+.stepper {
+  display: flex; align-items: center;
+  border: 1px solid var(--border2); border-radius: 8px;
+  overflow: hidden; background: var(--white);
+}
+.stepper-btn {
+  width: 40px; height: 40px; background: none; border: none;
+  font-size: 18px; color: var(--ink2); cursor: pointer;
+  transition: background .15s; display: flex; align-items: center; justify-content: center;
+  font-family: 'DM Sans', sans-serif;
+}
+.stepper-btn:hover { background: var(--tag-bg); }
+.stepper-val {
+  min-width: 52px; text-align: center;
+  font-size: 14px; font-weight: 600; color: var(--ink);
+  border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+  height: 40px; display: flex; align-items: center; justify-content: center;
+}
+.stepper-unit { font-size: 12px; color: var(--muted); }
+
+/* ── Toggle ── */
+.toggle-list { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--white); margin-bottom: 12px; }
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 13px 16px; border-bottom: 1px solid var(--border);
+  gap: 16px;
+}
+.toggle-row:last-child { border-bottom: none; }
+.toggle-row-label { font-size: 13px; color: var(--ink2); font-weight: 500; }
+.toggle-row-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.tog {
+  position: relative; width: 40px; height: 22px;
+  background: var(--border2); border-radius: 999px;
+  cursor: pointer; transition: background .2s; flex-shrink: 0;
+}
+.tog.on { background: var(--ink); }
+.tog::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--white); transition: transform .2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,.15);
+}
+.tog.on::after { transform: translateX(18px); }
+
+/* ── Color picker ── */
+.color-row { display: flex; gap: 10px; align-items: center; margin-bottom: 12px; }
+.color-row input[type="color"] {
+  width: 44px; height: 40px; padding: 2px 3px;
+  border-radius: 8px; cursor: pointer; flex-shrink: 0;
+  background: var(--white); border: 1px solid var(--border2);
+}
+.color-row input[type="text"] { flex: 1; margin-bottom: 0; }
+.color-swatches { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
+.swatch {
+  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  border: 2px solid transparent; transition: transform .15s, border-color .15s;
+  flex-shrink: 0;
+}
+.swatch:hover { transform: scale(1.12); }
+.swatch.on { border-color: var(--ink); }
+
+/* ── Detalle libre ── */
+.detalle-wrap { margin-top: 0; }
+.detalle-wrap textarea {
+  font-size: 13px;
+  background: #FAFAF8;
+  border-color: var(--border);
+  min-height: 60px;
+}
+.detalle-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--muted2); margin-bottom: 6px; display: block;
+}
+
+/* ── Botones ── */
+.btn-row { display: flex; gap: 10px; margin-top: 44px; }
+.btn-back {
+  padding: 12px 20px; border-radius: 8px;
+  border: 1px solid var(--border2); background: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--muted); cursor: pointer; transition: border-color .15s, color .15s;
+}
+.btn-back:hover { border-color: var(--ink2); color: var(--ink2); }
+.btn-next {
+  flex: 1; padding: 13px 24px; border-radius: 8px;
+  border: none; background: var(--ink); color: var(--white);
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; letter-spacing: .02em;
+  transition: background .15s, transform .1s;
+}
+.btn-next:hover { background: var(--ink2); }
+.btn-next:active { transform: scale(.99); }
+.btn-next:disabled { background: var(--muted2); cursor: not-allowed; }
+
+/* ── Loading ── */
+.spinner {
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,.3); border-top-color: #fff;
+  animation: spin .7s linear infinite; display: none;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.btn-next.loading { display: flex; align-items: center; justify-content: center; gap: 10px; }
+.btn-next.loading .btn-text { display: none; }
+.btn-next.loading .spinner { display: block; }
+
+/* ── Gracias ── */
+.gracias {
+  text-align: center; padding: 60px 20px;
+  max-width: 500px; margin: 0 auto;
+}
+.gracias-icon {
+  width: 64px; height: 64px; border-radius: 50%;
+  background: #F0F7F2; border: 1px solid #C3E0CC;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 24px; font-size: 28px;
+}
+.gracias-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 26px; color: var(--ink); letter-spacing: -.02em; margin-bottom: 12px;
+}
+.gracias-desc { font-size: 14px; color: var(--muted); line-height: 1.75; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <span class="header-brand">Información del servicio</span>
+    <span class="header-step" id="step-label">Paso 1 de 7</span>
+  </div>
+</header>
+<div class="progress-track">
+  <div class="progress-fill" id="prog"></div>
+</div>
+
+<div class="wrap">
+
+<!-- ══ S1: NEGOCIO ══ -->
+<div class="section active" id="s1">
+  <div class="sec-num">1</div>
+  <h1 class="sec-title">Tu negocio</h1>
+  <p class="sec-desc">Esta información aparecerá en los contratos y correos que reciben tus clientes.</p>
+
+  <div class="q" id="q-nombre">
+    <label class="q-label">Nombre del negocio <span class="req">*</span></label>
+    <input type="text" id="nombre" placeholder="Nombre completo de tu estudio o marca">
+    <span class="field-error-msg">Este campo es obligatorio</span>
+  </div>
+
+  <div class="q" id="q-gmail">
+    <label class="q-label">Correo Gmail <span class="req">*</span></label>
+    <input type="email" id="gmail" placeholder="correo@gmail.com">
+    <p class="q-hint">Este correo recibirá las notificaciones del sistema y se vinculará a tu Google Sheets.</p>
+    <span class="field-error-msg">Ingresa un correo válido</span>
+  </div>
+
+  <div class="q" id="q-whatsapp">
+    <label class="q-label">WhatsApp <span class="req">*</span></label>
+    <input type="text" id="whatsapp" placeholder="Ej: 5218112345678" inputmode="tel">
+    <p class="q-hint">Con código de país, sin espacios ni símbolo +.</p>
+    <span class="field-error-msg">Mínimo 10 dígitos</span>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="q">
+    <label class="q-label">Color principal de tu marca</label>
+    <div class="color-row">
+      <input type="color" id="color-picker" value="#1A1A2E" oninput="syncColor(this.value,'picker')">
+      <input type="text" id="color-hex" value="#1A1A2E" placeholder="#1A1A2E" oninput="syncColor(this.value,'text')">
+    </div>
+    <div class="color-swatches">
+      <div class="swatch" style="background:#1A1A2E" onclick="setColor('#1A1A2E')" title="Azul noche"></div>
+      <div class="swatch" style="background:#C9A84C" onclick="setColor('#C9A84C')" title="Dorado"></div>
+      <div class="swatch" style="background:#D4A0B0" onclick="setColor('#D4A0B0')" title="Rosa palo"></div>
+      <div class="swatch" style="background:#4A90D9" onclick="setColor('#4A90D9')" title="Azul"></div>
+      <div class="swatch" style="background:#2D7D46" onclick="setColor('#2D7D46')" title="Verde"></div>
+      <div class="swatch" style="background:#8B4513" onclick="setColor('#8B4513')" title="Cafe"></div>
+      <div class="swatch" style="background:#6C63FF" onclick="setColor('#6C63FF')" title="Morado"></div>
+      <div class="swatch" style="background:#E05252" onclick="setColor('#E05252')" title="Rojo"></div>
+      <div class="swatch on" style="background:#111111" onclick="setColor('#111111')" title="Negro"></div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Notas sobre tu marca (opcional)</span>
+      <textarea id="d-marca" placeholder="Describe tu estilo visual, referencias, o cualquier indicación sobre tu identidad de marca."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-next" onclick="ir(2)"><span class="btn-text">Continuar</span><div class="spinner"></div></button>
+  </div>
+</div>
+
+<!-- ══ S2: BANCO ══ -->
+<div class="section" id="s2">
+  <div class="sec-num">2</div>
+  <h1 class="sec-title">Datos bancarios</h1>
+  <p class="sec-desc">Estos datos aparecen en la página de pago que verá tu cliente para realizar la transferencia.</p>
+
+  <div class="field-row" style="margin-bottom:12px">
+    <div class="q" id="q-banco">
+      <label class="q-label">Banco <span class="req">*</span></label>
+      <input type="text" id="banco" placeholder="BBVA, Banamex, HSBC...">
+      <span class="field-error-msg">Obligatorio</span>
+    </div>
+    <div class="q" id="q-cuenta">
+      <label class="q-label">Número de cuenta <span class="req">*</span></label>
+      <input type="text" id="cuenta" placeholder="12345678" inputmode="numeric">
+      <span class="field-error-msg">Obligatorio</span>
+    </div>
+  </div>
+
+  <div class="q" id="q-clabe">
+    <label class="q-label">CLABE interbancaria <span class="req">*</span></label>
+    <input type="text" id="clabe" placeholder="18 dígitos" inputmode="numeric" maxlength="18">
+    <span class="field-error-msg">Debe tener exactamente 18 dígitos</span>
+  </div>
+
+  <div class="q" id="q-titular">
+    <label class="q-label">Nombre del titular <span class="req">*</span></label>
+    <input type="text" id="titular" placeholder="Exactamente como aparece en el banco">
+    <span class="field-error-msg">Obligatorio</span>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="ir(1)">Atras</button>
+    <button class="btn-next" onclick="ir(3)"><span class="btn-text">Continuar</span><div class="spinner"></div></button>
+  </div>
+</div>
+
+<!-- ══ S3: TIPO DE SERVICIO ══ -->
+<div class="section" id="s3">
+  <div class="sec-num">3</div>
+  <h1 class="sec-title">Tipo de servicio</h1>
+  <p class="sec-desc">Selecciona todo lo que aplique. Puedes agregar detalles en el campo de texto de cada pregunta.</p>
+
+  <div class="q">
+    <label class="q-label">Medio de trabajo</label>
+    <div class="tags" id="medio-tags">
+      <div class="tag" onclick="soloTag(this,'medio','Solo fotografia')">Solo fotografia</div>
+      <div class="tag" onclick="soloTag(this,'medio','Solo video')">Solo video</div>
+      <div class="tag" onclick="soloTag(this,'medio','Fotografia y video')">Fotografia y video</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle o especificacion adicional</span>
+      <textarea id="d-medio" placeholder="Ej: principalmente fotografia pero ocasionalmente hago reels cortos..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Especialidades</label>
+    <div class="tags" id="tipo-tags">
+      <div class="tag" onclick="multiTag(this,'tipo')">Bodas</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">XV anos</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Comida</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Producto</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Retrato</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Moda</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Inmuebles</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Corporativo</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Eventos</div>
+      <div class="tag" onclick="multiTag(this,'tipo')">Otro</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-tipo" placeholder="Describe tus especialidades con mas detalle si lo necesitas."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Servicios adicionales incluidos</label>
+    <div class="tags" id="extra-tags">
+      <div class="tag" onclick="multiTag(this,'extra')">Drone</div>
+      <div class="tag" onclick="multiTag(this,'extra')">Segunda camara</div>
+      <div class="tag" onclick="multiTag(this,'extra')">Iluminacion especial</div>
+      <div class="tag" onclick="multiTag(this,'extra')">Audio profesional</div>
+      <div class="tag" onclick="multiTag(this,'extra')">Traslados incluidos</div>
+      <div class="tag" onclick="multiTag(this,'extra')">Ninguno</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-extra" placeholder="Ej: el drone solo aplica en exteriores, los traslados hasta 30 km..."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="ir(2)">Atras</button>
+    <button class="btn-next" onclick="ir(4)"><span class="btn-text">Continuar</span><div class="spinner"></div></button>
+  </div>
+</div>
+
+<!-- ══ S4: ENTREGABLES ══ -->
+<div class="section" id="s4">
+  <div class="sec-num">4</div>
+  <h1 class="sec-title">Entregables</h1>
+  <p class="sec-desc">Define exactamente lo que el cliente recibe al contratar tu servicio.</p>
+
+  <div class="q">
+    <label class="q-label">Fotos editadas por sesion</label>
+    <div class="stepper-wrap">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="step('fotos',-10)">−</button>
+        <div class="stepper-val" id="fotos-val">0</div>
+        <button class="stepper-btn" onclick="step('fotos',10)">+</button>
+      </div>
+      <span class="stepper-unit">fotos — 0 significa que varia por paquete</span>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-fotos" placeholder="Ej: el numero exacto depende del paquete, el basico incluye 30 y el premium 80..."></textarea>
+    </div>
+  </div>
+
+  <div class="q" id="q-video-tipos" style="display:none">
+    <label class="q-label">Tipo de entregable de video</label>
+    <div class="tags" id="video-tags">
+      <div class="tag" onclick="multiTag(this,'video')">Corte largo (3-5 min)</div>
+      <div class="tag" onclick="multiTag(this,'video')">Reel / Highlight (60-90 seg)</div>
+      <div class="tag" onclick="multiTag(this,'video')">Formato vertical para redes</div>
+      <div class="tag" onclick="multiTag(this,'video')">Version sin musica</div>
+      <div class="tag" onclick="multiTag(this,'video')">Varias versiones</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-video" placeholder="Especifica duraciones, formatos, resoluciones o cualquier detalle relevante."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Archivos en formato RAW</label>
+    <div class="tags" id="raw-tags">
+      <div class="tag on" onclick="soloTag(this,'raw','No se entregan archivos RAW')">No se entregan</div>
+      <div class="tag" onclick="soloTag(this,'raw','Se incluyen en el precio')">Incluido en el precio</div>
+      <div class="tag" onclick="soloTag(this,'raw','Disponible con costo adicional')">Con costo adicional</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-raw" placeholder="Cualquier aclaracion sobre la entrega de archivos originales..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Album fisico</label>
+    <div class="tags" id="album-tags">
+      <div class="tag on" onclick="soloTag(this,'album','No incluye album fisico')">No incluye</div>
+      <div class="tag" onclick="soloTag(this,'album','Incluido en el precio')">Incluido</div>
+      <div class="tag" onclick="soloTag(this,'album','Opcional, con costo adicional')">Opcional con costo extra</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-album" placeholder="Tipo, tamano, acabado del album si aplica..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Formato de entrega digital</label>
+    <div class="tags" id="formato-tags">
+      <div class="tag on" onclick="multiTag(this,'formato')">Google Drive</div>
+      <div class="tag" onclick="multiTag(this,'formato')">WeTransfer</div>
+      <div class="tag" onclick="multiTag(this,'formato')">Dropbox</div>
+      <div class="tag" onclick="multiTag(this,'formato')">Galeria privada en linea</div>
+      <div class="tag" onclick="multiTag(this,'formato')">USB fisica</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-formato" placeholder="Cualquier especificacion sobre como entregas el material..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Plazo de entrega</label>
+    <div class="stepper-wrap">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="step('entrega',-1)">−</button>
+        <div class="stepper-val" id="entrega-val">7</div>
+        <button class="stepper-btn" onclick="step('entrega',1)">+</button>
+      </div>
+      <span class="stepper-unit">dias habiles despues de la sesion</span>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-entrega" placeholder="Ej: el plazo puede variar segun la temporada, en diciembre puede extenderse hasta 15 dias..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Rondas de revision incluidas</label>
+    <div class="tags" id="revision-tags">
+      <div class="tag" onclick="soloTag(this,'revision','1 ronda de revision')">1 ronda</div>
+      <div class="tag on" onclick="soloTag(this,'revision','2 rondas de revision')">2 rondas</div>
+      <div class="tag" onclick="soloTag(this,'revision','3 rondas de revision')">3 rondas</div>
+      <div class="tag" onclick="soloTag(this,'revision','Revisiones ilimitadas')">Ilimitadas</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-revision" placeholder="Define que cuenta como una ronda de revision, que tipo de cambios se permiten..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Tiempo que conservas los archivos tras la entrega</label>
+    <div class="stepper-wrap">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="step('almacen',-5)">−</button>
+        <div class="stepper-val" id="almacen-val">30</div>
+        <button class="stepper-btn" onclick="step('almacen',5)">+</button>
+      </div>
+      <span class="stepper-unit">dias naturales — 0 significa que no almacenas</span>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-almacen" placeholder="Cualquier aclaracion sobre el almacenamiento y respaldo de archivos..."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="ir(3)">Atras</button>
+    <button class="btn-next" onclick="ir(5)"><span class="btn-text">Continuar</span><div class="spinner"></div></button>
+  </div>
+</div>
+
+<!-- ══ S5: LOGISTICA ══ -->
+<div class="section" id="s5">
+  <div class="sec-num">5</div>
+  <h1 class="sec-title">Logistica de la sesion</h1>
+  <p class="sec-desc">Estas reglas protegen tu tiempo y se incluyen en el contrato.</p>
+
+  <div class="q">
+    <label class="q-label">Duracion tipica de una sesion</label>
+    <div class="stepper-wrap">
+      <div class="stepper">
+        <button class="stepper-btn" onclick="step('duracion',-.5)">−</button>
+        <div class="stepper-val" id="duracion-val">2h</div>
+        <button class="stepper-btn" onclick="step('duracion',.5)">+</button>
+      </div>
+      <span class="stepper-unit">puede variar segun el paquete</span>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-duracion" placeholder="Ej: el paquete basico es 2 horas, el premium cubre todo el dia..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Locaciones incluidas por sesion</label>
+    <div class="tags" id="locacion-tags">
+      <div class="tag" onclick="soloTag(this,'locacion','1 locacion')">1</div>
+      <div class="tag on" onclick="soloTag(this,'locacion','2 locaciones')">2</div>
+      <div class="tag" onclick="soloTag(this,'locacion','3 locaciones')">3</div>
+      <div class="tag" onclick="soloTag(this,'locacion','Sin limite de locaciones')">Sin limite</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-locacion" placeholder="Define que cuenta como una locacion, distancia maxima entre locaciones, etc."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Cambios de outfit incluidos</label>
+    <div class="tags" id="outfit-tags">
+      <div class="tag" onclick="soloTag(this,'outfit','No aplica')">No aplica</div>
+      <div class="tag on" onclick="soloTag(this,'outfit','1 cambio de outfit')">1</div>
+      <div class="tag" onclick="soloTag(this,'outfit','2 cambios de outfit')">2</div>
+      <div class="tag" onclick="soloTag(this,'outfit','Sin limite')">Sin limite</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-outfit" placeholder="Condiciones sobre los cambios, tiempo extra que implican, etc."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Tolerancia maxima de llegada tarde del cliente</label>
+    <div class="tags" id="tolerancia-tags">
+      <div class="tag" onclick="soloTag(this,'tolerancia','Sin tolerancia')">Sin tolerancia</div>
+      <div class="tag" onclick="soloTag(this,'tolerancia','10 minutos de tolerancia')">10 min</div>
+      <div class="tag on" onclick="soloTag(this,'tolerancia','20 minutos de tolerancia')">20 min</div>
+      <div class="tag" onclick="soloTag(this,'tolerancia','30 minutos de tolerancia')">30 min</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-tolerancia" placeholder="Que sucede si el cliente llega tarde: se descuenta del tiempo, se cobra extra, se cancela..."></textarea>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="q">
+    <label class="q-label">Opciones adicionales de logistica</label>
+    <div class="toggle-list">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row-label">Cobro por hora extra</div>
+          <div class="toggle-row-sub">Si la sesion se extiende mas alla del tiempo acordado</div>
+        </div>
+        <div class="tog" id="tog-horaextra" onclick="togSwitch('horaextra')"></div>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row-label">Limite de personas por sesion</div>
+          <div class="toggle-row-sub">Aplica para retrato, producto o sesiones especificas</div>
+        </div>
+        <div class="tog" id="tog-personas" onclick="togSwitch('personas')"></div>
+      </div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle de logistica adicional</span>
+      <textarea id="d-logistica" placeholder="Ej: la hora extra cuesta $500 MXN, el maximo de personas es 6 para retrato familiar, hay cargo por traslado fuera de la ciudad..."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="ir(4)">Atras</button>
+    <button class="btn-next" onclick="ir(6)"><span class="btn-text">Continuar</span><div class="spinner"></div></button>
+  </div>
+</div>
+
+<!-- ══ S6: PAGOS ══ -->
+<div class="section" id="s6">
+  <div class="sec-num">6</div>
+  <h1 class="sec-title">Pagos y cancelaciones</h1>
+  <p class="sec-desc">Tu politica de cobro y lo que sucede si el cliente cancela o reagenda.</p>
+
+  <div class="q">
+    <label class="q-label">Esquema de anticipo</label>
+    <div class="tags" id="anticipo-tags">
+      <div class="tag" onclick="soloTag(this,'anticipo','30% al contratar, 70% al entregar')">30%</div>
+      <div class="tag on" onclick="soloTag(this,'anticipo','50% al contratar, 50% al entregar')">50 / 50</div>
+      <div class="tag" onclick="soloTag(this,'anticipo','100% por adelantado')">100%</div>
+      <div class="tag" onclick="soloTag(this,'anticipo','Esquema personalizado')">Personalizado</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle o esquema personalizado</span>
+      <textarea id="d-anticipo" placeholder="Ej: 50% al contratar, 25% dos semanas antes y 25% al entregar. O bien: cualquier aclaracion sobre tu forma de cobro."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Aviso minimo para cancelar o reagendar sin penalizacion</label>
+    <div class="tags" id="cancelacion-tags">
+      <div class="tag" onclick="soloTag(this,'cancelacion','24 horas de anticipacion')">24 hrs</div>
+      <div class="tag" onclick="soloTag(this,'cancelacion','48 horas de anticipacion')">48 hrs</div>
+      <div class="tag on" onclick="soloTag(this,'cancelacion','7 dias de anticipacion')">7 dias</div>
+      <div class="tag" onclick="soloTag(this,'cancelacion','15 dias de anticipacion')">15 dias</div>
+      <div class="tag" onclick="soloTag(this,'cancelacion','30 dias de anticipacion')">30 dias</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-cancelacion" placeholder="Excepciones, casos especiales como clima o emergencias, condiciones de reagendamiento..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Que sucede con el anticipo al cancelar</label>
+    <div class="tags" id="reembolso-tags">
+      <div class="tag on" onclick="soloTag(this,'reembolso','No reembolsable, puede aplicarse como credito para reagendar')">Credito para reagendar</div>
+      <div class="tag" onclick="soloTag(this,'reembolso','No reembolsable bajo ninguna circunstancia')">Sin reembolso</div>
+      <div class="tag" onclick="soloTag(this,'reembolso','Reembolso parcial segun el tiempo de aviso')">Reembolso parcial</div>
+      <div class="tag" onclick="soloTag(this,'reembolso','Reembolso total si hay aviso suficiente')">Reembolso total</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-reembolso" placeholder="Condiciones especificas de tu politica de reembolso..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Penalizacion por cancelacion tardia</label>
+    <div class="tags" id="penalizacion-tags">
+      <div class="tag" onclick="soloTag(this,'penalizacion','Pierde unicamente el anticipo')">Solo el anticipo</div>
+      <div class="tag on" onclick="soloTag(this,'penalizacion','25% del total del servicio')">25% del total</div>
+      <div class="tag" onclick="soloTag(this,'penalizacion','50% del total del servicio')">50% del total</div>
+      <div class="tag" onclick="soloTag(this,'penalizacion','100% del total del servicio')">100% del total</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-penalizacion" placeholder="Condiciones de la penalizacion, escalonamiento segun dias de aviso, etc."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="ir(5)">Atras</button>
+    <button class="btn-next" onclick="ir(7)"><span class="btn-text">Continuar</span><div class="spinner"></div></button>
+  </div>
+</div>
+
+<!-- ══ S7: DERECHOS ══ -->
+<div class="section" id="s7">
+  <div class="sec-num">7</div>
+  <h1 class="sec-title">Derechos y operacion</h1>
+  <p class="sec-desc">Preguntas sobre el uso del material y como operas tu negocio.</p>
+
+  <div class="q">
+    <label class="q-label">Uso del material en tu portafolio</label>
+    <div class="toggle-list">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row-label">Puedes publicar el material en tu portafolio</div>
+          <div class="toggle-row-sub">Redes sociales, sitio web, presentaciones comerciales</div>
+        </div>
+        <div class="tog on" id="tog-portafolio" onclick="togSwitch('portafolio')"></div>
+      </div>
+    </div>
+    <div class="q">
+      <label class="q-label">Embargo antes de publicar</label>
+      <div class="tags" id="embargo-tags">
+        <div class="tag on" onclick="soloTag(this,'embargo','Sin embargo, puedo publicar de inmediato')">Sin embargo</div>
+        <div class="tag" onclick="soloTag(this,'embargo','7 dias de embargo')">7 dias</div>
+        <div class="tag" onclick="soloTag(this,'embargo','30 dias de embargo')">30 dias</div>
+        <div class="tag" onclick="soloTag(this,'embargo','90 dias de embargo')">90 dias</div>
+      </div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle sobre derechos de uso</span>
+      <textarea id="d-portafolio" placeholder="Condiciones de embargo, excepciones, creditos requeridos al publicar..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Uso del material por parte del cliente</label>
+    <div class="toggle-list">
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row-label">El cliente puede usar el material en publicidad pagada</div>
+          <div class="toggle-row-sub">Facebook Ads, Google Ads, publicidad impresa, medios masivos</div>
+        </div>
+        <div class="tog on" id="tog-publicidad" onclick="togSwitch('publicidad')"></div>
+      </div>
+      <div class="toggle-row">
+        <div>
+          <div class="toggle-row-label">El cliente puede revender o sublicenciar el material</div>
+          <div class="toggle-row-sub">Cederlo a terceros, agencias o plataformas externas</div>
+        </div>
+        <div class="tog" id="tog-reventa" onclick="togSwitch('reventa')"></div>
+      </div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-derechos" placeholder="Condiciones de licencia, restricciones de uso, cobro adicional por ciertos usos..."></textarea>
+    </div>
+  </div>
+
+  <div class="rule"></div>
+
+  <div class="q">
+    <label class="q-label">Horario de atencion</label>
+    <div class="tags" id="horario-tags">
+      <div class="tag on" onclick="soloTag(this,'horario','Lunes a viernes, 9am a 6pm')">Lun–Vie 9–6</div>
+      <div class="tag" onclick="soloTag(this,'horario','Lunes a sabado, 9am a 6pm')">Lun–Sab 9–6</div>
+      <div class="tag" onclick="soloTag(this,'horario','Lunes a viernes, 10am a 8pm')">Lun–Vie 10–8</div>
+      <div class="tag" onclick="soloTag(this,'horario','Horario flexible')">Flexible</div>
+    </div>
+    <div class="detalle-wrap">
+      <span class="detalle-label">Detalle</span>
+      <textarea id="d-horario" placeholder="Dias festivos, excepciones, tiempo de respuesta promedio..."></textarea>
+    </div>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Casos especiales o clausulas adicionales</label>
+    <div class="detalle-wrap">
+      <textarea id="d-especiales" style="min-height:100px" placeholder="Cualquier regla o condicion especifica de tu tipo de servicio que deba quedar en el contrato. Ej: Para bodas, el cliente debe informar restricciones en la iglesia. Para comida, el cliente prepara y presenta los alimentos. Para producto, el cliente entrega todos los articulos listos antes de la sesion."></textarea>
+    </div>
+  </div>
+
+  <div class="btn-row">
+    <button class="btn-back" onclick="ir(6)">Atras</button>
+    <button class="btn-next" id="btn-enviar" onclick="enviar()">
+      <span class="btn-text">Enviar informacion</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+</div>
+
+<!-- ══ GRACIAS ══ -->
+<div class="section" id="s-gracias">
+  <div class="gracias">
+    <div class="gracias-icon">✓</div>
+    <h1 class="gracias-title">Informacion recibida</h1>
+    <p class="gracias-desc">Recibimos toda la informacion de tu negocio. Nos pondremos en contacto contigo en las proximas horas para continuar con el proceso de configuracion.</p>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── URL del receptor (Apps Script tuyo) ──────────────────────────────────────
+// Cambia esta URL después de deployar ReceptorIntake_v1.js
+const RECEPTOR_URL = 'PEGAR_URL_DEL_RECEPTOR_AQUI';
+
+// ── Estado ───────────────────────────────────────────────────────────────────
+const E = {
+  duracion:2, fotos:0, entrega:7, almacen:30,
+  medio:'', raw:'No se entregan archivos RAW', album:'No incluye album fisico',
+  revision:'2 rondas de revision', anticipo:'50% al contratar, 50% al entregar',
+  locacion:'2 locaciones', outfit:'1 cambio de outfit', tolerancia:'20 minutos de tolerancia',
+  cancelacion:'7 dias de anticipacion',
+  reembolso:'No reembolsable, puede aplicarse como credito para reagendar',
+  penalizacion:'25% del total del servicio',
+  embargo:'Sin embargo, puedo publicar de inmediato',
+  horario:'Lunes a viernes, 9am a 6pm',
+  portafolio:true, publicidad:true, reventa:false, horaextra:false, personas:false,
+};
+const MC = {};
+let cur = 1;
+
+// ── Navegacion ────────────────────────────────────────────────────────────────
+function ir(n) {
+  if (n > cur && !validar(cur)) return;
+  document.getElementById('s' + cur).classList.remove('active');
+  cur = n;
+  const sec = document.getElementById('s' + n);
+  sec.classList.add('active');
+  document.getElementById('step-label').textContent = n <= 7 ? 'Paso ' + n + ' de 7' : '';
+  document.getElementById('prog').style.width = ((n - 1) / 7 * 100) + '%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Mostrar video si aplica
+  const m = E.medio || '';
+  if (n === 4) {
+    document.getElementById('q-video-tipos').style.display =
+      (m.includes('video') || m.includes('Video')) ? 'block' : 'none';
+  }
+}
+
+function validar(n) {
+  let ok = true;
+  if (n === 1) {
+    ok = chk('nombre', 'q-nombre', v => v.length > 1) && ok;
+    ok = chk('gmail', 'q-gmail', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) && ok;
+    ok = chk('whatsapp', 'q-whatsapp', v => v.replace(/\D/g,'').length >= 10) && ok;
+  }
+  if (n === 2) {
+    ok = chk('banco', 'q-banco', v => v.length > 1) && ok;
+    ok = chk('clabe', 'q-clabe', v => v.replace(/\D/g,'').length === 18) && ok;
+    ok = chk('cuenta', 'q-cuenta', v => v.length > 1) && ok;
+    ok = chk('titular', 'q-titular', v => v.length > 2) && ok;
+  }
+  if (!ok) document.querySelector('#s' + n + ' .has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return ok;
+}
+function chk(id, qid, fn) {
+  const v = (document.getElementById(id)?.value || '').trim();
+  const ok = fn(v);
+  document.getElementById(qid)?.classList.toggle('has-error', !ok);
+  return ok;
+}
+
+// ── Tags ─────────────────────────────────────────────────────────────────────
+function soloTag(el, k, v) {
+  el.closest('.tags').querySelectorAll('.tag').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  E[k] = v;
+}
+function multiTag(el, g) {
+  el.classList.toggle('on');
+  if (!MC[g]) MC[g] = new Set();
+  if (el.classList.contains('on')) MC[g].add(el.textContent.trim());
+  else MC[g].delete(el.textContent.trim());
+}
+function getMC(g) {
+  return MC[g] ? Array.from(MC[g]).join(', ') : '';
+}
+
+// ── Toggles ───────────────────────────────────────────────────────────────────
+function togSwitch(k) {
+  const t = document.getElementById('tog-' + k);
+  t.classList.toggle('on');
+  E[k] = t.classList.contains('on');
+}
+
+// ── Steppers ──────────────────────────────────────────────────────────────────
+function step(k, d) {
+  if (k === 'duracion') {
+    E[k] = Math.max(0.5, Math.round((E[k] + d) * 2) / 2);
+    document.getElementById('duracion-val').textContent = E[k] + 'h';
+  } else {
+    E[k] = Math.max(0, (E[k] || 0) + d);
+    document.getElementById(k + '-val').textContent = E[k];
+  }
+}
+
+// ── Color ─────────────────────────────────────────────────────────────────────
+function syncColor(v, from) {
+  if (from === 'picker') document.getElementById('color-hex').value = v;
+  else if (/^#[0-9A-Fa-f]{6}$/.test(v)) document.getElementById('color-picker').value = v;
+}
+function setColor(hex) {
+  document.getElementById('color-picker').value = hex;
+  document.getElementById('color-hex').value = hex;
+  document.querySelectorAll('.swatch').forEach(s =>
+    s.classList.toggle('on', s.getAttribute('onclick')?.includes(hex)));
+}
+
+// ── Leer campo ────────────────────────────────────────────────────────────────
+function g(id) { return (document.getElementById(id)?.value || '').trim(); }
+
+// ── Envio ─────────────────────────────────────────────────────────────────────
+async function enviar() {
+  if (!validar(7)) return;
+
+  const btn = document.getElementById('btn-enviar');
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  const payload = {
+    // Negocio
+    nombre    : g('nombre'),
+    gmail     : g('gmail'),
+    whatsapp  : g('whatsapp'),
+    color     : g('color-hex') || '#111111',
+    d_marca   : g('d-marca'),
+    // Banco
+    banco     : g('banco'),
+    clabe     : g('clabe'),
+    cuenta    : g('cuenta'),
+    titular   : g('titular'),
+    // Tipo
+    medio     : E.medio,
+    d_medio   : g('d-medio'),
+    tipos     : getMC('tipo'),
+    d_tipo    : g('d-tipo'),
+    extras    : getMC('extra'),
+    d_extra   : g('d-extra'),
+    // Entregables
+    fotos     : E.fotos,
+    d_fotos   : g('d-fotos'),
+    video     : getMC('video'),
+    d_video   : g('d-video'),
+    raw       : E.raw,
+    d_raw     : g('d-raw'),
+    album     : E.album,
+    d_album   : g('d-album'),
+    formato   : getMC('formato') || 'Google Drive',
+    d_formato : g('d-formato'),
+    entrega   : E.entrega,
+    d_entrega : g('d-entrega'),
+    revision  : E.revision,
+    d_revision: g('d-revision'),
+    almacen   : E.almacen,
+    d_almacen : g('d-almacen'),
+    // Logistica
+    duracion   : E.duracion,
+    d_duracion : g('d-duracion'),
+    locacion   : E.locacion,
+    d_locacion : g('d-locacion'),
+    outfit     : E.outfit,
+    d_outfit   : g('d-outfit'),
+    tolerancia : E.tolerancia,
+    d_tolerancia: g('d-tolerancia'),
+    horaextra  : E.horaextra,
+    personas   : E.personas,
+    d_logistica: g('d-logistica'),
+    // Pagos
+    anticipo      : E.anticipo,
+    d_anticipo    : g('d-anticipo'),
+    cancelacion   : E.cancelacion,
+    d_cancelacion : g('d-cancelacion'),
+    reembolso     : E.reembolso,
+    d_reembolso   : g('d-reembolso'),
+    penalizacion  : E.penalizacion,
+    d_penalizacion: g('d-penalizacion'),
+    // Derechos
+    portafolio  : E.portafolio,
+    embargo     : E.embargo,
+    d_portafolio: g('d-portafolio'),
+    publicidad  : E.publicidad,
+    reventa     : E.reventa,
+    d_derechos  : g('d-derechos'),
+    horario     : E.horario,
+    d_horario   : g('d-horario'),
+    d_especiales: g('d-especiales'),
+  };
+
+  try {
+    await fetch(RECEPTOR_URL, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+    // Siempre mostrar gracias, incluso si hay error de red (CORS en Apps Script)
+  } catch (e) {
+    // Apps Script puede retornar error de CORS pero igual procesa el POST
+  }
+
+  // Mostrar pantalla de gracias
+  document.getElementById('s7').classList.remove('active');
+  document.getElementById('s-gracias').classList.add('active');
+  document.getElementById('step-label').textContent = '';
+  document.getElementById('prog').style.width = '100%';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
