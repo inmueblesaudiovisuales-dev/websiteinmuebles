@@ -386,14 +386,14 @@ select { cursor: pointer; }
   </div>
 
   <div class="q">
-    <label class="q-label">Terminal / Cobro con tarjeta</label>
-    <input type="text" id="terminal" placeholder="Ej: Clip, Conekta, Square, Terminal bancaria BBVA...">
-    <p class="q-hint">Si cobras con tarjeta, indica qué terminal o plataforma usas.</p>
+    <label class="q-label">Número de tarjeta (para depósito en OXXO)</label>
+    <input type="text" id="tarjeta" placeholder="16 dígitos" inputmode="numeric" maxlength="16">
+    <p class="q-hint">El cliente usa este número para hacer depósitos en OXXO o ventanilla bancaria.</p>
   </div>
 
   <div class="q">
     <label class="q-label">Otro método de cobro</label>
-    <input type="text" id="otro-cobro" placeholder="Ej: PayPal, Mercado Pago, efectivo, cheque...">
+    <input type="text" id="otro-cobro" placeholder="Ej: PayPal, Mercado Pago, efectivo...">
   </div>
 
   <div class="btn-row">
@@ -996,7 +996,7 @@ async function enviar() {
     clabe     : g('clabe'),
     cuenta    : g('cuenta'),
     titular   : g('titular'),
-    terminal  : g('terminal'),
+    tarjeta   : g('tarjeta'),
     otroCobro : g('otro-cobro'),
     // Tipo
     medio     : E.medio,
