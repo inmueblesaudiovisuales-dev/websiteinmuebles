@@ -362,29 +362,38 @@ select { cursor: pointer; }
   <h1 class="sec-title">Datos bancarios</h1>
   <p class="sec-desc">Estos datos aparecen en la página de pago que verá tu cliente para realizar la transferencia.</p>
 
+  <p class="q-hint" style="margin-bottom:20px">Llena solo los datos que apliquen. Puedes dejar en blanco los que no uses.</p>
+
   <div class="field-row" style="margin-bottom:12px">
-    <div class="q" id="q-banco">
-      <label class="q-label">Banco <span class="req">*</span></label>
+    <div class="q">
+      <label class="q-label">Banco</label>
       <input type="text" id="banco" placeholder="BBVA, Banamex, HSBC...">
-      <span class="field-error-msg">Obligatorio</span>
     </div>
-    <div class="q" id="q-cuenta">
-      <label class="q-label">Número de cuenta <span class="req">*</span></label>
+    <div class="q">
+      <label class="q-label">Número de cuenta</label>
       <input type="text" id="cuenta" placeholder="12345678" inputmode="numeric">
-      <span class="field-error-msg">Obligatorio</span>
     </div>
   </div>
 
-  <div class="q" id="q-clabe">
-    <label class="q-label">CLABE interbancaria <span class="req">*</span></label>
+  <div class="q">
+    <label class="q-label">CLABE interbancaria</label>
     <input type="text" id="clabe" placeholder="18 dígitos" inputmode="numeric" maxlength="18">
-    <span class="field-error-msg">Debe tener exactamente 18 dígitos</span>
   </div>
 
-  <div class="q" id="q-titular">
-    <label class="q-label">Nombre del titular <span class="req">*</span></label>
+  <div class="q">
+    <label class="q-label">Nombre del titular</label>
     <input type="text" id="titular" placeholder="Exactamente como aparece en el banco">
-    <span class="field-error-msg">Obligatorio</span>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Terminal / Cobro con tarjeta</label>
+    <input type="text" id="terminal" placeholder="Ej: Clip, Conekta, Square, Terminal bancaria BBVA...">
+    <p class="q-hint">Si cobras con tarjeta, indica qué terminal o plataforma usas.</p>
+  </div>
+
+  <div class="q">
+    <label class="q-label">Otro método de cobro</label>
+    <input type="text" id="otro-cobro" placeholder="Ej: PayPal, Mercado Pago, efectivo, cheque...">
   </div>
 
   <div class="btn-row">
@@ -551,6 +560,7 @@ select { cursor: pointer; }
   <div class="q">
     <label class="q-label">Rondas de revision incluidas</label>
     <div class="tags" id="revision-tags">
+      <div class="tag" onclick="soloTag(this,'revision','Sin rondas de revision incluidas')">Sin revisiones</div>
       <div class="tag" onclick="soloTag(this,'revision','1 ronda de revision')">1 ronda</div>
       <div class="tag on" onclick="soloTag(this,'revision','2 rondas de revision')">2 rondas</div>
       <div class="tag" onclick="soloTag(this,'revision','3 rondas de revision')">3 rondas</div>
@@ -708,10 +718,11 @@ select { cursor: pointer; }
       <div class="tag on" onclick="soloTag(this,'cancelacion','7 dias de anticipacion')">7 dias</div>
       <div class="tag" onclick="soloTag(this,'cancelacion','15 dias de anticipacion')">15 dias</div>
       <div class="tag" onclick="soloTag(this,'cancelacion','30 dias de anticipacion')">30 dias</div>
+      <div class="tag" onclick="soloTag(this,'cancelacion','Politica personalizada')">Personalizado</div>
     </div>
     <div class="detalle-wrap">
-      <span class="detalle-label">Detalle</span>
-      <textarea id="d-cancelacion" placeholder="Excepciones, casos especiales como clima o emergencias, condiciones de reagendamiento..."></textarea>
+      <span class="detalle-label">Describe tu politica de cancelacion con detalle</span>
+      <textarea id="d-cancelacion" placeholder="Ej: 7 dias sin costo, entre 3-7 dias se cobra el 25%, menos de 3 dias se pierde el anticipo completo. Para bodas aplica politica especial..."></textarea>
     </div>
   </div>
 
@@ -722,10 +733,11 @@ select { cursor: pointer; }
       <div class="tag" onclick="soloTag(this,'reembolso','No reembolsable bajo ninguna circunstancia')">Sin reembolso</div>
       <div class="tag" onclick="soloTag(this,'reembolso','Reembolso parcial segun el tiempo de aviso')">Reembolso parcial</div>
       <div class="tag" onclick="soloTag(this,'reembolso','Reembolso total si hay aviso suficiente')">Reembolso total</div>
+      <div class="tag" onclick="soloTag(this,'reembolso','Politica personalizada')">Personalizado</div>
     </div>
     <div class="detalle-wrap">
-      <span class="detalle-label">Detalle</span>
-      <textarea id="d-reembolso" placeholder="Condiciones especificas de tu politica de reembolso..."></textarea>
+      <span class="detalle-label">Describe que pasa exactamente con el anticipo</span>
+      <textarea id="d-reembolso" placeholder="Ej: el anticipo no se regresa pero puede usarse en los siguientes 6 meses. Si el cliente cancela por causa de fuerza mayor se negocia caso por caso..."></textarea>
     </div>
   </div>
 
@@ -736,10 +748,11 @@ select { cursor: pointer; }
       <div class="tag on" onclick="soloTag(this,'penalizacion','25% del total del servicio')">25% del total</div>
       <div class="tag" onclick="soloTag(this,'penalizacion','50% del total del servicio')">50% del total</div>
       <div class="tag" onclick="soloTag(this,'penalizacion','100% del total del servicio')">100% del total</div>
+      <div class="tag" onclick="soloTag(this,'penalizacion','Penalizacion personalizada')">Personalizado</div>
     </div>
     <div class="detalle-wrap">
-      <span class="detalle-label">Detalle</span>
-      <textarea id="d-penalizacion" placeholder="Condiciones de la penalizacion, escalonamiento segun dias de aviso, etc."></textarea>
+      <span class="detalle-label">Describe tu esquema de penalizacion con detalle</span>
+      <textarea id="d-penalizacion" placeholder="Ej: si cancela con menos de 48 hrs cobra el 50%, si cancela el mismo dia cobra el 100%. Para bodas la penalizacion es diferente..."></textarea>
     </div>
   </div>
 
@@ -895,10 +908,14 @@ function validar(n) {
     ok = chk('whatsapp', 'q-whatsapp', v => v.replace(/\D/g,'').length >= 10) && ok;
   }
   if (n === 2) {
-    ok = chk('banco', 'q-banco', v => v.length > 1) && ok;
-    ok = chk('clabe', 'q-clabe', v => v.replace(/\D/g,'').length === 18) && ok;
-    ok = chk('cuenta', 'q-cuenta', v => v.length > 1) && ok;
-    ok = chk('titular', 'q-titular', v => v.length > 2) && ok;
+    // Datos bancarios — opcionales, solo validamos si se llenó algo
+    const clabeVal = (document.getElementById('clabe')?.value || '').replace(/\D/g,'');
+    if (clabeVal.length > 0 && clabeVal.length !== 18) {
+      document.getElementById('clabe')?.closest('.q')?.classList.add('has-error');
+      ok = false;
+    } else {
+      document.getElementById('clabe')?.closest('.q')?.classList.remove('has-error');
+    }
   }
   if (!ok) document.querySelector('#s' + n + ' .has-error')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   return ok;
@@ -979,6 +996,8 @@ async function enviar() {
     clabe     : g('clabe'),
     cuenta    : g('cuenta'),
     titular   : g('titular'),
+    terminal  : g('terminal'),
+    otroCobro : g('otro-cobro'),
     // Tipo
     medio     : E.medio,
     d_medio   : g('d-medio'),
@@ -1039,11 +1058,12 @@ async function enviar() {
   try {
     await fetch(RECEPTOR_URL, {
       method: 'POST',
+      mode: 'no-cors',
       body: JSON.stringify(payload),
     });
-    // Siempre mostrar gracias, incluso si hay error de red (CORS en Apps Script)
+    // Con no-cors no podemos leer la respuesta pero el POST llega a Apps Script
   } catch (e) {
-    // Apps Script puede retornar error de CORS pero igual procesa el POST
+    // Ignorar errores de red — la pantalla de gracias se muestra siempre
   }
 
   // Mostrar pantalla de gracias
