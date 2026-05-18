@@ -1309,6 +1309,7 @@ function limpiarFormCrear(tipo) {
     document.getElementById('est-fecha').value = '';
     document.getElementById('est-hora').value  = '10:00';
     document.getElementById('tipo-residencial').checked = true;
+    precioManual = false;
     actualizarPaquetes();
   } else {
     ['par-nombre','par-correo','par-telefono','par-precio-total','par-anticipo','par-notas'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
