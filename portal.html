@@ -506,7 +506,7 @@ function renderEtapa1() {
   // precioBase (precio de catálogo) sirve solo de referencia contable.
   var precioBase = parseFloat(d.precioTotal) || parseFloat(d.precioBase) || 0;
   var anticipo0  = parseFloat(d.anticipo) || Math.round(precioBase * 0.5);
-  if (precioBase > 0) {
+  if (precioBase > 0 && !esParticular && addons.length > 0) {
     html += '<div class="resumen-fila"><span class="resumen-label">Precio base</span><span class="resumen-valor" id="txt-precio-base">' + esc(formatMXN(precioBase)) + '</span></div>';
   }
   html += '<div class="resumen-fila"><span class="resumen-label">Total</span><span class="resumen-valor gold" id="txt-total">' + esc(formatMXN(precioBase)) + '</span></div>';
