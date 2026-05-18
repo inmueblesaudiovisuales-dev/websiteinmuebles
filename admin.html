@@ -728,7 +728,7 @@ function actualizarPaquetes() {
     campoAdd.style.display = 'block';
     lista.innerHTML = adds.map(p => `
       <label class="add-item">
-        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" checked onchange="actualizarPrecio()">
+        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" onchange="actualizarPrecio()">
         <span class="add-item-nombre">${esc(p.Nombre)}</span>
         <span class="add-item-precio">+${fmxn(p.Precio)}</span>
       </label>`).join('');
