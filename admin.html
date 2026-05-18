@@ -1,818 +1,1278 @@
 <!DOCTYPE html>
-<html lang="es-MX">
+<html lang="es">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel de Entregas · Inmuebles Audiovisuales</title>
-<meta name="robots" content="noindex, nofollow">
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Panel Admin — Inmuebles Audiovisuales</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      font-size: 14px; line-height: 1.5;
+      color: #1C1C1E; background: #F5F5F0;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, textarea, select { font-family: inherit; font-size: inherit; }
 
-  :root {
-    --gold: #C9A84C;
-    --gold-dim: rgba(201,168,76,0.12);
-    --gold-dim2: rgba(201,168,76,0.07);
-    --charcoal: #1C1C1E;
-    --surface: #242426;
-    --surface2: #2c2c2e;
-    --border: rgba(255,255,255,0.08);
-    --border-gold: rgba(201,168,76,0.3);
-    --concrete: #9B9B9F;
-    --white: #FAFAFA;
-    --error: #E05252;
-    --success: #4CAF50;
-  }
+    :root {
+      --onyx:        #1C1C1E;
+      --gold:        #C9A84C;
+      --gold-pale:   #FAF6EC;
+      --gold-border: #E8D5A3;
+      --page:        #F5F5F0;
+      --card:        #FFFFFF;
+      --ink-1:       #1C1C1E;
+      --ink-2:       #6B6B70;
+      --ink-3:       #9B9B9F;
+      --ink-4:       #C8C8CD;
+      --border:      #E8E8EA;
+      --border2:     #D5D5D8;
+      --success:     #2D7A4F;
+      --warn:        #B45309;
+      --danger:      #C0392B;
+      --r:           8px;
+      --r-lg:        12px;
+      --shadow:      0 2px 12px rgba(28,28,30,0.08);
+      --shadow-lg:   0 8px 32px rgba(28,28,30,0.16);
+    }
 
-  html { scroll-behavior: smooth; }
+    /* ── LOGIN ─────────────────────────────────────── */
+    #pantalla-login {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--onyx);
+    }
+    .login-box {
+      background: var(--card); border-radius: var(--r-lg);
+      padding: 40px 36px; width: 100%; max-width: 360px;
+      box-shadow: var(--shadow-lg);
+    }
+    .login-marca { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+    .login-box h1 { font-size: 20px; font-weight: 800; margin-bottom: 4px; }
+    .login-box .login-sub { color: var(--ink-3); font-size: 13px; margin-bottom: 22px; }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 46px; }
+    .pw-toggle {
+      position: absolute; right: 0; top: 0; bottom: 0; width: 44px;
+      background: none; border: none; cursor: pointer;
+      color: var(--ink-3); display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .pw-toggle:hover { color: var(--ink-1); }
+    .error-login { font-size: 12px; color: var(--danger); min-height: 18px; margin-top: 6px; }
 
-  body {
-    font-family: 'Montserrat', sans-serif;
-    background: var(--charcoal);
-    color: var(--white);
-    -webkit-font-smoothing: antialiased;
-    min-height: 100vh;
-  }
+    /* ── ADMIN ─────────────────────────────────────── */
+    #pantalla-admin { display: none; }
 
-  /* ── PANTALLA DE LOGIN ── */
-  #login-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
-  }
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      height: 54px; padding: 0 24px;
+      background: var(--onyx);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topbar-marca { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); }
+    .topbar-sep { color: rgba(255,255,255,0.2); font-size: 16px; margin: 0 2px; }
+    .topbar-titulo { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.7); flex: 1; }
+    .btn-logout {
+      background: none; border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.6);
+      border-radius: var(--r); padding: 6px 14px; font-size: 12px; font-weight: 600; cursor: pointer;
+      transition: all 120ms;
+    }
+    .btn-logout:hover { border-color: rgba(255,255,255,0.4); color: white; }
 
-  .login-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 16px;
-    padding: 36px 32px;
-    width: 100%;
-    max-width: 360px;
-  }
+    .contenido { max-width: 1140px; margin: 0 auto; padding: 24px 24px 80px; }
 
-  .login-logo {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 6px;
-  }
+    /* Tabs principales */
+    .tabs { display: flex; gap: 2px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+    .tab-btn {
+      padding: 10px 18px; border: none; background: none;
+      font-size: 13px; font-weight: 600; color: var(--ink-3);
+      cursor: pointer; border-bottom: 2px solid transparent;
+      margin-bottom: -1px; transition: color 120ms;
+    }
+    .tab-btn:hover { color: var(--ink-1); }
+    .tab-btn.activo { color: var(--ink-1); border-bottom-color: var(--onyx); }
+    .seccion { display: none; }
+    .seccion.activa { display: block; }
 
-  .login-title {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--white);
-    margin-bottom: 28px;
-    letter-spacing: -0.01em;
-  }
+    /* ── TABLA CONTRATOS ────────────────────────────── */
+    .barra { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+    .barra .campo-busqueda { flex: 1; min-width: 200px; }
+    .tabla-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
+    .tabla-card table { width: 100%; border-collapse: collapse; }
+    .tabla-card th {
+      padding: 10px 16px; text-align: left;
+      font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--ink-3); background: var(--page); border-bottom: 1px solid var(--border);
+    }
+    .tabla-card td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--ink-1); vertical-align: middle; }
+    .tabla-card tr:last-child td { border-bottom: none; }
+    .tabla-card tbody tr:hover td { background: var(--gold-pale); cursor: pointer; }
+    .tabla-card tbody tr.activo td { background: #FEF9ED; }
+    .td-folio { font-size: 11px; font-weight: 700; color: var(--ink-2); letter-spacing: 0.04em; font-family: 'Courier New', monospace; }
+    .td-nombre { font-weight: 600; }
+    .td-sub { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+    .td-monto { font-family: 'Courier New', monospace; text-align: right; }
+    .td-saldo { font-family: 'Courier New', monospace; text-align: right; color: var(--warn); }
+    .td-saldo.pagado { color: var(--success); }
+    .td-fecha { font-size: 11px; color: var(--ink-3); }
+    .tabla-vacio { text-align: center; color: var(--ink-3); padding: 40px; font-style: italic; font-size: 13px; }
 
-  .login-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--concrete);
-    margin-bottom: 8px;
-    display: block;
-  }
+    /* Badges */
+    .badge { display: inline-block; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .badge-pendiente-firma  { background: #FEF3C7; color: #92400E; }
+    .badge-firmado          { background: #DBEAFE; color: #1E40AF; }
+    .badge-anticipo         { background: #D1FAE5; color: #065F46; }
+    .badge-en-produccion    { background: #EDE9FE; color: #5B21B6; }
+    .badge-entregado        { background: #E0F2FE; color: #0369A1; }
+    .badge-liquidado        { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
 
-  .login-input {
-    width: 100%;
-    padding: 13px 16px;
-    background: var(--surface2);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 15px;
-    font-weight: 500;
-    color: var(--white);
-    outline: none;
-    transition: border-color 0.2s;
-    margin-bottom: 16px;
-  }
+    /* ── FORM NUEVO CONTRATO ────────────────────────── */
+    .form-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 28px; max-width: 640px; }
+    .form-card h2 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .form-desc { font-size: 13px; color: var(--ink-3); margin-bottom: 22px; }
 
-  .login-input:focus { border-color: var(--gold); }
-  .login-input::placeholder { color: rgba(155,155,159,0.5); }
+    .sub-tabs { display: flex; margin-bottom: 24px; border: 1.5px solid var(--border2); border-radius: var(--r); overflow: hidden; }
+    .sub-tab-btn {
+      flex: 1; padding: 10px 0; border: none; background: var(--page);
+      font-size: 13px; font-weight: 600; color: var(--ink-3); cursor: pointer; transition: all 120ms;
+    }
+    .sub-tab-btn.activo { background: var(--onyx); color: white; }
 
-  .login-btn {
-    width: 100%;
-    padding: 13px;
-    background: var(--gold);
-    border: none;
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--charcoal);
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
+    .campo { margin-bottom: 14px; }
+    .campo label {
+      display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase;
+      color: var(--ink-3); margin-bottom: 5px;
+    }
+    input[type="text"], input[type="email"], input[type="number"],
+    input[type="password"], input[type="date"], input[type="time"],
+    input[type="url"], select, textarea {
+      width: 100%; padding: 10px 13px;
+      background: var(--page); border: 1.5px solid var(--border2);
+      border-radius: var(--r); color: var(--ink-1); font-size: 14px;
+      outline: none; transition: border-color 120ms, box-shadow 120ms;
+      -webkit-appearance: none; appearance: none;
+    }
+    input[type="checkbox"], input[type="radio"] {
+      width: auto; padding: 0; background: initial; border: initial;
+      border-radius: 0; -webkit-appearance: auto; appearance: auto;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--gold); background: var(--card);
+      box-shadow: 0 0 0 3px rgba(201,168,76,0.14);
+    }
+    .fila-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 
-  .login-btn:hover { opacity: 0.88; }
+    /* Radios tipo propiedad */
+    .radio-grupo { display: flex; gap: 8px; }
+    .radio-opcion { flex: 1; position: relative; }
+    .radio-opcion input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-opcion label {
+      display: block; text-align: center; padding: 10px;
+      border: 1.5px solid var(--border2); border-radius: var(--r);
+      font-size: 13px; font-weight: 600; color: var(--ink-3);
+      cursor: pointer; transition: all 120ms;
+      text-transform: none; letter-spacing: 0;
+    }
+    .radio-opcion input:checked + label { border-color: var(--gold); background: var(--gold-pale); color: var(--ink-1); }
 
-  .login-error {
-    font-size: 12px;
-    color: var(--error);
-    margin-top: 10px;
-    display: none;
-  }
+    /* Adicionales */
+    .add-lista { display: flex; flex-direction: column; gap: 7px; }
+    .add-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border: 1.5px solid var(--border2);
+      border-radius: var(--r); cursor: pointer; transition: all 120ms;
+    }
+    .add-item:hover { border-color: var(--gold-border); background: var(--gold-pale); }
+    .add-item input[type="checkbox"] { width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; accent-color: var(--gold); }
+    .add-item-nombre { font-size: 13px; font-weight: 600; flex: 1; }
+    .add-item-precio { font-size: 12px; color: var(--ink-2); font-weight: 600; }
 
-  /* ── PANEL PRINCIPAL ── */
-  #panel-screen { display: none; }
+    /* Resumen precio */
+    .precio-resumen { background: var(--page); border: 1px solid var(--border); border-radius: var(--r); padding: 12px 14px; margin-top: 4px; }
+    .pr-fila { display: flex; justify-content: space-between; font-size: 13px; padding: 2px 0; }
+    .pr-fila.total { font-weight: 700; font-size: 15px; border-top: 1px solid var(--border); margin-top: 6px; padding-top: 8px; }
 
-  .topbar {
-    background: var(--surface);
-    border-bottom: 0.5px solid var(--border);
-    padding: 16px 24px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+    /* Botones */
+    .btn-primario {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 11px 22px; min-height: 42px;
+      background: var(--onyx); color: white;
+      border: none; border-radius: var(--r);
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      transition: background 120ms, transform 80ms;
+    }
+    .btn-primario:hover { background: #333336; }
+    .btn-primario:active { transform: scale(0.98); }
+    .btn-primario:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-primario.gold { background: var(--gold); color: var(--onyx); }
+    .btn-primario.gold:hover { background: #B89238; }
+    .btn-secundario {
+      display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+      padding: 10px 18px; min-height: 40px;
+      background: transparent; color: var(--ink-1);
+      border: 1.5px solid var(--border2); border-radius: var(--r);
+      font-size: 13px; font-weight: 600; cursor: pointer; transition: all 120ms;
+    }
+    .btn-secundario:hover { border-color: var(--ink-2); background: var(--page); }
+    .btn-secundario:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-sm {
+      padding: 7px 14px; min-height: 34px; font-size: 12px;
+    }
 
-  .topbar-logo {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
+    /* Resultado de creación */
+    .resultado-box {
+      background: var(--gold-pale); border: 1.5px solid var(--gold-border);
+      border-radius: var(--r); padding: 16px; margin-top: 20px;
+    }
+    .resultado-titulo { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+    .resultado-url { font-size: 12px; word-break: break-all; color: var(--ink-2); line-height: 1.6; margin-bottom: 10px; }
+    .resultado-acciones { display: flex; gap: 8px; flex-wrap: wrap; }
+    .btn-copiar {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: var(--r);
+      background: var(--onyx); color: white;
+      border: none; font-size: 12px; font-weight: 600; cursor: pointer; transition: background 120ms;
+    }
+    .btn-copiar:hover { background: #333336; }
+    .btn-wa {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: var(--r);
+      background: #25D366; color: white;
+      border: none; font-size: 12px; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: background 120ms;
+    }
+    .btn-wa:hover { background: #1dba58; }
 
-  .topbar-tag {
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--concrete);
-    background: var(--surface2);
-    border: 0.5px solid var(--border);
-    padding: 4px 10px;
-    border-radius: 6px;
-  }
+    .form-msg { font-size: 12px; min-height: 18px; margin-top: 8px; }
+    .form-msg.error { color: var(--danger); }
+    .form-msg.ok    { color: var(--success); }
 
-  .panel-body {
-    max-width: 580px;
-    margin: 0 auto;
-    padding: 36px 24px 80px;
-  }
+    /* ── PANEL LATERAL ──────────────────────────────── */
+    .panel-lateral {
+      position: fixed; right: 0; top: 0; width: 440px;
+      height: 100vh; height: 100dvh;
+      background: var(--card); border-left: 1px solid var(--border);
+      z-index: 200;
+      transform: translateX(100%); transition: transform 280ms cubic-bezier(0.16,1,0.3,1);
+      overflow-y: auto; overflow-anchor: none;
+      display: flex; flex-direction: column;
+    }
+    .panel-lateral.visible { transform: translateX(0); box-shadow: var(--shadow-lg); }
 
-  .panel-title {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--white);
-    letter-spacing: -0.02em;
-    margin-bottom: 6px;
-  }
+    .panel-header {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      padding: 18px 20px 14px;
+      position: sticky; top: 0; background: var(--card); z-index: 1;
+      border-bottom: 1px solid var(--border);
+    }
+    .panel-header-info { flex: 1; min-width: 0; padding-right: 10px; }
+    .panel-folio { font-size: 11px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 3px; }
+    .panel-nombre { font-size: 17px; font-weight: 800; color: var(--ink-1); line-height: 1.2; margin-bottom: 6px; }
+    .btn-cerrar {
+      width: 34px; height: 34px; flex-shrink: 0;
+      background: var(--page); border: 1px solid var(--border);
+      border-radius: 8px; cursor: pointer; color: var(--ink-3);
+      display: flex; align-items: center; justify-content: center; font-size: 18px;
+    }
+    .btn-cerrar:hover { background: var(--border); color: var(--ink-1); }
 
-  .panel-sub {
-    font-size: 13px;
-    color: var(--concrete);
-    margin-bottom: 32px;
-    line-height: 1.6;
-  }
+    .panel-tabs {
+      display: flex; border-bottom: 1px solid var(--border);
+      padding: 0 20px; background: var(--card);
+      position: sticky; top: 80px; z-index: 1;
+    }
+    .panel-tab-btn {
+      flex: 1; padding: 10px 0;
+      background: none; border: none; border-bottom: 2px solid transparent;
+      font-size: 11px; font-weight: 700; color: var(--ink-3);
+      cursor: pointer; margin-bottom: -1px; transition: color 120ms;
+      text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .panel-tab-btn.activo { color: var(--gold); border-bottom-color: var(--gold); }
+    .panel-tab-pane { display: none; padding: 18px 20px; }
+    .panel-tab-pane.activo { display: block; }
 
-  /* ── FIELDS ── */
-  .field {
-    margin-bottom: 20px;
-  }
+    .info-fila {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      padding: 9px 0; border-bottom: 1px solid var(--border);
+      font-size: 13px; gap: 12px;
+    }
+    .info-fila:last-child { border-bottom: none; }
+    .info-fila .etiq { color: var(--ink-3); flex-shrink: 0; }
+    .info-fila .val  { font-weight: 600; text-align: right; word-break: break-word; }
 
-  .field-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--concrete);
-    margin-bottom: 8px;
-    display: block;
-  }
+    .prop-card {
+      background: var(--page); border: 1px solid var(--border);
+      border-radius: var(--r); padding: 11px 13px; margin-bottom: 8px;
+    }
+    .prop-card-titulo { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-2); margin-bottom: 7px; }
+    .prop-dato { font-size: 13px; padding: 2px 0; }
+    .prop-dato .lbl { color: var(--ink-3); font-size: 12px; }
 
-  .field-hint {
-    font-size: 11px;
-    color: rgba(155,155,159,0.6);
-    margin-top: 6px;
-    line-height: 1.5;
-  }
+    .link-portal-box {
+      background: var(--gold-pale); border: 1.5px solid var(--gold-border);
+      border-radius: var(--r); padding: 12px 14px; margin-top: 14px;
+    }
+    .link-portal-label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+    .link-portal-url { font-size: 11px; word-break: break-all; color: var(--ink-2); margin-bottom: 8px; line-height: 1.5; }
+    .link-portal-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 
-  .field input[type="text"],
-  .field input[type="password"],
-  .field input[type="url"],
-  .field select {
-    width: 100%;
-    padding: 13px 16px;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--white);
-    outline: none;
-    transition: border-color 0.2s;
-    -webkit-appearance: none;
-  }
+    .abono-fila { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid var(--border); }
+    .abono-fila:last-child { border-bottom: none; }
+    .abono-metodo { font-size: 13px; font-weight: 600; }
+    .abono-fecha  { font-size: 11px; color: var(--ink-3); }
+    .abono-monto  { font-size: 14px; font-weight: 700; color: var(--success); font-family: 'Courier New', monospace; }
 
-  .field input:focus,
-  .field select:focus { border-color: var(--gold); }
-  .field input::placeholder { color: rgba(155,155,159,0.4); }
+    .pago-barra-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; margin: 6px 0 14px; }
+    .pago-barra-fill  { height: 100%; background: var(--gold); border-radius: 3px; transition: width 400ms; }
 
-  .field select option {
-    background: var(--surface2);
-    color: var(--white);
-  }
+    .pago-resumen { background: var(--page); border-radius: var(--r); padding: 11px 13px; margin-bottom: 14px; }
+    .pago-fila { display: flex; justify-content: space-between; font-size: 13px; padding: 2px 0; }
+    .pago-fila.total { font-weight: 700; font-size: 14px; border-top: 1px solid var(--border); margin-top: 5px; padding-top: 7px; }
 
-  /* ── SEPARADORES ── */
-  .section-sep {
-    border: none;
-    border-top: 0.5px solid var(--border);
-    margin: 28px 0;
-  }
+    .sec-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); margin: 18px 0 9px; }
+    .sec-label:first-child { margin-top: 0; }
 
-  .section-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 18px;
-  }
+    .campo-sm input, .campo-sm select, .campo-sm textarea { padding: 8px 11px; font-size: 13px; }
 
-  /* ── EXTRAS TOGGLE ── */
-  .extras-toggle {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    cursor: pointer;
-    margin-bottom: 16px;
-    width: fit-content;
-  }
+    .estatus-fila { display: flex; gap: 8px; align-items: flex-end; }
+    .estatus-fila select { flex: 1; }
 
-  .extras-toggle input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: var(--gold);
-    cursor: pointer;
-    flex-shrink: 0;
-  }
+    /* ── CRM ────────────────────────────────────────── */
+    .crm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+    .crm-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 16px; }
+    .crm-nombre { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+    .crm-correo { font-size: 12px; color: var(--ink-3); margin-bottom: 10px; }
+    .crm-proyectos-hdr { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+    .crm-proyecto { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; border-top: 1px solid var(--border); font-size: 12px; }
+    .crm-folio { font-family: 'Courier New', monospace; color: var(--ink-2); font-size: 11px; }
 
-  .extras-toggle-label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--concrete);
-    letter-spacing: 0.05em;
-    user-select: none;
-  }
+    /* Overlay */
+    #overlay { display: none; position: fixed; inset: 0; background: rgba(28,28,30,0.4); z-index: 190; }
+    #overlay.visible { display: block; }
 
-  .extras-block { display: none; }
-  .extras-block.visible { display: block; }
-
-  .extra-card {
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 10px;
-    padding: 18px 16px;
-    margin-bottom: 12px;
-  }
-
-  .extra-card-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--concrete);
-    margin-bottom: 14px;
-  }
-
-  .extra-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  /* ── BOTÓN GENERAR ── */
-  .btn-generar {
-    width: 100%;
-    padding: 15px;
-    background: var(--gold);
-    border: none;
-    border-radius: 10px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--charcoal);
-    cursor: pointer;
-    transition: opacity 0.2s;
-    margin-top: 8px;
-  }
-
-  .btn-generar:hover { opacity: 0.88; }
-
-  /* ── RESULTADO ── */
-  .result-card {
-    background: var(--gold-dim2);
-    border: 0.5px solid var(--border-gold);
-    border-radius: 12px;
-    padding: 22px 20px;
-    margin-top: 24px;
-    display: none;
-  }
-
-  .result-card.visible { display: block; }
-
-  .result-label {
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 10px;
-  }
-
-  .result-url {
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--concrete);
-    word-break: break-all;
-    line-height: 1.6;
-    background: var(--surface);
-    border: 0.5px solid var(--border);
-    border-radius: 8px;
-    padding: 12px 14px;
-    margin-bottom: 14px;
-    font-family: monospace;
-  }
-
-  .btn-row {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-  }
-
-  .btn-copy {
-    flex: 1;
-    min-width: 130px;
-    padding: 12px;
-    background: var(--gold);
-    border: none;
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--charcoal);
-    cursor: pointer;
-    transition: opacity 0.2s;
-  }
-
-  .btn-copy:hover { opacity: 0.88; }
-
-  .btn-preview {
-    flex: 1;
-    min-width: 130px;
-    padding: 12px;
-    background: transparent;
-    border: 0.5px solid var(--border-gold);
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--gold);
-    cursor: pointer;
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-
-  .btn-preview:hover { background: var(--gold-dim); }
-
-  .copy-feedback {
-    font-size: 11px;
-    color: var(--success);
-    margin-top: 10px;
-    display: none;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-  }
-
-  .copy-feedback.visible { display: block; }
-
-  /* ── VALIDACIÓN ── */
-  .field.has-error input,
-  .field.has-error select {
-    border-color: var(--error);
-  }
-
-  .field-error {
-    font-size: 11px;
-    color: var(--error);
-    margin-top: 5px;
-    display: none;
-  }
-
-  .field.has-error .field-error { display: block; }
-
-  /* ── UPLOADER ── */
-  .upload-area {
-    background: var(--surface);
-    border: 0.5px dashed rgba(201,168,76,0.4);
-    border-radius: 8px;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    min-height: 72px;
-    gap: 10px;
-  }
-  .upload-area:hover { border-color: var(--gold); background: var(--gold-dim2); }
-  #upload-placeholder { display: flex; align-items: center; gap: 10px; color: var(--concrete); font-size: 13px; font-weight: 500; }
-  #upload-placeholder svg { color: var(--concrete); flex-shrink: 0; }
-  #upload-preview { display: flex; align-items: center; gap: 12px; width: 100%; }
-  #upload-thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; flex-shrink: 0; }
-  #upload-nombre { font-size: 12px; color: var(--concrete); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #upload-loading { display: flex; align-items: center; gap: 10px; color: var(--concrete); font-size: 13px; }
-  .upload-spinner { width: 18px; height: 18px; border: 2px solid rgba(201,168,76,0.3); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; flex-shrink: 0; }
-  @keyframes spin { to { transform: rotate(360deg); } }
-
-</style>
+    /* ── RESPONSIVE ─────────────────────────────────── */
+    @media (max-width: 640px) {
+      .contenido { padding: 16px 16px 80px; }
+      .panel-lateral { width: 100%; }
+      .fila-2 { grid-template-columns: 1fr; }
+      .barra .campo-busqueda { min-width: 100%; order: -1; }
+      .tabla-card td:nth-child(4), .tabla-card th:nth-child(4),
+      .tabla-card td:nth-child(6), .tabla-card th:nth-child(6) { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-<!-- ── LOGIN ── -->
-<div id="login-screen">
-  <div class="login-card">
-    <p class="login-logo">Inmuebles Audiovisuales</p>
-    <h1 class="login-title">Panel de entregas</h1>
-    <label class="login-label" for="inp-pass">Contraseña</label>
-    <input class="login-input" type="password" id="inp-pass" placeholder="••••••••" autocomplete="current-password">
-    <button class="login-btn" onclick="verificarPassword()">Entrar</button>
-    <p class="login-error" id="login-error">Contraseña incorrecta.</p>
+<!-- ═══ LOGIN ═══════════════════════════════════════════════════════════════ -->
+<div id="pantalla-login">
+  <div class="login-box">
+    <div class="login-marca">Inmuebles Audiovisuales</div>
+    <h1>Panel de control</h1>
+    <p class="login-sub">Acceso exclusivo para administradores</p>
+    <div class="campo">
+      <label>Contraseña</label>
+      <div class="pw-wrap">
+        <input type="password" id="input-pw" placeholder="Contraseña" autocomplete="current-password">
+        <button type="button" class="pw-toggle" id="btn-pw-toggle" onclick="togglePw()">
+          <i class="ti ti-eye"></i>
+        </button>
+      </div>
+      <div class="error-login" id="error-login"></div>
+    </div>
+    <button class="btn-primario gold" style="width:100%" onclick="intentarLogin()">
+      Ingresar
+    </button>
   </div>
 </div>
 
-<!-- ── PANEL PRINCIPAL ── -->
-<div id="panel-screen">
+<!-- ═══ ADMIN ════════════════════════════════════════════════════════════════ -->
+<div id="pantalla-admin">
   <div class="topbar">
-    <span class="topbar-logo">Inmuebles Audiovisuales</span>
-    <span class="topbar-tag">Panel de entregas</span>
+    <span class="topbar-marca">Inmuebles Audiovisuales</span>
+    <span class="topbar-sep">/</span>
+    <span class="topbar-titulo">Contratos v3</span>
+    <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
   </div>
 
-  <div class="panel-body">
-    <h1 class="panel-title">Nueva entrega</h1>
-    <p class="panel-sub">Llena los datos para generar el link que le vas a mandar al cliente.</p>
-
-    <!-- Datos del cliente -->
-    <p class="section-label">Cliente y propiedad</p>
-
-    <div class="field" id="field-nombre">
-      <label class="field-label" for="inp-nombre">Nombre del cliente</label>
-      <input type="text" id="inp-nombre" placeholder="Ej. Sofía Ramírez">
-      <p class="field-error">Este campo es obligatorio.</p>
+  <div class="contenido">
+    <div class="tabs">
+      <button class="tab-btn activo" data-tab="contratos" onclick="mostrarTab('contratos', this)">Contratos</button>
+      <button class="tab-btn" data-tab="nuevo" onclick="mostrarTab('nuevo', this)">Nuevo contrato</button>
+      <button class="tab-btn" data-tab="crm" onclick="mostrarTab('crm', this)">Clientes</button>
     </div>
 
-    <div class="field" id="field-direccion">
-      <label class="field-label" for="inp-direccion">Dirección de la propiedad</label>
-      <input type="text" id="inp-direccion" placeholder="Ej. Av. Vasconcelos 245, San Pedro">
-      <p class="field-error">Este campo es obligatorio.</p>
-    </div>
-
-    <div class="field">
-      <label class="field-label">Foto de portada</label>
-      <div class="upload-area" id="upload-area" onclick="document.getElementById('inp-foto-file').click()">
-        <input type="file" id="inp-foto-file" accept="image/*" style="display:none" onchange="subirFoto(this)">
-        <div id="upload-placeholder">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          <span>Seleccionar foto</span>
+    <!-- ── CONTRATOS ──────────────────────────────────── -->
+    <div id="sec-contratos" class="seccion activa">
+      <div class="barra">
+        <div class="campo-busqueda">
+          <input type="text" id="busqueda" placeholder="Buscar por nombre, correo o folio..." oninput="filtrarContratos()">
         </div>
-        <div id="upload-preview" style="display:none">
-          <img id="upload-thumb" src="" alt="portada">
-          <span id="upload-nombre"></span>
-        </div>
-        <div id="upload-loading" style="display:none">
-          <div class="upload-spinner"></div>
-          <span>Subiendo...</span>
-        </div>
+        <select id="filtro-estatus" onchange="filtrarContratos()" style="width:auto">
+          <option value="">Todos los estatus</option>
+          <option value="Pendiente firma">Pendiente firma</option>
+          <option value="Firmado">Firmado</option>
+          <option value="Anticipo recibido">Anticipo recibido</option>
+          <option value="En produccion">En producción</option>
+          <option value="Entregado">Entregado</option>
+          <option value="Liquidado">Liquidado</option>
+        </select>
+        <button class="btn-primario gold" onclick="irANuevo()">
+          <i class="ti ti-plus"></i> Nuevo
+        </button>
+        <button class="btn-secundario btn-sm" onclick="cargarContratos()" title="Actualizar">
+          <i class="ti ti-refresh"></i>
+        </button>
       </div>
-      <input type="hidden" id="inp-portada">
-      <p class="field-error-upload" id="upload-error" style="display:none;color:var(--error);font-size:11px;margin-top:6px;">Error al subir la foto. Intenta de nuevo.</p>
-    </div>
-
-    <hr class="section-sep">
-
-    <!-- Material -->
-    <p class="section-label">Material a entregar</p>
-
-    <div class="field" id="field-drive">
-      <label class="field-label" for="inp-drive">Carpeta de Google Drive</label>
-      <input type="url" id="inp-drive" placeholder="https://drive.google.com/...">
-      <p class="field-error">Agrega al menos el link de Drive.</p>
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="inp-drive-label">Texto del botón de Drive</label>
-      <input type="text" id="inp-drive-label" placeholder="Fotografía y video" value="Fotografía y video">
-    </div>
-
-    <hr class="section-sep">
-
-    <!-- Tour virtual -->
-    <label class="extras-toggle" for="chk-tour">
-      <input type="checkbox" id="chk-tour" onchange="toggleTour()">
-      <span class="extras-toggle-label">Incluir tour virtual</span>
-    </label>
-
-    <div class="extras-block" id="block-tour">
-      <div class="field">
-        <label class="field-label" for="inp-tour">Link de Cloudpano</label>
-        <input type="url" id="inp-tour" placeholder="https://app.cloudpano.com/...">
-      </div>
-      <div class="field">
-        <label class="field-label" for="inp-tour-label">Texto del botón</label>
-        <input type="text" id="inp-tour-label" placeholder="Recorrido Virtual Inmersivo" value="Recorrido Virtual Inmersivo">
+      <div class="tabla-card">
+        <table>
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Cliente</th>
+              <th>Estatus</th>
+              <th>Total</th>
+              <th>Saldo</th>
+              <th>Creado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-body">
+            <tr><td colspan="6" class="tabla-vacio">Cargando...</td></tr>
+          </tbody>
+        </table>
       </div>
     </div>
 
-    <hr class="section-sep">
-
-    <!-- Extras -->
-    <label class="extras-toggle" for="chk-extras">
-      <input type="checkbox" id="chk-extras" onchange="toggleExtras()">
-      <span class="extras-toggle-label">Agregar material extra</span>
-    </label>
-
-    <div class="extras-block" id="block-extras">
-      <div class="extra-card">
-        <p class="extra-card-title">Extra 1</p>
-        <div class="field">
-          <label class="field-label">Link</label>
-          <input type="url" id="inp-extra1-url" placeholder="https://...">
+    <!-- ── NUEVO CONTRATO ─────────────────────────────── -->
+    <div id="sec-nuevo" class="seccion">
+      <div class="form-card">
+        <h2>Nuevo contrato</h2>
+        <p class="form-desc">Elige el tipo de cotización para este cliente.</p>
+        <div class="sub-tabs">
+          <button class="sub-tab-btn activo" onclick="mostrarSubTab('estandar', this)">Estándar</button>
+          <button class="sub-tab-btn" onclick="mostrarSubTab('particular', this)">Cotización particular</button>
         </div>
-        <div class="extra-row">
-          <div class="field">
-            <label class="field-label">Nombre</label>
-            <input type="text" id="inp-extra1-label" placeholder="Ej. Renders 3D">
+
+        <!-- ESTÁNDAR -->
+        <div id="form-estandar">
+          <div class="campo">
+            <label>Tipo de propiedad</label>
+            <div class="radio-grupo">
+              <div class="radio-opcion">
+                <input type="radio" name="tipo-paquete" id="tipo-residencial" value="Residencial" checked onchange="actualizarPaquetes()">
+                <label for="tipo-residencial">Residencial</label>
+              </div>
+              <div class="radio-opcion">
+                <input type="radio" name="tipo-paquete" id="tipo-terreno" value="Terreno" onchange="actualizarPaquetes()">
+                <label for="tipo-terreno">Terreno</label>
+              </div>
+            </div>
           </div>
-          <div class="field">
-            <label class="field-label">Descripción</label>
-            <input type="text" id="inp-extra1-sub" placeholder="Ej. Archivos PDF">
+          <div class="campo">
+            <label>Paquete base</label>
+            <select id="est-paquete" onchange="actualizarPrecio()">
+              <option value="">Cargando...</option>
+            </select>
           </div>
+          <div class="campo" id="campo-adicionales">
+            <label>Servicios adicionales</label>
+            <div class="add-lista" id="lista-adicionales"></div>
+          </div>
+          <div class="campo">
+            <label>Precio estimado</label>
+            <div class="precio-resumen">
+              <div class="pr-fila"><span>Paquete base</span><span id="pr-base">—</span></div>
+              <div id="pr-extras"></div>
+              <div class="pr-fila total"><span>Total estimado</span><span id="pr-total">—</span></div>
+            </div>
+          </div>
+          <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
+          <div class="campo">
+            <label>Nombre del cliente</label>
+            <input type="text" id="est-nombre" placeholder="Nombre completo">
+          </div>
+          <div class="fila-2">
+            <div class="campo">
+              <label>Correo</label>
+              <input type="email" id="est-correo" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="campo">
+              <label>Teléfono</label>
+              <input type="text" id="est-telefono" placeholder="812 345 6789">
+            </div>
+          </div>
+          <div class="fila-2">
+            <div class="campo">
+              <label>Fecha de sesión</label>
+              <input type="date" id="est-fecha">
+            </div>
+            <div class="campo">
+              <label>Hora</label>
+              <input type="time" id="est-hora" value="10:00">
+            </div>
+          </div>
+          <div class="fila-2">
+            <div class="campo">
+              <label>Precio total <span style="font-weight:400;text-transform:none;letter-spacing:0">(editable)</span></label>
+              <input type="number" id="est-precio-total" placeholder="0" oninput="precioManual=true;actualizarAnticipo('est')">
+            </div>
+            <div class="campo">
+              <label>Anticipo (50% por defecto)</label>
+              <input type="number" id="est-anticipo" placeholder="0">
+            </div>
+          </div>
+          <div class="form-msg" id="msg-estandar"></div>
+          <button class="btn-primario gold" style="width:100%;margin-top:6px" id="btn-crear-estandar" onclick="crearContrato('estandar')">
+            Crear contrato y generar link
+          </button>
+          <div id="resultado-estandar"></div>
         </div>
-      </div>
 
-      <div class="extra-card">
-        <p class="extra-card-title">Extra 2 (opcional)</p>
-        <div class="field">
-          <label class="field-label">Link</label>
-          <input type="url" id="inp-extra2-url" placeholder="https://...">
-        </div>
-        <div class="extra-row">
-          <div class="field">
-            <label class="field-label">Nombre</label>
-            <input type="text" id="inp-extra2-label" placeholder="Ej. Folleto digital">
+        <!-- PARTICULAR -->
+        <div id="form-particular" style="display:none">
+          <div class="campo">
+            <label>Nombre del cliente</label>
+            <input type="text" id="par-nombre" placeholder="Nombre completo">
           </div>
-          <div class="field">
-            <label class="field-label">Descripción</label>
-            <input type="text" id="inp-extra2-sub" placeholder="Ej. PDF">
+          <div class="fila-2">
+            <div class="campo">
+              <label>Correo</label>
+              <input type="email" id="par-correo" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="campo">
+              <label>Teléfono</label>
+              <input type="text" id="par-telefono" placeholder="812 345 6789">
+            </div>
           </div>
+          <div class="campo">
+            <label>Número de propiedades</label>
+            <select id="par-num-props">
+              <option value="1">1 propiedad</option>
+              <option value="2">2 propiedades</option>
+              <option value="3">3 propiedades</option>
+              <option value="4">4 propiedades</option>
+              <option value="5">5 propiedades</option>
+            </select>
+          </div>
+          <div class="fila-2">
+            <div class="campo">
+              <label>Precio total acordado</label>
+              <input type="number" id="par-precio-total" placeholder="0" oninput="actualizarAnticipo('par')">
+            </div>
+            <div class="campo">
+              <label>Anticipo (50% por defecto)</label>
+              <input type="number" id="par-anticipo" placeholder="0">
+            </div>
+          </div>
+          <div class="form-msg" id="msg-particular"></div>
+          <button class="btn-primario gold" style="width:100%;margin-top:6px" id="btn-crear-particular" onclick="crearContrato('particular')">
+            Crear cotización y generar link
+          </button>
+          <div id="resultado-particular"></div>
         </div>
       </div>
     </div>
 
-    <hr class="section-sep">
-
-
-    <p class="section-label">Reseña de Google</p>
-
-    <label class="extras-toggle" for="chk-review">
-      <input type="checkbox" id="chk-review" checked>
-      <span class="extras-toggle-label">Incluir invitación a dejar reseña</span>
-    </label>
-
-    <input type="hidden" id="inp-review" value="https://g.page/r/CQTT-o3a_kVcEAE/review">
-
-    <button class="btn-generar" onclick="generarLink()">Generar link de entrega</button>
-
-    <!-- Resultado -->
-    <div class="result-card" id="result-card">
-      <p class="result-label">Link listo</p>
-      <p class="result-url" id="result-url"></p>
-      <div class="btn-row">
-        <button class="btn-copy" onclick="copiarLink()">Copiar link</button>
-        <a class="btn-preview" id="btn-preview" href="#" target="_blank" rel="noopener">Ver página</a>
+    <!-- ── CRM ────────────────────────────────────────── -->
+    <div id="sec-crm" class="seccion">
+      <div class="barra">
+        <p style="font-size:13px;color:var(--ink-3);flex:1">Clientes únicos con historial de proyectos.</p>
+        <button class="btn-secundario btn-sm" onclick="cargarCRM()"><i class="ti ti-refresh"></i> Actualizar</button>
       </div>
-      <p class="copy-feedback" id="copy-feedback">Link copiado al portapapeles.</p>
+      <div class="crm-grid" id="crm-grid">
+        <p style="color:var(--ink-3);font-style:italic;font-size:13px">Cargando...</p>
+      </div>
     </div>
   </div>
 </div>
 
+<!-- ═══ PANEL LATERAL ════════════════════════════════════════════════════════ -->
+<div id="panel-lateral" class="panel-lateral">
+  <div class="panel-header">
+    <div class="panel-header-info">
+      <div class="panel-folio" id="panel-folio">—</div>
+      <div class="panel-nombre" id="panel-nombre">—</div>
+      <div id="panel-badge"></div>
+    </div>
+    <button class="btn-cerrar" onclick="cerrarPanel()"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="panel-tabs">
+    <button class="panel-tab-btn activo" onclick="mostrarPanelTab('general', this)">General</button>
+    <button class="panel-tab-btn" onclick="mostrarPanelTab('pagos', this)">Pagos</button>
+    <button class="panel-tab-btn" onclick="mostrarPanelTab('entrega', this)">Entrega</button>
+  </div>
+  <div id="pane-general" class="panel-tab-pane activo"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Selecciona un contrato.</p></div>
+  <div id="pane-pagos"   class="panel-tab-pane"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Selecciona un contrato.</p></div>
+  <div id="pane-entrega" class="panel-tab-pane"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Selecciona un contrato.</p></div>
+</div>
+<div id="overlay" onclick="cerrarPanel()"></div>
+
+<!-- ═══ SCRIPT ═══════════════════════════════════════════════════════════════ -->
 <script>
-  // ── CONTRASEÑA ──
-  // Cambia esta contraseña por la que quieras usar
-  const PASSWORD = 'ia2024';
+const API         = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5UX56JdQVdpmqQZ_OJkeRndA6INREg4ekebpjj6_YH/exec';
+const PORTAL_BASE = 'https://inmueblesaudiovisuales.com/portal.html';
+const PASSWORD    = 'framedock';
 
-  // URL base de la página de entrega — ajusta cuando subas al dominio
-  const BASE_URL = 'https://inmueblesaudiovisuales.com/entrega.html';
+let paquetes       = [];
+let todosContratos = [];
+let tokenActivo    = null;
+let precioManual   = false;
 
-  function verificarPassword() {
-    const val = document.getElementById('inp-pass').value;
-    const err = document.getElementById('login-error');
-    if (val === PASSWORD) {
-      document.getElementById('login-screen').style.display = 'none';
-      document.getElementById('panel-screen').style.display = 'block';
-      err.style.display = 'none';
-    } else {
-      err.style.display = 'block';
-      document.getElementById('inp-pass').focus();
-    }
+// ── LOGIN ─────────────────────────────────────────────────────────────────────
+
+function intentarLogin() {
+  if (document.getElementById('input-pw').value === PASSWORD) {
+    document.getElementById('pantalla-login').style.display = 'none';
+    document.getElementById('pantalla-admin').style.display = 'block';
+    cargarPaquetes();
+    cargarContratos();
+  } else {
+    document.getElementById('error-login').textContent = 'Contraseña incorrecta.';
   }
+}
 
-  // Enter en el campo de contraseña
-  document.getElementById('inp-pass').addEventListener('keydown', e => {
-    if (e.key === 'Enter') verificarPassword();
+function cerrarSesion() {
+  document.getElementById('pantalla-admin').style.display = 'none';
+  document.getElementById('pantalla-login').style.display = 'flex';
+  document.getElementById('input-pw').value = '';
+  document.getElementById('error-login').textContent = '';
+}
+
+function togglePw() {
+  const inp = document.getElementById('input-pw');
+  const ico = document.querySelector('#btn-pw-toggle i');
+  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'ti ti-eye-off'; }
+  else                         { inp.type = 'password'; ico.className = 'ti ti-eye'; }
+}
+
+document.getElementById('input-pw').addEventListener('keydown', e => { if (e.key === 'Enter') intentarLogin(); });
+
+// ── NAVEGACIÓN ────────────────────────────────────────────────────────────────
+
+function mostrarTab(id, btn) {
+  document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+  document.getElementById('sec-' + id).classList.add('activa');
+  btn.classList.add('activo');
+  if (id === 'contratos') cargarContratos();
+  if (id === 'crm') cargarCRM();
+}
+
+function mostrarSubTab(tipo, btn) {
+  document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+  document.getElementById('form-estandar').style.display   = tipo === 'estandar'   ? 'block' : 'none';
+  document.getElementById('form-particular').style.display = tipo === 'particular' ? 'block' : 'none';
+}
+
+function mostrarPanelTab(id, btn) {
+  document.querySelectorAll('.panel-tab-btn').forEach(b => b.classList.remove('activo'));
+  document.querySelectorAll('.panel-tab-pane').forEach(p => p.classList.remove('activo'));
+  btn.classList.add('activo');
+  document.getElementById('pane-' + id).classList.add('activo');
+}
+
+function irANuevo() {
+  const btn = document.querySelector('.tab-btn[data-tab="nuevo"]');
+  mostrarTab('nuevo', btn);
+}
+
+// ── API ───────────────────────────────────────────────────────────────────────
+
+async function apiGet(params) {
+  const res = await fetch(API + '?' + new URLSearchParams(params).toString(), { redirect: 'follow' });
+  return res.json();
+}
+
+async function apiPost(body) {
+  const res = await fetch(API, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'text/plain' },
+    body    : JSON.stringify(body),
+    redirect: 'follow',
+  });
+  return res.json();
+}
+
+// ── PAQUETES ──────────────────────────────────────────────────────────────────
+
+async function cargarPaquetes() {
+  try {
+    const data = await apiGet({ action: 'listarPaquetes' });
+    if (data.ok) { paquetes = data.paquetes; actualizarPaquetes(); }
+  } catch (e) { console.error('Error cargando paquetes:', e); }
+}
+
+function actualizarPaquetes() {
+  precioManual = false;
+  const tipo  = document.querySelector('input[name="tipo-paquete"]:checked')?.value || 'Residencial';
+  const bases = paquetes.filter(p => !p.EsAdicional && (p.Tipo === tipo || p.Tipo === 'Ambos'));
+  const adds  = paquetes.filter(p =>  p.EsAdicional && (p.Tipo === tipo || p.Tipo === 'Ambos'));
+
+  const sel = document.getElementById('est-paquete');
+  sel.innerHTML = bases.length
+    ? bases.map(p => `<option value="${esc(p.Clave)}" data-precio="${p.Precio}">${esc(p.Nombre)} — ${fmxn(p.Precio)}</option>`).join('')
+    : '<option value="">Sin paquetes disponibles</option>';
+
+  const lista = document.getElementById('lista-adicionales');
+  const campoAdd = document.getElementById('campo-adicionales');
+  if (!adds.length) {
+    campoAdd.style.display = 'none';
+    lista.innerHTML = '';
+  } else {
+    campoAdd.style.display = 'block';
+    lista.innerHTML = adds.map(p => `
+      <label class="add-item">
+        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" checked onchange="actualizarPrecio()">
+        <span class="add-item-nombre">${esc(p.Nombre)}</span>
+        <span class="add-item-precio">+${fmxn(p.Precio)}</span>
+      </label>`).join('');
+  }
+  actualizarPrecio();
+}
+
+function actualizarPrecio() {
+  const sel     = document.getElementById('est-paquete');
+  const baseOpt = sel.options[sel.selectedIndex];
+  const base    = parseFloat(baseOpt?.dataset?.precio) || 0;
+
+  let extras = 0;
+  const extrasHtml = [];
+  document.querySelectorAll('#lista-adicionales input[type="checkbox"]:checked').forEach(c => {
+    const p = parseFloat(c.dataset.precio) || 0;
+    extras += p;
+    extrasHtml.push(`<div class="pr-fila"><span>${esc(c.closest('label').querySelector('.add-item-nombre').textContent)}</span><span>+${fmxn(p)}</span></div>`);
   });
 
-  // ── TOGGLES ──
-  function toggleTour() {
-    const on = document.getElementById('chk-tour').checked;
-    document.getElementById('block-tour').classList.toggle('visible', on);
+  const total = base + extras;
+  document.getElementById('pr-base').textContent  = fmxn(base);
+  document.getElementById('pr-extras').innerHTML  = extrasHtml.join('');
+  document.getElementById('pr-total').textContent = fmxn(total);
+
+  if (!precioManual) {
+    document.getElementById('est-precio-total').value = total;
+    actualizarAnticipo('est');
   }
+}
 
-  function toggleExtras() {
-    const on = document.getElementById('chk-extras').checked;
-    document.getElementById('block-extras').classList.toggle('visible', on);
+function actualizarAnticipo(p) {
+  const total = parseFloat(document.getElementById(p + '-precio-total').value) || 0;
+  document.getElementById(p + '-anticipo').value = Math.round(total * 0.5);
+}
+
+// ── CONTRATOS ─────────────────────────────────────────────────────────────────
+
+async function cargarContratos() {
+  document.getElementById('tabla-body').innerHTML = '<tr><td colspan="6" class="tabla-vacio">Cargando...</td></tr>';
+  try {
+    const data = await apiGet({ action: 'listarContratos' });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    todosContratos = data.contratos || [];
+    filtrarContratos();
+  } catch (e) {
+    document.getElementById('tabla-body').innerHTML =
+      `<tr><td colspan="6" style="color:var(--danger);padding:24px;text-align:center">Error: ${esc(e.message)}</td></tr>`;
   }
+}
 
-  // ── VALIDACIÓN ──
-  function validar() {
-    let ok = true;
+function filtrarContratos() {
+  const q  = document.getElementById('busqueda').value.toLowerCase();
+  const st = document.getElementById('filtro-estatus').value;
+  const lista = todosContratos.filter(c => {
+    if (st && c.estatus !== st) return false;
+    if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
+    return true;
+  });
+  renderTabla(lista);
+}
 
-    const nombre = document.getElementById('inp-nombre').value.trim();
-    const fieldNombre = document.getElementById('field-nombre');
-    if (!nombre) { fieldNombre.classList.add('has-error'); ok = false; }
-    else fieldNombre.classList.remove('has-error');
-
-    const direccion = document.getElementById('inp-direccion').value.trim();
-    const fieldDireccion = document.getElementById('field-direccion');
-    if (!direccion) { fieldDireccion.classList.add('has-error'); ok = false; }
-    else fieldDireccion.classList.remove('has-error');
-
-    const drive = document.getElementById('inp-drive').value.trim();
-    const fieldDrive = document.getElementById('field-drive');
-    if (!drive) { fieldDrive.classList.add('has-error'); ok = false; }
-    else fieldDrive.classList.remove('has-error');
-
-    return ok;
+function renderTabla(lista) {
+  const tbody = document.getElementById('tabla-body');
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="tabla-vacio">Sin contratos que mostrar.</td></tr>';
+    return;
   }
+  tbody.innerHTML = lista.map(c => {
+    const activo = tokenActivo === c.token ? 'activo' : '';
+    return `<tr class="${activo}" onclick="abrirPanel('${c.token}')">
+      <td class="td-folio">${esc(c.folio) || '—'}</td>
+      <td><div class="td-nombre">${esc(c.nombre)}</div><div class="td-sub">${esc(c.correo)}</div></td>
+      <td>${badgeEstatus(c.estatus)}</td>
+      <td class="td-monto">${fmxn(c.precioTotal)}</td>
+      <td class="td-saldo${c.saldoPendiente <= 0 ? ' pagado' : ''}">
+        ${c.saldoPendiente > 0 ? fmxn(c.saldoPendiente) : '<i class="ti ti-check" style="color:var(--success)"></i>'}
+      </td>
+      <td class="td-fecha">${fmxnFecha(c.fechaCreacion)}</td>
+    </tr>`;
+  }).join('');
+}
 
-  // ── CONVERTIR LINK DE DRIVE A LINK DIRECTO DE IMAGEN ──
-  function driveDirecto(url) {
-    if (!url) return "";
-    if (url.includes("uc?export=view")) return url;
-    const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-    if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
-    const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
-    if (match2) return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
-    return url;
+// ── PANEL LATERAL ─────────────────────────────────────────────────────────────
+
+async function abrirPanel(token) {
+  tokenActivo = token;
+  renderTabla(todosContratos.filter(c => {
+    const q  = document.getElementById('busqueda').value.toLowerCase();
+    const st = document.getElementById('filtro-estatus').value;
+    if (st && c.estatus !== st) return false;
+    if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
+    return true;
+  }));
+
+  document.getElementById('panel-folio').textContent  = '...';
+  document.getElementById('panel-nombre').textContent = 'Cargando...';
+  document.getElementById('panel-badge').innerHTML    = '';
+  ['general','pagos','entrega'].forEach(id =>
+    document.getElementById('pane-' + id).innerHTML =
+      '<p style="color:var(--ink-3);font-style:italic;font-size:13px;padding:4px 0">Cargando...</p>'
+  );
+  document.getElementById('panel-lateral').classList.add('visible');
+  document.getElementById('overlay').classList.add('visible');
+  document.querySelectorAll('.panel-tab-btn').forEach((b,i) => b.classList.toggle('activo', i===0));
+  document.querySelectorAll('.panel-tab-pane').forEach((p,i) => p.classList.toggle('activo', i===0));
+
+  try {
+    const data = await apiGet({ action: 'obtenerContrato', token });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    renderPanel(data);
+  } catch (e) {
+    document.getElementById('pane-general').innerHTML =
+      `<p style="color:var(--danger);font-size:13px">Error: ${esc(e.message)}</p>`;
   }
+}
 
-  // ── SUBIR FOTO A IMGBB ──
-  const IMGBB_KEY = 'e31f66bd10c9c3abff1cd4c7475da580';
+function cerrarPanel() {
+  tokenActivo = null;
+  document.getElementById('panel-lateral').classList.remove('visible');
+  document.getElementById('overlay').classList.remove('visible');
+  document.querySelectorAll('#tabla-body tr').forEach(tr => tr.classList.remove('activo'));
+}
 
-  async function subirFoto(input) {
-    const file = input.files[0];
-    if (!file) return;
+function renderPanel(data) {
+  const c   = data.contrato;
+  const tok = c.Token;
+  const urlPortal = PORTAL_BASE + '?token=' + tok;
 
-    document.getElementById('upload-placeholder').style.display = 'none';
-    document.getElementById('upload-preview').style.display = 'none';
-    document.getElementById('upload-loading').style.display = 'flex';
-    document.getElementById('upload-error').style.display = 'none';
-    document.getElementById('inp-portada').value = '';
+  let adicionales = [];
+  try { adicionales = JSON.parse(c.AdicionalesJSON || '[]'); } catch(e) {}
 
-    try {
-      const base64 = await new Promise((res, rej) => {
-        const r = new FileReader();
-        r.onload = () => res(r.result.split(',')[1]);
-        r.onerror = rej;
-        r.readAsDataURL(file);
-      });
+  document.getElementById('panel-folio').textContent  = c.Folio || 'Sin folio';
+  document.getElementById('panel-nombre').textContent = c.NombreCliente;
+  document.getElementById('panel-badge').innerHTML    = badgeEstatus(c.Estatus);
 
-      const form = new FormData();
-      form.append('key', IMGBB_KEY);
-      form.append('image', base64);
+  // ── PANE GENERAL ──
+  const addHtml = adicionales.length
+    ? adicionales.map(clave => {
+        const pkg = paquetes.find(p => p.Clave === clave);
+        return `<span style="display:inline-block;background:var(--page);border:1px solid var(--border);border-radius:20px;font-size:11px;padding:2px 9px;margin:2px">${esc(pkg ? pkg.Nombre : clave)}</span>`;
+      }).join('')
+    : '<span style="font-size:12px;color:var(--ink-3)">Sin servicios adicionales</span>';
 
-      const resp = await fetch('https://api.imgbb.com/1/upload', { method: 'POST', body: form });
-      const data = await resp.json();
+  const propHtml = data.propiedades.length
+    ? data.propiedades.map((p, i) => {
+        const titulo = data.propiedades.length > 1 ? `Propiedad ${i + 1}` : 'Propiedad';
+        const tipotxt = p.tipo ? ` · ${p.tipo}` : '';
+        const fechatxt = p.fechaSesion ? fmxnFechaLarga(p.fechaSesion) + (p.horaSesion ? ' · ' + p.horaSesion : '') : '';
+        return `<div class="prop-card">
+          <div class="prop-card-titulo">${esc(titulo)}${esc(tipotxt)}</div>
+          ${p.paquete     ? `<div class="prop-dato"><span class="lbl">Paquete </span>${esc(p.paquete)}</div>` : ''}
+          ${fechatxt      ? `<div class="prop-dato"><span class="lbl">Fecha </span>${esc(fechatxt)}</div>` : ''}
+          ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
+          ${p.linkMaps    ? `<div class="prop-dato"><a href="${esc(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
+          ${p.sobreLaPropiedad ? `<div class="prop-dato"><span class="lbl">Notas </span>${esc(p.sobreLaPropiedad)}</div>` : ''}
+        </div>`;
+      }).join('')
+    : '<p style="font-size:12px;color:var(--ink-3)">Sin propiedades configuradas aún.</p>';
 
-      if (!data.success) throw new Error('imgbb error');
+  const waUrl = 'https://wa.me/?text=' + encodeURIComponent('Aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + urlPortal);
 
-      const url = data.data.url;
-      document.getElementById('inp-portada').value = url;
+  document.getElementById('pane-general').innerHTML = `
+    <div class="info-fila"><span class="etiq">Cliente</span><span class="val">${esc(c.NombreCliente)}</span></div>
+    <div class="info-fila"><span class="etiq">Correo</span><span class="val"><a href="mailto:${esc(c.CorreoCliente)}" style="color:var(--gold);text-decoration:none">${esc(c.CorreoCliente)}</a></span></div>
+    <div class="info-fila"><span class="etiq">Teléfono</span><span class="val">${esc(c.TelefonoCliente) || '—'}</span></div>
+    <div class="info-fila"><span class="etiq">Tipo</span><span class="val">${c.TipoContrato === 'estandar' ? 'Estándar' : 'Particular'}</span></div>
+    ${c.PaqueteBase ? `<div class="info-fila"><span class="etiq">Paquete</span><span class="val">${esc(c.PaqueteBase)}</span></div>` : ''}
+    <div class="info-fila"><span class="etiq">Adicionales</span><span class="val">${addHtml}</span></div>
+    <div class="sec-label">Propiedades</div>
+    ${propHtml}
+    <div class="link-portal-box">
+      <div class="link-portal-label">Link del portal (cliente)</div>
+      <div class="link-portal-url">${esc(urlPortal)}</div>
+      <div class="link-portal-btns">
+        <button class="btn-copiar" data-url="${esc(urlPortal)}" onclick="copiarDesdeBtn(this)">
+          <i class="ti ti-copy"></i> Copiar
+        </button>
+        <a class="btn-wa" href="${esc(waUrl)}" target="_blank" rel="noopener">
+          <i class="ti ti-brand-whatsapp"></i> WhatsApp
+        </a>
+      </div>
+    </div>`;
 
-      const thumb = document.getElementById('upload-thumb');
-      thumb.src = url;
-      document.getElementById('upload-nombre').textContent = file.name;
-      document.getElementById('upload-loading').style.display = 'none';
-      document.getElementById('upload-preview').style.display = 'flex';
+  // ── PANE PAGOS ──
+  const precioTotal  = parseFloat(c.PrecioTotal)  || 0;
+  const totalAbonado = parseFloat(data.totalAbonado) || 0;
+  const saldo        = parseFloat(c.SaldoPendiente) || 0;
+  const pct          = precioTotal > 0 ? Math.min(100, Math.round(totalAbonado / precioTotal * 100)) : 0;
 
-    } catch(e) {
-      document.getElementById('upload-loading').style.display = 'none';
-      document.getElementById('upload-placeholder').style.display = 'flex';
-      document.getElementById('upload-error').style.display = 'block';
+  const abonosHtml = data.abonos.length
+    ? data.abonos.map(a => `
+        <div class="abono-fila">
+          <div>
+            <div class="abono-metodo">${esc(a.metodo || 'Transferencia')}</div>
+            <div class="abono-fecha">${fmxnFecha(a.fecha)}${a.notas ? ' · ' + esc(a.notas) : ''}</div>
+          </div>
+          <div class="abono-monto">+${fmxn(a.monto)}</div>
+        </div>`).join('')
+    : '<p style="font-size:12px;color:var(--ink-3);padding:6px 0">Sin abonos registrados.</p>';
+
+  document.getElementById('pane-pagos').innerHTML = `
+    <div class="pago-resumen">
+      <div class="pago-fila"><span>Total del contrato</span><span>${fmxn(precioTotal)}</span></div>
+      <div class="pago-fila"><span>Total abonado</span><span style="color:var(--success)">${fmxn(totalAbonado)}</span></div>
+      <div class="pago-fila total"><span>Saldo pendiente</span><span style="color:${saldo > 0 ? 'var(--warn)' : 'var(--success)'}">${fmxn(saldo)}</span></div>
+    </div>
+    <div class="pago-barra-track"><div class="pago-barra-fill" style="width:${pct}%"></div></div>
+
+    <div class="sec-label">Historial de abonos</div>
+    <div id="historial-abonos">${abonosHtml}</div>
+
+    <div class="sec-label">Registrar abono</div>
+    <div class="fila-2">
+      <div class="campo campo-sm"><label>Monto</label><input type="number" id="abono-monto" placeholder="0"></div>
+      <div class="campo campo-sm">
+        <label>Método</label>
+        <select id="abono-metodo">
+          <option value="Transferencia">Transferencia</option>
+          <option value="Efectivo">Efectivo</option>
+          <option value="Clip">Clip</option>
+          <option value="OXXO">OXXO / 7-Eleven</option>
+        </select>
+      </div>
+    </div>
+    <div class="campo campo-sm"><label>Notas (opcional)</label><input type="text" id="abono-notas" placeholder="Referencia, aclaración..."></div>
+    <button class="btn-primario gold" style="width:100%" id="btn-abono" onclick="registrarAbono()">
+      <i class="ti ti-check"></i> Registrar abono
+    </button>
+    <div class="form-msg" id="msg-abono"></div>
+
+    <div class="sec-label" style="margin-top:22px">Cambiar estatus</div>
+    <div class="estatus-fila">
+      <select id="panel-estatus">
+        ${['Pendiente firma','Firmado','Anticipo recibido','En produccion','Entregado','Liquidado'].map(s =>
+          `<option value="${s}" ${c.Estatus === s ? 'selected' : ''}>${s === 'En produccion' ? 'En producción' : esc(s)}</option>`
+        ).join('')}
+      </select>
+      <button class="btn-secundario btn-sm" onclick="cambiarEstatus()">Guardar</button>
+    </div>
+    <div class="form-msg" id="msg-estatus"></div>`;
+
+  // ── PANE ENTREGA ──
+  document.getElementById('pane-entrega').innerHTML = `
+    <p style="font-size:13px;color:var(--ink-2);line-height:1.6;margin-bottom:18px">
+      Ingresa el link de Drive con el material terminado. Se enviará un correo al cliente con el link de su portal.
+    </p>
+    <div class="campo"><label>Link de Google Drive</label>
+      <input type="url" id="entrega-drive" value="${esc(c.EntregaDriveLink || '')}" placeholder="https://drive.google.com/drive/folders/...">
+    </div>
+    <div class="campo"><label>Links adicionales (uno por línea)</label>
+      <textarea id="entrega-links-extra" rows="3" placeholder="Link extra 1&#10;Link extra 2">${esc(c.EntregaLinksExtra || '')}</textarea>
+    </div>
+    <button class="btn-primario gold" style="width:100%" id="btn-entrega" onclick="guardarEntrega()">
+      <i class="ti ti-send"></i> Enviar al cliente
+    </button>
+    <div class="form-msg" id="msg-entrega"></div>
+    ${c.FechaEntrega ? `<p style="font-size:12px;color:var(--ink-3);margin-top:12px">Entregado el ${fmxnFecha(c.FechaEntrega)}</p>` : ''}`;
+}
+
+// ── REGISTRAR ABONO ──────────────────────────────────────────────────────────
+
+async function registrarAbono() {
+  const monto = parseFloat(document.getElementById('abono-monto').value);
+  if (!monto || monto <= 0) { setMsg('msg-abono', 'Ingresa un monto válido.', 'error'); return; }
+
+  const btn = document.getElementById('btn-abono');
+  if (btn) { btn.disabled = true; btn.textContent = 'Registrando...'; }
+  setMsg('msg-abono', '', '');
+
+  const metodo = document.getElementById('abono-metodo').value;
+  const notas  = document.getElementById('abono-notas').value;
+  const t      = tokenActivo;
+
+  try {
+    const data = await apiPost({ action: 'registrarAbono', token: t, monto, metodo, notas });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    if (t && t === tokenActivo) {
+      await abrirPanel(t);
+      setMsg('msg-abono', 'Abono registrado correctamente.', 'ok');
     }
+    cargarContratos();
+  } catch (e) {
+    setMsg('msg-abono', 'Error: ' + e.message, 'error');
+    const b = document.getElementById('btn-abono');
+    if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
+  }
+}
+
+// ── CAMBIAR ESTATUS ──────────────────────────────────────────────────────────
+
+async function cambiarEstatus() {
+  const estatus = document.getElementById('panel-estatus').value;
+  const t = tokenActivo;
+  setMsg('msg-estatus', '', '');
+  try {
+    const data = await apiPost({ action: 'actualizarEstatus', token: t, estatus });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    if (t && t === tokenActivo) {
+      await abrirPanel(t);
+      mostrarPanelTab('pagos', document.querySelectorAll('.panel-tab-btn')[1]);
+      setMsg('msg-estatus', 'Estatus actualizado.', 'ok');
+    }
+    cargarContratos();
+  } catch (e) {
+    setMsg('msg-estatus', 'Error: ' + e.message, 'error');
+  }
+}
+
+// ── GUARDAR ENTREGA ──────────────────────────────────────────────────────────
+
+async function guardarEntrega() {
+  const driveLink = document.getElementById('entrega-drive').value.trim();
+  if (!driveLink) { setMsg('msg-entrega', 'El link de Drive es obligatorio.', 'error'); return; }
+
+  const btn = document.getElementById('btn-entrega');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+  setMsg('msg-entrega', '', '');
+
+  const linksExtra = document.getElementById('entrega-links-extra').value.trim();
+  const t = tokenActivo;
+
+  try {
+    const data = await apiPost({ action: 'guardarEntrega', token: t, driveLink, linksExtra });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    if (t && t === tokenActivo) {
+      await abrirPanel(t);
+      mostrarPanelTab('entrega', document.querySelectorAll('.panel-tab-btn')[2]);
+      setMsg('msg-entrega', 'Entrega guardada. Se envió correo al cliente.', 'ok');
+    }
+    cargarContratos();
+  } catch (e) {
+    setMsg('msg-entrega', 'Error: ' + e.message, 'error');
+    const b = document.getElementById('btn-entrega');
+    if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-send"></i> Enviar al cliente'; }
+  }
+}
+
+// ── CREAR CONTRATO ────────────────────────────────────────────────────────────
+
+async function crearContrato(tipo) {
+  const isEst = tipo === 'estandar';
+  const msgId = isEst ? 'msg-estandar' : 'msg-particular';
+  const resId = isEst ? 'resultado-estandar' : 'resultado-particular';
+  const btn   = document.getElementById('btn-crear-' + tipo);
+
+  setMsg(msgId, '', '');
+  document.getElementById(resId).innerHTML = '';
+
+  let body = {};
+
+  if (isEst) {
+    const nombre   = document.getElementById('est-nombre').value.trim();
+    const correo   = document.getElementById('est-correo').value.trim();
+    const telefono = document.getElementById('est-telefono').value.trim();
+    const paqBase  = document.getElementById('est-paquete').value;
+    const fecha    = document.getElementById('est-fecha').value;
+    const hora     = document.getElementById('est-hora').value;
+    const ptotal   = parseFloat(document.getElementById('est-precio-total').value) || 0;
+    const anticipo = parseFloat(document.getElementById('est-anticipo').value) || 0;
+
+    if (!nombre || !correo) { setMsg(msgId, 'Nombre y correo son obligatorios.', 'error'); return; }
+    if (!paqBase)           { setMsg(msgId, 'Selecciona un paquete base.', 'error'); return; }
+    if (!fecha)             { setMsg(msgId, 'La fecha de sesión es obligatoria.', 'error'); return; }
+    if (!ptotal)            { setMsg(msgId, 'El precio total es obligatorio.', 'error'); return; }
+
+    const adds   = Array.from(document.querySelectorAll('#lista-adicionales input[type="checkbox"]:checked')).map(c => c.value);
+    const paqObj = paquetes.find(p => p.Clave === paqBase);
+
+    body = {
+      action         : 'crearContrato',
+      tipoContrato   : 'estandar',
+      nombreCliente  : nombre,
+      correoCliente  : correo,
+      telefonoCliente: telefono,
+      paqueteBase    : paqBase,
+      adicionales    : adds,
+      fechaSesion    : fecha,
+      horaSesion     : hora,
+      precioBase     : paqObj ? paqObj.Precio : ptotal,
+      precioTotal    : ptotal,
+      anticipo       : anticipo,
+    };
+  } else {
+    const nombre   = document.getElementById('par-nombre').value.trim();
+    const correo   = document.getElementById('par-correo').value.trim();
+    const telefono = document.getElementById('par-telefono').value.trim();
+    const numProps = parseInt(document.getElementById('par-num-props').value) || 1;
+    const ptotal   = parseFloat(document.getElementById('par-precio-total').value) || 0;
+    const anticipo = parseFloat(document.getElementById('par-anticipo').value) || 0;
+
+    if (!nombre || !correo) { setMsg(msgId, 'Nombre y correo son obligatorios.', 'error'); return; }
+    if (!ptotal)            { setMsg(msgId, 'El precio total es obligatorio.', 'error'); return; }
+
+    body = {
+      action         : 'crearContrato',
+      tipoContrato   : 'particular',
+      nombreCliente  : nombre,
+      correoCliente  : correo,
+      telefonoCliente: telefono,
+      numPropiedades : numProps,
+      precioBase     : ptotal,
+      precioTotal    : ptotal,
+      anticipo       : anticipo,
+    };
   }
 
-  // ── GENERAR LINK ──
-  async function generarLink() {
-    if (!validar()) {
-      const firstError = document.querySelector('.has-error');
-      if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  btn.disabled = true;
+  btn.textContent = 'Creando...';
+
+  try {
+    const data = await apiPost(body);
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+
+    const esConfig = data.url && data.url.includes('configurar3');
+    const titulo   = esConfig ? 'Link para configurar propiedades' : 'Link del portal para el cliente';
+    const waTxt    = esConfig
+      ? 'Creé tu cotización. Usaré este link para configurar las propiedades: ' + data.url
+      : 'Hola, aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + data.url;
+    const waUrl = 'https://wa.me/?text=' + encodeURIComponent(waTxt);
+
+    document.getElementById(resId).innerHTML = `
+      <div class="resultado-box">
+        <div class="resultado-titulo">${esc(titulo)}</div>
+        <div class="resultado-url">${esc(data.url)}</div>
+        <div class="resultado-acciones">
+          <button class="btn-copiar" data-url="${esc(data.url)}" onclick="copiarDesdeBtn(this)">
+            <i class="ti ti-copy"></i> Copiar link
+          </button>
+          <a class="btn-wa" href="${esc(waUrl)}" target="_blank" rel="noopener">
+            <i class="ti ti-brand-whatsapp"></i> WhatsApp
+          </a>
+        </div>
+      </div>`;
+
+    limpiarFormCrear(tipo);
+    cargarContratos();
+  } catch (e) {
+    setMsg(msgId, 'Error: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = isEst ? 'Crear contrato y generar link' : 'Crear cotización y generar link';
+  }
+}
+
+function limpiarFormCrear(tipo) {
+  if (tipo === 'estandar') {
+    ['est-nombre','est-correo','est-telefono'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('est-fecha').value = '';
+    document.getElementById('est-hora').value  = '10:00';
+    document.getElementById('tipo-residencial').checked = true;
+    actualizarPaquetes();
+  } else {
+    ['par-nombre','par-correo','par-telefono','par-precio-total','par-anticipo'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('par-num-props').value = '1';
+  }
+}
+
+// ── CRM ───────────────────────────────────────────────────────────────────────
+
+async function cargarCRM() {
+  document.getElementById('crm-grid').innerHTML = '<p style="color:var(--ink-3);font-style:italic;font-size:13px">Cargando...</p>';
+  try {
+    const data = await apiGet({ action: 'listarClientes' });
+    if (!data.ok) throw new Error(data.error || 'Error');
+    const lista = data.clientes || [];
+    if (!lista.length) {
+      document.getElementById('crm-grid').innerHTML = '<p style="color:var(--ink-3);font-style:italic;font-size:13px">Sin clientes registrados aún.</p>';
       return;
     }
-
-    const btn = document.querySelector('.btn-generar');
-    btn.textContent = 'Generando...';
-    btn.disabled = true;
-
-    const p = new URLSearchParams();
-
-    const nombre     = document.getElementById('inp-nombre').value.trim();
-    const direccion  = document.getElementById('inp-direccion').value.trim();
-    const portada    = document.getElementById('inp-portada').value.trim();
-    const drive      = document.getElementById('inp-drive').value.trim();
-    const driveLabel = document.getElementById('inp-drive-label').value.trim() || 'Fotografía y video';
-    const review     = document.getElementById('chk-review').checked ? document.getElementById('inp-review').value : '';
-
-    p.set('nombre', nombre);
-    p.set('direccion', direccion);
-    if (portada) p.set('portada', portada);
-    p.set('drive', drive);
-    if (driveLabel !== 'Fotografía y video') p.set('drive_label', driveLabel);
-    if (review) p.set('review', review);
-
-    // Tour
-    if (document.getElementById('chk-tour').checked) {
-      const tour = document.getElementById('inp-tour').value.trim();
-      const tourLabel = document.getElementById('inp-tour-label').value.trim();
-      if (tour) {
-        p.set('tour', tour);
-        if (tourLabel && tourLabel !== 'Recorrido Virtual Inmersivo') p.set('tour_label', tourLabel);
-      }
-    }
-
-    // Extras
-    if (document.getElementById('chk-extras').checked) {
-      const e1url = document.getElementById('inp-extra1-url').value.trim();
-      if (e1url) {
-        p.set('extra1_url', e1url);
-        const e1label = document.getElementById('inp-extra1-label').value.trim();
-        const e1sub   = document.getElementById('inp-extra1-sub').value.trim();
-        if (e1label) p.set('extra1_label', e1label);
-        if (e1sub)   p.set('extra1_sub', e1sub);
-      }
-      const e2url = document.getElementById('inp-extra2-url').value.trim();
-      if (e2url) {
-        p.set('extra2_url', e2url);
-        const e2label = document.getElementById('inp-extra2-label').value.trim();
-        const e2sub   = document.getElementById('inp-extra2-sub').value.trim();
-        if (e2label) p.set('extra2_label', e2label);
-        if (e2sub)   p.set('extra2_sub', e2sub);
-      }
-    }
-
-    const urlLarga = `${BASE_URL}?${p.toString()}`;
-    const urlFinal = urlLarga;
-
-    btn.textContent = 'Generar link de entrega';
-    btn.disabled = false;
-
-    document.getElementById('result-url').textContent = urlFinal;
-    document.getElementById('btn-preview').href = urlLarga;
-    document.getElementById('result-card').classList.add('visible');
-    document.getElementById('copy-feedback').classList.remove('visible');
-    document.getElementById('result-card').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('crm-grid').innerHTML = lista.map(cl => `
+      <div class="crm-card">
+        <div class="crm-nombre">${esc(cl.nombre)}</div>
+        <div class="crm-correo">${esc(cl.correo)}${cl.telefono ? ' · ' + esc(cl.telefono) : ''}</div>
+        <div class="crm-proyectos-hdr">${cl.proyectos.length} proyecto${cl.proyectos.length !== 1 ? 's' : ''}</div>
+        ${cl.proyectos.map(p => `
+          <div class="crm-proyecto">
+            <span class="crm-folio">${esc(p.folio) || '—'}</span>
+            ${badgeEstatus(p.estatus)}
+          </div>`).join('')}
+      </div>`).join('');
+  } catch (e) {
+    document.getElementById('crm-grid').innerHTML = `<p style="color:var(--danger);font-size:13px">Error: ${esc(e.message)}</p>`;
   }
+}
 
-  // ── COPIAR ──
-  function copiarLink() {
-    const url = document.getElementById('result-url').textContent;
-    navigator.clipboard.writeText(url).then(() => {
-      const fb = document.getElementById('copy-feedback');
-      fb.classList.add('visible');
-      setTimeout(() => fb.classList.remove('visible'), 3000);
-    });
+// ── HELPERS ───────────────────────────────────────────────────────────────────
+
+function fmxn(val) {
+  return new Intl.NumberFormat('es-MX', { style: 'currency', currency: 'MXN', minimumFractionDigits: 0 }).format(parseFloat(val) || 0);
+}
+
+function fmxnFecha(val) {
+  if (!val) return '—';
+  const d = new Date(val);
+  if (isNaN(d)) return String(val);
+  return d.toLocaleDateString('es-MX', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function fmxnFechaLarga(val) {
+  if (!val) return '—';
+  const str = String(val).includes('T') ? val : val + 'T12:00:00';
+  const d = new Date(str);
+  if (isNaN(d)) return String(val);
+  return d.toLocaleDateString('es-MX', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+function esc(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function badgeEstatus(estatus) {
+  const map = {
+    'Pendiente firma' : 'badge-pendiente-firma',
+    'Firmado'         : 'badge-firmado',
+    'Anticipo recibido': 'badge-anticipo',
+    'En produccion'   : 'badge-en-produccion',
+    'Entregado'       : 'badge-entregado',
+    'Liquidado'       : 'badge-liquidado',
+  };
+  const cls = map[estatus] || 'badge-pendiente-firma';
+  const txt = estatus === 'En produccion' ? 'En producción' : (estatus || '—');
+  return `<span class="badge ${cls}">${esc(txt)}</span>`;
+}
+
+function setMsg(id, text, tipo) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'form-msg' + (tipo ? ' ' + tipo : '');
+}
+
+async function copiarDesdeBtn(btn) {
+  const url = btn.dataset.url;
+  try {
+    await navigator.clipboard.writeText(url);
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="ti ti-check"></i> Copiado';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  } catch {
+    prompt('Copia este link:', url);
   }
+}
 </script>
-
 </body>
 </html>
