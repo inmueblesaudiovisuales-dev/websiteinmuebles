@@ -724,7 +724,7 @@ const ESTATUS_ABIERTOS = ['Pendiente firma', 'Firmado', 'Anticipo recibido', 'En
 
 function normalizarTelWA(tel) {
   if (!tel) return '';
-  var d = tel.replace(/\D/g, '');
+  var d = String(tel).replace(/\D/g, '');
   if (d.startsWith('521') && d.length === 13) return d;
   if (d.startsWith('52')  && d.length === 12) return '521' + d.substring(2);
   if (d.length === 10) return '521' + d;
