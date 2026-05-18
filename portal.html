@@ -202,6 +202,13 @@
 
   .progress-bar-wrap { width:100%; height:4px; background:var(--border); border-radius:2px; margin-top:14px; overflow:hidden; display:none; }
   .progress-bar-fill { height:100%; width:0%; background:var(--gold); border-radius:2px; transition:width 0.4s ease; }
+  .upload-field { margin-bottom:16px; }
+  .upload-label { font-size:12px; font-weight:700; color:var(--charcoal); display:block; margin-bottom:2px; }
+  .upload-hint  { font-size:11px; color:var(--concrete); margin:0 0 6px; line-height:1.5; }
+  .upload-row   { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .btn-upload   { display:inline-flex; align-items:center; gap:6px; padding:7px 14px; border:1.5px solid var(--border-strong); border-radius:var(--r); font-family:inherit; font-size:11px; font-weight:700; color:var(--charcoal); cursor:pointer; transition:all 0.15s; flex-shrink:0; }
+  .btn-upload:hover { border-color:var(--gold); color:var(--gold); }
+  .upload-status { font-size:11px; }
 
   /* Print — solo muestra la card del comprobante */
   @media print {
@@ -501,7 +508,7 @@ function renderEtapa1() {
         html += '<div class="field"><label>Sobre el terreno (opcional)</label><textarea id="inp-sobre-' + n + '" placeholder="Superficie en m², frente, fondo, zonificación, servicios disponibles, tipo de terreno..." style="min-height:100px"></textarea></div>';
         html += '<div class="field"><label>Acceso al terreno (opcional)</label><textarea id="inp-acceso-' + n + '" placeholder="¿Hay candado o reja? ¿Quién abre?"></textarea></div>';
         html += '<div class="field"><label>Orientación del frente (opcional)</label><textarea id="inp-frente-' + n + '" placeholder="¿Cuál es el frente oficial? ¿Hacia dónde da?"></textarea></div>';
-        html += '<div class="field"><label>Perímetro del terreno</label><p class="field-hint" style="margin-top:0;margin-bottom:8px">Por favor envía un screenshot del perímetro delimitado (Google Earth o Google Maps con contorno dibujado) directamente a <strong>inmueblesaudiovisuales@gmail.com</strong> o por <a href="https://wa.me/5218127174207" style="color:var(--gold);font-weight:700">WhatsApp</a>. Sin esta referencia no podemos garantizar capturar los límites correctos.</p></div>';
+        html += '<div class="field"><label>Perímetro del terreno</label><p class="field-hint" style="margin-top:0;margin-bottom:8px">Puedes subir la captura en la sección de archivos de más abajo, o enviárnosla por WhatsApp. Sin esta referencia no podemos garantizar capturar los límites correctos.</p></div>';
       }
       html += '</div>'; // end prop card
     });
@@ -510,6 +517,19 @@ function renderEtapa1() {
     html += '<div class="card"><p class="section-title">Comentarios adicionales</p>';
     html += '<div class="field" style="margin-bottom:0"><label>¿Hay algo más que debamos saber? (opcional)</label><textarea id="inp-comentarios" placeholder="Referencias visuales, colores de tu marca, datos para el video, o cualquier detalle adicional." style="min-height:100px"></textarea></div></div>';
   }
+
+  // --- Archivos del proyecto ---
+  html += '<div class="card"><p class="section-title">Archivos del proyecto</p>';
+  html += '<p class="upload-hint" style="margin-bottom:16px">Opcional. Puedes subir estos archivos ahora o enviárnoslos por WhatsApp después. No bloquean la firma.</p>';
+  html += renderUploadField('logo', 0, 'Logo de la agencia o cliente', 'Se incluye en el PDF de referencias');
+  props.forEach(function(p, i) {
+    var sufijo = props.length > 1 ? ' — Propiedad ' + (i + 1) : '';
+    if ((p.tipo || '').toLowerCase() === 'terreno') {
+      html += renderUploadField('perimetro', i, 'Perímetro del terreno' + sufijo, 'Captura de Google Earth o Maps con el contorno del terreno marcado');
+    }
+    html += renderUploadField('fachada', i, 'Fachada o acceso' + sufijo, 'Foto de la entrada, portón o código QR de acceso');
+  });
+  html += '</div>';
 
   html += '<button class="btn-primary" id="btn-revisar">REVISAR Y FIRMAR CONTRATO</button>';
   html += '<div class="error-inline" id="error-form"></div>';
@@ -1170,6 +1190,77 @@ function renderEtapa4() {
   document.getElementById('main-content').innerHTML = html;
 
   document.getElementById('btn-imprimir').addEventListener('click', function() { window.print(); });
+}
+
+/* ── SUBIDA DE ARCHIVOS ──────────────────────────────────────────────────────── */
+
+function renderUploadField(tipo, propIndex, label, hint) {
+  var idInput  = 'upload-input-'  + tipo + '-' + propIndex;
+  var idStatus = 'upload-status-' + tipo + '-' + propIndex;
+  return '<div class="upload-field">' +
+    '<span class="upload-label">' + label + '</span>' +
+    (hint ? '<p class="upload-hint">' + hint + '</p>' : '') +
+    '<div class="upload-row">' +
+      '<label for="' + idInput + '" class="btn-upload">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>' +
+        'Seleccionar' +
+      '</label>' +
+      '<input type="file" id="' + idInput + '" accept="image/*" style="display:none" ' +
+        'onchange="subirArchivoPortal(\'' + tipo + '\',' + propIndex + ',this)">' +
+      '<span class="upload-status" id="' + idStatus + '"></span>' +
+    '</div>' +
+  '</div>';
+}
+
+function subirArchivoPortal(tipo, propIndex, inputEl) {
+  var file = inputEl.files[0];
+  if (!file) return;
+  if (file.size > 8 * 1024 * 1024) {
+    setUploadStatus(tipo, propIndex, 'error', 'El archivo es muy grande (máx. 8 MB)');
+    return;
+  }
+  setUploadStatus(tipo, propIndex, 'loading', '');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    apiPost({
+      action    : 'subirArchivo',
+      token     : token,
+      propIndex : propIndex,
+      tipo      : tipo,
+      fileName  : file.name,
+      mimeType  : file.type || 'image/jpeg',
+      fileBase64: e.target.result,
+    })
+    .then(function(data) {
+      if (data.ok) {
+        setUploadStatus(tipo, propIndex, 'ok', file.name);
+      } else {
+        setUploadStatus(tipo, propIndex, 'error', data.error || 'Error al subir');
+      }
+    })
+    .catch(function() {
+      setUploadStatus(tipo, propIndex, 'error', 'Error de conexión');
+    });
+  };
+  reader.onerror = function() {
+    setUploadStatus(tipo, propIndex, 'error', 'No se pudo leer el archivo');
+  };
+  reader.readAsDataURL(file);
+}
+
+function setUploadStatus(tipo, propIndex, estado, texto) {
+  var el = document.getElementById('upload-status-' + tipo + '-' + propIndex);
+  if (!el) return;
+  if (estado === 'loading') {
+    el.textContent = 'Subiendo...';
+    el.style.color = 'var(--concrete)';
+  } else if (estado === 'ok') {
+    el.textContent = texto + ' — listo';
+    el.style.color = 'var(--success)';
+  } else {
+    el.textContent = texto;
+    el.style.color = 'var(--danger)';
+  }
 }
 
 init();
