@@ -435,11 +435,13 @@
       <button class="tab-btn activo" data-tab="contratos"  onclick="mostrarTab('contratos', this)">Contratos</button>
       <button class="tab-btn" data-tab="nuevo"      onclick="mostrarTab('nuevo', this)">Nuevo contrato</button>
       <button class="tab-btn" data-tab="crm"        onclick="mostrarTab('crm', this)">Clientes</button>
+      <button class="tab-btn" data-tab="metricas"   onclick="mostrarTab('metricas', this)">Métricas</button>
       <button class="tab-btn" data-tab="paquetes"   onclick="mostrarTab('paquetes', this)">Paquetes</button>
     </div>
 
     <!-- ── CONTRATOS ──────────────────────────────────── -->
     <div id="sec-contratos" class="seccion activa">
+      <div id="stats-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
       <div class="barra">
         <div class="campo-busqueda">
           <input type="text" id="busqueda" placeholder="Buscar por nombre, correo o folio..." oninput="filtrarContratos()">
@@ -611,6 +613,20 @@
       </div>
     </div>
 
+    <!-- ── MÉTRICAS ─────────────────────────────────── -->
+    <div id="sec-metricas" class="seccion">
+      <div class="barra" style="margin-bottom:14px">
+        <div style="display:flex;gap:6px">
+          <button class="ciclo-btn activo-ciclo" id="met-btn-mes"       onclick="setMetPeriodo('mes',this)">Este mes</button>
+          <button class="ciclo-btn" id="met-btn-trimestre" onclick="setMetPeriodo('trimestre',this)">Trimestre</button>
+          <button class="ciclo-btn" id="met-btn-anio"      onclick="setMetPeriodo('anio',this)">Este año</button>
+          <button class="ciclo-btn" id="met-btn-todo"      onclick="setMetPeriodo('todo',this)">Todo</button>
+        </div>
+        <button class="btn-secundario btn-sm" onclick="cargarMetricas()"><i class="ti ti-refresh"></i></button>
+      </div>
+      <div id="metricas-body"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Cargando...</p></div>
+    </div>
+
     <!-- ── CRM ────────────────────────────────────────── -->
     <div id="sec-crm" class="seccion">
       <div class="barra">
@@ -760,6 +776,7 @@ function mostrarTab(id, btn) {
   if (id === 'contratos') cargarContratos();
   if (id === 'crm') cargarCRM();
   if (id === 'paquetes') cargarPaquetesAdmin();
+  if (id === 'metricas') cargarMetricas();
 }
 
 function mostrarSubTab(tipo, btn) {
@@ -868,14 +885,35 @@ function actualizarAnticipo(p) {
 async function cargarContratos() {
   document.getElementById('tabla-body').innerHTML = '<tr><td colspan="6" class="tabla-vacio">Cargando...</td></tr>';
   try {
-    const data = await apiGet({ action: 'listarContratos' });
-    if (!data.ok) throw new Error(data.error || 'Error desconocido');
-    todosContratos = data.contratos || [];
+    const [dataC, dataS] = await Promise.all([
+      apiGet({ action: 'listarContratos' }),
+      apiGet({ action: 'listarStats', periodo: 'mes' }),
+    ]);
+    if (!dataC.ok) throw new Error(dataC.error || 'Error desconocido');
+    todosContratos = dataC.contratos || [];
     filtrarContratos();
+    if (dataS.ok) renderStatsBar(dataS);
   } catch (e) {
     document.getElementById('tabla-body').innerHTML =
       `<tr><td colspan="6" style="color:var(--danger);padding:24px;text-align:center">Error: ${esc(e.message)}</td></tr>`;
   }
+}
+
+function renderStatsBar(s) {
+  const bar = document.getElementById('stats-bar');
+  if (!bar) return;
+  const tarjetas = [
+    { label: 'Contratos activos',    valor: s.numContratos,    sub: 'este mes',           color: 'var(--ink-1)' },
+    { label: 'Facturado este mes',   valor: fmxn(s.facturado), sub: '',                   color: 'var(--gold)' },
+    { label: 'Cobrado este mes',     valor: fmxn(s.cobrado),   sub: '',                   color: 'var(--success)' },
+    { label: 'Por cobrar (total)',   valor: fmxn(s.porCobrar), sub: 'contratos abiertos', color: 'var(--warn)' },
+  ];
+  bar.innerHTML = tarjetas.map(t => `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px 16px">
+      <p style="font-size:11px;color:var(--ink-3);margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em">${t.label}</p>
+      <p style="font-size:20px;font-weight:700;color:${t.color};margin:0 0 2px">${t.valor}</p>
+      ${t.sub ? `<p style="font-size:11px;color:var(--ink-3);margin:0">${t.sub}</p>` : ''}
+    </div>`).join('');
 }
 
 function setCiclo(ciclo) {
@@ -1019,6 +1057,18 @@ function renderPanel(data) {
           <i class="ti ti-brand-whatsapp"></i> WhatsApp
         </a>
       </div>
+    </div>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
+      <p class="sec-label" style="margin-bottom:10px">Zona de riesgo</p>
+      <div style="display:flex;gap:8px">
+        <button class="btn-secundario btn-sm" style="flex:1;color:var(--warn);border-color:var(--warn)" onclick="archivarContrato()">
+          <i class="ti ti-archive"></i> Archivar
+        </button>
+        <button class="btn-secundario btn-sm" style="flex:1;color:var(--error, #e74c3c);border-color:var(--error, #e74c3c)" onclick="eliminarContrato()">
+          <i class="ti ti-trash"></i> Eliminar
+        </button>
+      </div>
+      <div class="form-msg" id="msg-borrar"></div>
     </div>`;
 
   // ── PANE PAGOS ──
@@ -1605,6 +1655,159 @@ async function togglePaqueteAdmin(clave, activar) {
     await cargarPaquetes();
   } catch (e) {
     alert('Error: ' + e.message);
+  }
+}
+
+// ── MÉTRICAS ──────────────────────────────────────────────────────────────────
+
+let metPeriodo = 'mes';
+
+function setMetPeriodo(periodo, btn) {
+  metPeriodo = periodo;
+  ['mes','trimestre','anio','todo'].forEach(p => {
+    document.getElementById('met-btn-' + p).classList.toggle('activo-ciclo', p === periodo);
+  });
+  cargarMetricas();
+}
+
+async function cargarMetricas() {
+  document.getElementById('metricas-body').innerHTML = '<p style="color:var(--ink-3);font-style:italic;font-size:13px">Cargando...</p>';
+  try {
+    const s = await apiGet({ action: 'listarStats', periodo: metPeriodo });
+    if (!s.ok) throw new Error(s.error || 'Error');
+    renderMetricas(s);
+  } catch (e) {
+    document.getElementById('metricas-body').innerHTML = `<p style="color:var(--danger)">Error: ${esc(e.message)}</p>`;
+  }
+}
+
+function renderMetricas(s) {
+  const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const labelPeriodo = { mes: 'este mes', trimestre: 'este trimestre', anio: 'este año', todo: 'acumulado' }[s.periodo] || '';
+
+  // Tarjetas principales
+  let html = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">`;
+  const cards = [
+    { label: 'Facturado',     valor: fmxn(s.facturado),      sub: s.numContratos + ' contratos', color: 'var(--gold)' },
+    { label: 'Cobrado',       valor: fmxn(s.cobrado),         sub: labelPeriodo,                  color: 'var(--success)' },
+    { label: 'Por cobrar',    valor: fmxn(s.porCobrar),       sub: 'contratos abiertos',          color: 'var(--warn)' },
+    { label: 'Ticket promedio', valor: fmxn(s.ticketPromedio), sub: labelPeriodo,                 color: 'var(--ink-1)' },
+  ];
+  html += cards.map(c => `
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px">
+      <p style="font-size:11px;color:var(--ink-3);margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em">${c.label}</p>
+      <p style="font-size:22px;font-weight:700;color:${c.color};margin:0 0 3px">${c.valor}</p>
+      <p style="font-size:11px;color:var(--ink-3);margin:0">${c.sub}</p>
+    </div>`).join('');
+  html += `</div>`;
+
+  // Fila inferior: estatus + top clientes + gráfica
+  html += `<div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:14px">`;
+
+  // Por estatus
+  const ORDEN_ESTATUS = ['Pendiente firma','Firmado','Anticipo recibido','En produccion','Entregado','Liquidado'];
+  const maxEst = Math.max(1, ...Object.values(s.porEstatus));
+  html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px">
+    <p style="font-size:12px;font-weight:700;color:var(--ink-1);margin:0 0 14px">Por estatus</p>`;
+  ORDEN_ESTATUS.forEach(est => {
+    const n = s.porEstatus[est] || 0;
+    if (!n) return;
+    const pct = Math.round(n / maxEst * 100);
+    const label = est === 'En produccion' ? 'En producción' : est;
+    html += `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--ink-2);margin-bottom:3px">
+        <span>${esc(label)}</span><span style="font-weight:700">${n}</span>
+      </div>
+      <div style="background:var(--border);border-radius:3px;height:5px">
+        <div style="background:var(--gold);width:${pct}%;height:5px;border-radius:3px"></div>
+      </div>
+    </div>`;
+  });
+  if (!Object.values(s.porEstatus).some(v => v > 0)) {
+    html += `<p style="font-size:12px;color:var(--ink-3)">Sin contratos en el período.</p>`;
+  }
+  html += `</div>`;
+
+  // Top clientes
+  html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px">
+    <p style="font-size:12px;font-weight:700;color:var(--ink-1);margin:0 0 14px">Top clientes</p>`;
+  if (s.topClientes.length) {
+    s.topClientes.forEach((c, i) => {
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border)">
+        <span style="font-size:12px;color:var(--ink-2)">${i + 1}. ${esc(c.nombre)}</span>
+        <span style="font-size:12px;font-weight:700;color:var(--ink-1)">${fmxn(c.total)}</span>
+      </div>`;
+    });
+  } else {
+    html += `<p style="font-size:12px;color:var(--ink-3)">Sin datos.</p>`;
+  }
+  html += `</div>`;
+
+  // Facturación por mes (barras verticales CSS)
+  const maxMes = Math.max(1, ...s.porMes.map(m => m.facturado));
+  html += `<div style="background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:16px 18px">
+    <p style="font-size:12px;font-weight:700;color:var(--ink-1);margin:0 0 14px">Facturación últimos 6 meses</p>
+    <div style="display:flex;align-items:flex-end;gap:8px;height:100px">`;
+  s.porMes.forEach(m => {
+    const h = m.facturado > 0 ? Math.max(6, Math.round(m.facturado / maxMes * 90)) : 2;
+    html += `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+      <span style="font-size:9px;color:var(--ink-3)">${m.facturado > 0 ? fmxnCorto(m.facturado) : ''}</span>
+      <div style="width:100%;height:${h}px;background:var(--gold);border-radius:3px 3px 0 0;opacity:${m.facturado > 0 ? 1 : 0.25}"></div>
+      <span style="font-size:10px;color:var(--ink-3)">${m.mes}</span>
+    </div>`;
+  });
+  html += `</div></div>`;
+
+  html += `</div>`;
+  document.getElementById('metricas-body').innerHTML = html;
+}
+
+function fmxnCorto(n) {
+  if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
+  if (n >= 1000)    return '$' + Math.round(n / 1000) + 'k';
+  return fmxn(n);
+}
+
+// ── ARCHIVAR / ELIMINAR CONTRATO ──────────────────────────────────────────────
+
+async function archivarContrato() {
+  if (!tokenActivo) return;
+  const c = todosContratos.find(x => x.token === tokenActivo);
+  const nombre = c ? c.nombre : 'este contrato';
+  if (!confirm(`¿Archivar el contrato de ${nombre}?\n\nEl contrato desaparecerá de la lista pero permanecerá en Google Sheets. Puedes reactivarlo desde ahí cambiando la columna Oculto a vacío.`)) return;
+
+  setMsg('msg-borrar', 'Archivando...', '');
+  try {
+    const data = await apiPost({ action: 'ocultarContrato', token: tokenActivo });
+    if (!data.ok) throw new Error(data.error || 'Error');
+    document.getElementById('panel-lateral').classList.remove('visible');
+    tokenActivo = null;
+    await cargarContratos();
+  } catch (e) {
+    setMsg('msg-borrar', 'Error: ' + e.message, 'error');
+  }
+}
+
+async function eliminarContrato() {
+  if (!tokenActivo) return;
+  const c = todosContratos.find(x => x.token === tokenActivo);
+  const nombre = c ? c.nombre : '';
+  const confirmacion = prompt(`ELIMINAR PERMANENTEMENTE\n\nEsta acción borrará el contrato, sus abonos, propiedades y tokens de Google Sheets. No se puede deshacer.\n\nEscribe el nombre del cliente para confirmar:`);
+  if (confirmacion === null) return;
+  if (confirmacion.trim().toLowerCase() !== (nombre || '').trim().toLowerCase()) {
+    alert('El nombre no coincide. No se eliminó nada.');
+    return;
+  }
+
+  setMsg('msg-borrar', 'Eliminando...', '');
+  try {
+    const data = await apiPost({ action: 'eliminarContrato', token: tokenActivo });
+    if (!data.ok) throw new Error(data.error || 'Error');
+    document.getElementById('panel-lateral').classList.remove('visible');
+    tokenActivo = null;
+    await cargarContratos();
+  } catch (e) {
+    setMsg('msg-borrar', 'Error: ' + e.message, 'error');
   }
 }
 </script>
