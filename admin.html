@@ -519,14 +519,6 @@
             <p style="font-size:11px;color:var(--ink-3);margin-bottom:8px;line-height:1.5">Las opciones marcadas aparecerán como toggles en el portal del cliente. El precio final se recalcula cuando el cliente las seleccione.</p>
             <div class="add-lista" id="lista-adicionales"></div>
           </div>
-          <div class="campo">
-            <label>Precio estimado</label>
-            <div class="precio-resumen">
-              <div class="pr-fila"><span>Paquete base</span><span id="pr-base">—</span></div>
-              <div id="pr-extras"></div>
-              <div class="pr-fila total"><span>Total estimado</span><span id="pr-total">—</span></div>
-            </div>
-          </div>
           <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
           <div class="campo">
             <label>Nombre del cliente</label>
@@ -585,11 +577,9 @@
               <input type="text" id="par-telefono" placeholder="812 345 6789">
             </div>
           </div>
-          <div class="campo" id="campo-adicionales-par">
-            <label>Servicios adicionales a ofrecer</label>
-            <div class="add-lista" id="lista-adicionales-par">
-              <p style="font-size:12px;color:var(--ink-3)">Cargando...</p>
-            </div>
+          <div class="campo">
+            <label>Notas del contrato <span style="font-weight:400;color:var(--ink-3)">(opcional)</span></label>
+            <textarea id="par-notas" placeholder="Servicios adicionales acordados, condiciones especiales, notas para el cliente..." style="min-height:70px"></textarea>
           </div>
           <div class="campo">
             <label>Número de propiedades</label>
@@ -648,15 +638,15 @@
         <div style="background:var(--card);border-radius:var(--r);padding:28px;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.25)">
           <p class="section-title" id="modal-paq-titulo">Nuevo paquete</p>
           <input type="hidden" id="mp-clave-original">
-          <div class="campo-form">
+          <div class="campo">
             <label>Clave *</label>
             <input type="text" id="mp-clave" placeholder="PREM-RES" style="text-transform:uppercase">
           </div>
-          <div class="campo-form">
+          <div class="campo">
             <label>Nombre *</label>
             <input type="text" id="mp-nombre" placeholder="Premium Residencial">
           </div>
-          <div class="campo-form">
+          <div class="campo">
             <label>Tipo</label>
             <select id="mp-tipo">
               <option value="Ambos">Ambos</option>
@@ -664,15 +654,15 @@
               <option value="Terreno">Terreno</option>
             </select>
           </div>
-          <div class="campo-form">
+          <div class="campo">
             <label>Precio (MXN)</label>
             <input type="number" id="mp-precio" placeholder="0" min="0" step="100">
           </div>
-          <div class="campo-form">
+          <div class="campo">
             <label>Entregables</label>
             <textarea id="mp-entregables" placeholder="Video 4K · Fotografías · Tour virtual" style="min-height:70px"></textarea>
           </div>
-          <div class="campo-form" style="display:flex;align-items:center;gap:10px">
+          <div class="campo" style="display:flex;align-items:center;gap:10px">
             <input type="checkbox" id="mp-es-adicional" style="width:auto;margin:0">
             <label for="mp-es-adicional" style="margin:0;font-weight:400">Es add-on (adicional)</label>
           </div>
@@ -826,18 +816,8 @@ async function cargarPaquetes() {
 }
 
 function renderAdicionalesPar() {
-  const adds = paquetes.filter(p => p.EsAdicional);
-  const lista = document.getElementById('lista-adicionales-par');
-  if (!adds.length) {
-    document.getElementById('campo-adicionales-par').style.display = 'none';
-    return;
-  }
-  lista.innerHTML = adds.map(p => `
-    <label class="add-item">
-      <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" onchange="">
-      <span class="add-item-nombre">${esc(p.Nombre)}</span>
-      <span class="add-item-precio">+${fmxn(p.Precio)}</span>
-    </label>`).join('');
+  // Los contratos particulares ya no ofrecen add-ons en el portal.
+  // Función mantenida para no romper la llamada en cargarPaquetes().
 }
 
 function actualizarPaquetes() {
@@ -860,7 +840,7 @@ function actualizarPaquetes() {
     campoAdd.style.display = 'block';
     lista.innerHTML = adds.map(p => `
       <label class="add-item">
-        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" onchange="actualizarPrecio()">
+        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" checked onchange="actualizarPrecio()">
         <span class="add-item-nombre">${esc(p.Nombre)}</span>
         <span class="add-item-precio">+${fmxn(p.Precio)}</span>
       </label>`).join('');
@@ -872,11 +852,6 @@ function actualizarPrecio() {
   const sel     = document.getElementById('est-paquete');
   const baseOpt = sel.options[sel.selectedIndex];
   const base    = parseFloat(baseOpt?.dataset?.precio) || 0;
-
-  document.getElementById('pr-base').textContent  = fmxn(base);
-  document.getElementById('pr-extras').innerHTML  = '';
-  document.getElementById('pr-total').textContent = fmxn(base);
-
   if (!precioManual) {
     document.getElementById('est-precio-total').value = base;
     actualizarAnticipo('est');
@@ -950,6 +925,7 @@ async function abrirPanel(token) {
   renderTabla(todosContratos.filter(c => {
     const q  = document.getElementById('busqueda').value.toLowerCase();
     const st = document.getElementById('filtro-estatus').value;
+    if (filtroCiclo === 'abiertos' && !ESTATUS_ABIERTOS.includes(c.estatus)) return false;
     if (st && c.estatus !== st) return false;
     if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
     return true;
@@ -1255,14 +1231,12 @@ async function crearContrato(tipo) {
     if (!nombre) { setMsg(msgId, 'El nombre del cliente es obligatorio.', 'error'); return; }
     if (!ptotal) { setMsg(msgId, 'El precio total es obligatorio.', 'error'); return; }
 
-    const addsParArr = Array.from(document.querySelectorAll('#lista-adicionales-par input[type="checkbox"]:checked')).map(c => c.value);
-
     const propiedadesConfig = [];
     for (var pi = 1; pi <= numProps; pi++) {
       var pTipo = tiposPropPar[pi] || 'Residencial';
       var paqSel = document.getElementById('par-paquete-' + pi);
-      var paqNombre = '';
-      if (paqSel && paqSel.value) {
+      var paqNombre = (document.getElementById('par-nombre-servicio-' + pi) || {value:''}).value.trim();
+      if (!paqNombre && paqSel && paqSel.value) {
         var paqOpt = paqSel.options[paqSel.selectedIndex];
         paqNombre = paqOpt.dataset.nombre || paqSel.value;
       }
@@ -1282,7 +1256,8 @@ async function crearContrato(tipo) {
       correoCliente     : correo,
       telefonoCliente   : telefono,
       numPropiedades    : numProps,
-      adicionales       : addsParArr,
+      adicionales       : [],
+      notasContrato     : (document.getElementById('par-notas') || {value:''}).value.trim(),
       propiedadesConfig : propiedadesConfig,
       precioBase        : ptotal,
       precioTotal       : ptotal,
@@ -1336,7 +1311,7 @@ function limpiarFormCrear(tipo) {
     document.getElementById('tipo-residencial').checked = true;
     actualizarPaquetes();
   } else {
-    ['par-nombre','par-correo','par-telefono','par-precio-total','par-anticipo'].forEach(id => document.getElementById(id).value = '');
+    ['par-nombre','par-correo','par-telefono','par-precio-total','par-anticipo','par-notas'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
     document.getElementById('par-num-props').value = '1';
     renderPropCardsPar(1);
   }
@@ -1448,8 +1423,12 @@ function renderPropCardsPar(n) {
         '</div>' +
       '</div>' +
       '<div class="campo">' +
-        '<label>Paquete <span style="font-weight:400;color:var(--ink-3)">(opcional)</span></label>' +
-        '<select id="par-paquete-' + i + '" onchange="onPaqueteChangePar(' + i + ')"><option value="">— Seleccionar —</option></select>' +
+        '<label>Nombre del servicio</label>' +
+        '<input type="text" id="par-nombre-servicio-' + i + '" placeholder="Producción audiovisual residencial, Tour virtual, etc.">' +
+      '</div>' +
+      '<div class="campo">' +
+        '<label>Paquete base <span style="font-weight:400;color:var(--ink-3)">(opcional — llena entregables automáticamente)</span></label>' +
+        '<select id="par-paquete-' + i + '" onchange="onPaqueteChangePar(' + i + ')"><option value="">— Sin paquete —</option></select>' +
       '</div>' +
       '<div class="campo">' +
         '<label>Entregables</label>' +
