@@ -449,17 +449,22 @@ function renderEtapa1() {
   html += '<div class="field" id="field-telefono"><label for="inp-telefono">Teléfono móvil *</label><input type="text" id="inp-telefono" placeholder="8127174207" inputmode="tel" value="' + esc(d.telefono || '') + '"><span class="field-error">Este campo es obligatorio</span></div>';
   html += '</div>';
 
-  // --- Formulario por propiedad (solo estándar) ---
-  if (!esParticular && props.length > 0) {
+  // --- Formulario por propiedad ---
+  if (props.length > 0) {
     props.forEach(function(p, i) {
       var n = i + 1;
       var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
       orientaciones[n] = '';
       html += '<div class="card">';
       html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
-      html += '<div class="prop-badge">' + n + '</div><div><p style="font-size:13px;font-weight:700">' + esc(p.paquete || 'Propiedad ' + n) + '</p>';
-      if (p.fechaSesion) html += '<p style="font-size:11px;color:var(--concrete);margin-top:2px">' + esc(formatFecha(p.fechaSesion)) + '</p>';
-      html += '</div></div>';
+      if (!esParticular) {
+        html += '<div class="prop-badge">' + n + '</div><div><p style="font-size:13px;font-weight:700">' + esc(p.paquete || 'Propiedad ' + n) + '</p>';
+        if (p.fechaSesion) html += '<p style="font-size:11px;color:var(--concrete);margin-top:2px">' + esc(formatFecha(p.fechaSesion)) + '</p>';
+        html += '</div>';
+      } else {
+        html += '<div class="prop-badge">' + n + '</div><div><p style="font-size:13px;font-weight:700">Propiedad ' + n + '</p></div>';
+      }
+      html += '</div>';
 
       html += '<p class="section-title">Ubicación</p>';
       html += '<div class="field" id="field-direccion-' + n + '"><label>Domicilio completo *</label><input type="text" id="inp-direccion-' + n + '" placeholder="Calle, número, colonia, municipio"><span class="field-error">Este campo es obligatorio</span></div>';
@@ -666,49 +671,47 @@ function validarYRevisar() {
   var props        = (portalData && portalData.propiedades) || [];
   var propsPayload = [];
 
-  if (!esParticular) {
-    props.forEach(function(p, i) {
-      var n   = i + 1;
-      var dir  = (document.getElementById('inp-direccion-' + n) || {value:''}).value.trim();
-      var maps = (document.getElementById('inp-mapas-'     + n) || {value:''}).value.trim();
-      var ori  = orientaciones[n] || '';
-      if (!dir || dir.length < 5) {
-        var el = document.getElementById('field-direccion-' + n);
-        if (el) el.classList.add('has-error');
-        valido = false;
-      }
-      if (!maps || maps.length < 5) {
-        var el2 = document.getElementById('field-mapas-' + n);
-        if (el2) el2.classList.add('has-error');
-        valido = false;
-      }
-      if (!ori) {
-        var el3 = document.getElementById('field-orientacion-' + n);
-        if (el3) el3.classList.add('has-error');
-        var e3  = document.getElementById('err-orientacion-' + n);
-        if (e3) e3.style.display = 'block';
-        valido = false;
-      }
-      var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
-      var datosEsp  = {};
-      if (!esTerreno) {
-        datosEsp.presentes = (document.getElementById('inp-presentes-' + n) || {value:''}).value.trim();
-      } else {
-        datosEsp.accesoTerreno     = (document.getElementById('inp-acceso-' + n) || {value:''}).value.trim();
-        datosEsp.orientacionFrente = (document.getElementById('inp-frente-' + n) || {value:''}).value.trim();
-      }
-      var comsEl = document.getElementById('inp-comentarios');
-      if (comsEl && n === 1) datosEsp.comentarios = comsEl.value.trim();
-      propsPayload.push({
-        direccion        : dir,
-        linkMaps         : maps,
-        referencias      : (document.getElementById('inp-referencias-' + n) || {value:''}).value.trim(),
-        orientacion      : ori,
-        sobreLaPropiedad : (document.getElementById('inp-sobre-' + n) || {value:''}).value.trim(),
-        datosEspecificos : datosEsp,
-      });
+  props.forEach(function(p, i) {
+    var n   = i + 1;
+    var dir  = (document.getElementById('inp-direccion-' + n) || {value:''}).value.trim();
+    var maps = (document.getElementById('inp-mapas-'     + n) || {value:''}).value.trim();
+    var ori  = orientaciones[n] || '';
+    if (!dir || dir.length < 5) {
+      var el = document.getElementById('field-direccion-' + n);
+      if (el) el.classList.add('has-error');
+      valido = false;
+    }
+    if (!maps || maps.length < 5) {
+      var el2 = document.getElementById('field-mapas-' + n);
+      if (el2) el2.classList.add('has-error');
+      valido = false;
+    }
+    if (!ori) {
+      var el3 = document.getElementById('field-orientacion-' + n);
+      if (el3) el3.classList.add('has-error');
+      var e3  = document.getElementById('err-orientacion-' + n);
+      if (e3) e3.style.display = 'block';
+      valido = false;
+    }
+    var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
+    var datosEsp  = {};
+    if (!esTerreno) {
+      datosEsp.presentes = (document.getElementById('inp-presentes-' + n) || {value:''}).value.trim();
+    } else {
+      datosEsp.accesoTerreno     = (document.getElementById('inp-acceso-' + n) || {value:''}).value.trim();
+      datosEsp.orientacionFrente = (document.getElementById('inp-frente-' + n) || {value:''}).value.trim();
+    }
+    var comsEl = document.getElementById('inp-comentarios');
+    if (comsEl && n === 1) datosEsp.comentarios = comsEl.value.trim();
+    propsPayload.push({
+      direccion        : dir,
+      linkMaps         : maps,
+      referencias      : (document.getElementById('inp-referencias-' + n) || {value:''}).value.trim(),
+      orientacion      : ori,
+      sobreLaPropiedad : (document.getElementById('inp-sobre-' + n) || {value:''}).value.trim(),
+      datosEspecificos : datosEsp,
     });
-  }
+  });
 
   if (!valido) {
     var primer = document.querySelector('.has-error');
@@ -771,6 +774,7 @@ function renderRevision() {
 
   if (esP) {
     props.forEach(function(p, i) {
+      var fp    = formData.propsPayload[i] || {};
       var label = props.length > 1 ? 'Propiedad ' + (i + 1) : 'Paquete';
       if (p.paquete) html += '<div class="resumen-fila"><span class="resumen-label">' + label + '</span><span class="resumen-valor">' + esc(p.paquete) + '</span></div>';
       if (p.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(p.fechaSesion)) + '</span></div>';
@@ -778,6 +782,8 @@ function renderRevision() {
         var items = p.entregables.split('·').map(function(e) { return e.trim(); }).filter(Boolean);
         if (items.length) html += '<div class="resumen-fila"><span class="resumen-label">Entregables</span><span class="resumen-valor" style="text-align:right">' + items.join('<br>') + '</span></div>';
       }
+      if (fp.direccion) html += '<div class="resumen-fila"><span class="resumen-label">Dirección</span><span class="resumen-valor">' + esc(fp.direccion) + '</span></div>';
+      if (fp.orientacion) html += '<div class="resumen-fila"><span class="resumen-label">Orientación del video</span><span class="resumen-valor">' + esc(fp.orientacion.split(' — ')[0] || fp.orientacion) + '</span></div>';
     });
   } else {
     formData.propsPayload.forEach(function(p, i) {
