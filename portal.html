@@ -200,6 +200,9 @@
   footer { text-align: center; padding: 24px; font-size: 11px; color: var(--concrete); }
   footer a { color: var(--gold); text-decoration: none; }
 
+  .progress-bar-wrap { width:100%; height:4px; background:var(--border); border-radius:2px; margin-top:14px; overflow:hidden; display:none; }
+  .progress-bar-fill { height:100%; width:0%; background:var(--gold); border-radius:2px; transition:width 0.4s ease; }
+
   /* Print — solo muestra la card del comprobante */
   @media print {
     body > * { display: none !important; }
@@ -739,12 +742,16 @@ function validarYRevisar() {
 
 function _terminosPortal() {
   var ts = [
-    ['01. Pre-producción y planificación', 'El cliente deberá proporcionar la dirección exacta y enlace de ubicación (Google Maps, Waze o equivalente) antes de la sesión. La omisión o inexactitud de esta información puede afectar la calidad del resultado final y es responsabilidad exclusiva del cliente.'],
-    ['02. Sesión de producción', 'El cliente o su representante deberá garantizar el acceso a la propiedad en la fecha y hora acordadas. En caso de cancelación o cambio de fecha con menos de 48 horas de anticipación, el anticipo no es reembolsable. Las reprogramaciones por causa mayor se coordinan sin costo adicional.'],
-    ['03. Entregables y tiempos', 'Los entregables descritos en este contrato se entregarán conforme a los plazos habituales de Inmuebles Audiovisuales. Cualquier plazo específico deberá acordarse por escrito. Los tiempos pueden variar por carga de trabajo.'],
-    ['04. Pagos', 'El servicio requiere un anticipo del 50% al momento de la firma del contrato. El saldo restante se liquida al momento de la entrega del material. Inmuebles Audiovisuales se reserva el derecho de retener el material hasta la liquidación total del servicio.'],
-    ['05. Uso del material', 'Los archivos entregados son para uso exclusivo del cliente en la promoción del inmueble contratado. Queda prohibida la reventa, redistribución o modificación del material audiovisual sin autorización expresa y por escrito de Inmuebles Audiovisuales.'],
-    ['06. Responsabilidad', 'Inmuebles Audiovisuales no se hace responsable por condiciones climáticas adversas, accesos denegados por terceros, o cualquier circunstancia ajena a su control que impida la sesión. En dichos casos se coordinará una nueva fecha sin costo adicional.'],
+    ['01. Pre-producción', 'Antes de la sesión necesitamos la dirección exacta de la propiedad y el enlace de ubicación en Google Maps, Waze o similar. Si esa información llega incompleta o incorrecta, puede afectar el resultado final y queda bajo responsabilidad del cliente.'],
+    ['02. Sesión de producción', 'El cliente o quien lo represente debe garantizar el acceso a la propiedad en la fecha y hora pactadas. Si se cancela o reprograma con menos de 48 horas de anticipación, el anticipo no es reembolsable. Los cambios de fecha por causa mayor se coordinan sin costo extra.'],
+    ['03. Entregables', 'Los archivos se entregan en los plazos habituales de Inmuebles Audiovisuales. Si se requiere una fecha límite específica, debe quedar por escrito antes de la sesión. Los tiempos pueden ajustarse según la carga de trabajo.'],
+    ['04. Pagos', 'El servicio se confirma con un anticipo del 50% al firmar. El saldo restante se cubre al entregar el material. Inmuebles Audiovisuales puede retener los archivos hasta que el pago esté completo.'],
+    ['05. Uso del material', 'Los archivos entregados son para uso exclusivo del cliente en la promoción del inmueble contratado. No está permitido revenderlos, redistribuirlos ni modificarlos sin autorización escrita de Inmuebles Audiovisuales.'],
+    ['06. Derechos de imagen y créditos', 'Inmuebles Audiovisuales se reserva el derecho de usar el material producido como muestra de trabajo en portafolio, redes sociales y materiales de marketing, salvo que el cliente indique lo contrario por escrito antes de la sesión.'],
+    ['07. Condiciones externas', 'Inmuebles Audiovisuales no se responsabiliza por condiciones climáticas adversas, accesos negados por terceros o cualquier situación fuera de su control que impida la sesión. En esos casos se agenda una nueva fecha sin costo adicional.'],
+    ['08. Modificaciones al servicio', 'Cualquier cambio al alcance del servicio después de firmado este contrato debe acordarse por escrito y puede implicar un ajuste en el precio o en los tiempos de entrega.'],
+    ['09. Propiedad intelectual', 'Inmuebles Audiovisuales conserva los derechos de autor sobre el material audiovisual producido. La licencia de uso otorgada al cliente es no exclusiva y se limita a la promoción del inmueble descrito en este contrato.'],
+    ['10. Resolución de disputas', 'Cualquier desacuerdo relacionado con este contrato se resolverá primero por la vía del diálogo directo. Si no se llega a un acuerdo, las partes se someten a la jurisdicción de los tribunales competentes de Monterrey, Nuevo León, México.'],
   ];
   return ts.map(function(t) {
     return '<div style="margin-bottom:16px">' +
@@ -772,7 +779,7 @@ function renderRevision() {
     '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>Volver al formulario</button>';
 
   html += '<p class="page-greeting">Revisa tu <span>contrato.</span></p>';
-  html += '<p class="page-sub">Confirma que todos los datos son correctos antes de firmar. Al firmar, cualquier error en la información proporcionada es responsabilidad del cliente.</p>';
+  html += '<p class="page-sub">Revisa que todo esté correcto. Una vez que firmes, los datos del contrato quedan como los proporcionaste.</p>';
 
   // --- Resumen del servicio ---
   html += '<div class="card"><p class="section-title">Resumen del servicio</p>';
@@ -814,7 +821,7 @@ function renderRevision() {
   // --- Aviso de responsabilidad ---
   html += '<div class="card" style="background:var(--warn-bg);border-color:var(--warn-border)">';
   html += '<p style="font-size:12px;font-weight:700;color:var(--warn);margin-bottom:8px">Responsabilidad sobre la información</p>';
-  html += '<p style="font-size:12px;color:var(--charcoal);line-height:1.7">Al firmar, el cliente declara que toda la información proporcionada en este contrato —incluyendo datos personales, domicilio, enlace de ubicación y detalles de la propiedad— es correcta y verídica. Inmuebles Audiovisuales no asume responsabilidad por errores, omisiones o imprecisiones en los datos suministrados por el cliente, ni por las consecuencias que de ellos se deriven.</p>';
+  html += '<p style="font-size:12px;color:var(--charcoal);line-height:1.7">Al firmar confirmas que los datos de este contrato son correctos. Inmuebles Audiovisuales no se hace responsable por errores en la información que proporcionaste.</p>';
   html += '</div>';
 
   // --- Términos y condiciones ---
@@ -830,6 +837,7 @@ function renderRevision() {
   html += '<div style="height:1px;background:var(--border);margin:20px 0"></div>';
   html += '<div class="terms-row"><input type="checkbox" id="chk-terminos"><label for="chk-terminos">He revisado los detalles del servicio y acepto los términos y condiciones de Inmuebles Audiovisuales.</label></div>';
   html += '<button class="btn-primary" id="btn-firmar" disabled>FIRMAR CONTRATO</button>';
+  html += '<div class="progress-bar-wrap" id="firma-progress-wrap"><div class="progress-bar-fill" id="firma-progress-fill"></div></div>';
   html += '<div class="error-inline" id="error-firma"></div>';
   html += '<p style="font-size:11px;color:var(--concrete);text-align:center;margin-top:12px;line-height:1.6">Recibirás una copia del contrato en tu correo electrónico.</p>';
   html += '</div>';
@@ -892,6 +900,15 @@ function enviarFirma() {
   btn.textContent = 'Firmando contrato...';
   enviando        = true;
 
+  var wrap = document.getElementById('firma-progress-wrap');
+  var fill = document.getElementById('firma-progress-fill');
+  if (wrap) { wrap.style.display = 'block'; }
+  if (fill) {
+    fill.style.width = '0%';
+    setTimeout(function() { fill.style.width = '70%'; }, 50);
+    setTimeout(function() { fill.style.width = '90%'; }, 2000);
+  }
+
   apiPost({
     action          : 'manejarFirmaCliente',
     token           : token,
@@ -908,6 +925,8 @@ function enviarFirma() {
         errEl.style.display = 'block';
         btn.disabled        = false;
         btn.textContent     = 'FIRMAR CONTRATO';
+        if (wrap) wrap.style.display = 'none';
+        if (fill) fill.style.width = '0%';
         actualizarBtnFirmar();
         return;
       }
@@ -921,6 +940,8 @@ function enviarFirma() {
       errEl.style.display = 'block';
       btn.disabled        = false;
       btn.textContent     = 'FIRMAR CONTRATO';
+      if (wrap) wrap.style.display = 'none';
+      if (fill) fill.style.width = '0%';
       actualizarBtnFirmar();
     });
 }
@@ -959,20 +980,20 @@ function renderEtapa2() {
   html += '<div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">' + esc(d.banco || 'Banamex') + '</span></div>';
   html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">' + esc(d.titular || 'Bruno Gutierrez Salazar') + '</span></div>';
   html += '<div class="dato-fila"><span class="dato-label">CLABE</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="clabe-num">' + esc(d.clabe || '') + '</span><button class="btn-copy" id="btn-copy-clabe">Copiar</button></span></div>';
-  html += '<div class="dato-fila"><span class="dato-label">Cuenta</span><span class="dato-valor">' + esc(d.cuenta || '') + '</span></div>';
+  html += '<div class="dato-fila"><span class="dato-label">Número de cuenta</span><span class="dato-valor">' + esc(d.cuenta || '') + '</span></div>';
   html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
   html += '</div></details>';
 
   if (d.clipLink) {
     html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">';
     html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>';
-    html += 'Pagar con Clip · ' + formatMXN(anticipo) + '</a>';
+    html += 'Pagar anticipo con Clip</a>';
   }
 
   var waMsg = encodeURIComponent('Hola, acabo de realizar el pago del anticipo (' + formatMXN(anticipo) + '). Mi folio es ' + folio + '.');
   html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsg + '" target="_blank" rel="noopener" class="btn-wa">';
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>';
-  html += 'Ya pagué — avisar a Inmuebles Audiovisuales</a>';
+  html += 'Ya pagué. Avisarles ahora</a>';
   html += '</div>'; // end payment card
 
   html += '</div>'; // end wrap
@@ -1045,10 +1066,10 @@ function renderEtapa3() {
     html += '<div class="dato-fila"><span class="dato-label">CLABE</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="clabe-saldo">' + esc(d.clabe || '') + '</span><button class="btn-copy" id="btn-copy-clabe2">Copiar</button></span></div>';
     html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(saldo) + '</span></div></div></details>';
     if (d.clipLink) {
-      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">Pagar saldo con Clip · ' + formatMXN(saldo) + '</a>';
+      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">Pagar saldo restante con Clip</a>';
     }
     var waMsg2 = encodeURIComponent('Hola, acabo de realizar el pago del saldo restante (' + formatMXN(saldo) + '). Mi folio es ' + (d.folio || '') + '.');
-    html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsg2 + '" target="_blank" rel="noopener" class="btn-wa">Ya pagué — avisar a Inmuebles Audiovisuales</a>';
+    html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsg2 + '" target="_blank" rel="noopener" class="btn-wa">Ya pagué. Avisarles ahora</a>';
     html += '</div>';
   }
 
@@ -1134,7 +1155,7 @@ function renderEtapa4() {
     html += '<div class="banner warn"><div class="banner-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>';
     html += '<div><div class="banner-title">Saldo pendiente</div><div class="banner-desc">Queda un saldo de ' + formatMXN(saldo) + '. Puedes liquidarlo cuando gustes.</div></div></div>';
     if (d.clipLink) {
-      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:16px">PAGAR SALDO · ' + formatMXN(saldo) + '</a>';
+      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:16px">PAGAR SALDO RESTANTE</a>';
     }
   }
 
