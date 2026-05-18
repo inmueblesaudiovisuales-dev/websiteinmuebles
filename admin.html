@@ -629,6 +629,15 @@ let todosContratos = [];
 let tokenActivo    = null;
 let precioManual   = false;
 
+function normalizarTelWA(tel) {
+  if (!tel) return '';
+  var d = tel.replace(/\D/g, '');
+  if (d.startsWith('521') && d.length === 13) return d;
+  if (d.startsWith('52')  && d.length === 12) return '521' + d.substring(2);
+  if (d.length === 10) return '521' + d;
+  return d;
+}
+
 // ── LOGIN ─────────────────────────────────────────────────────────────────────
 
 function intentarLogin() {
@@ -914,7 +923,8 @@ function renderPanel(data) {
       }).join('')
     : '<p style="font-size:12px;color:var(--ink-3)">Sin propiedades configuradas aún.</p>';
 
-  const waUrl = 'https://wa.me/?text=' + encodeURIComponent('Aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + urlPortal);
+  const waTelPortal = normalizarTelWA(c.TelefonoCliente);
+  const waUrl = 'https://wa.me/' + waTelPortal + '?text=' + encodeURIComponent('Aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + urlPortal);
 
   document.getElementById('pane-general').innerHTML = `
     <div class="info-fila"><span class="etiq">Cliente</span><span class="val">${esc(c.NombreCliente)}</span></div>
@@ -1176,7 +1186,10 @@ async function crearContrato(tipo) {
     const waTxt    = esConfig
       ? 'Creé tu cotización. Usaré este link para configurar las propiedades: ' + data.url
       : 'Hola, aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + data.url;
-    const waUrl = 'https://wa.me/?text=' + encodeURIComponent(waTxt);
+    const waTelNuevo = normalizarTelWA(isEst
+      ? document.getElementById('est-telefono').value.trim()
+      : document.getElementById('par-telefono').value.trim());
+    const waUrl = 'https://wa.me/' + waTelNuevo + '?text=' + encodeURIComponent(waTxt);
 
     document.getElementById(resId).innerHTML = `
       <div class="resultado-box">
