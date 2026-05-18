@@ -50,9 +50,11 @@
 
   /* States */
   #state-loading, #state-error { display: none; }
-  .spinner { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; gap: 16px; color: var(--concrete); font-size: 13px; }
-  .spinner-ring { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--gold); border-radius: 50%; animation: spin 0.8s linear infinite; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .progreso-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 240px; gap: 16px; }
+  .progreso-barra { width: min(240px, 60vw); height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progreso-relleno { height: 100%; background: var(--gold); border-radius: 2px; width: 0; animation: progreso 3s ease-out forwards; }
+  .progreso-texto { font-size: 12px; color: var(--concrete); }
+  @keyframes progreso { 0% { width: 0 } 50% { width: 65% } 80% { width: 82% } 100% { width: 88% } }
 
   /* Layout */
   .wrap { max-width: 560px; margin: 0 auto; padding: 24px 16px 64px; }
@@ -124,10 +126,11 @@
   .addon-entregables { font-size: 11px; color: var(--concrete); margin-top: 4px; line-height: 1.5; }
 
   /* Total */
-  .total-box { background: var(--charcoal); border-radius: 10px; padding: 16px 18px; margin-top: 4px; }
-  .total-fila { display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,0.65); margin-bottom: 6px; }
+  .total-box { background: var(--gold-dim); border: 1.5px solid rgba(201,168,76,0.25); border-radius: 10px; padding: 16px 18px; margin-top: 4px; }
+  .total-fila { display: flex; justify-content: space-between; font-size: 13px; color: var(--concrete); margin-bottom: 6px; font-weight: 500; }
   .total-fila:last-child { margin-bottom: 0; }
-  .total-fila.principal { color: #fff; font-size: 16px; font-weight: 800; }
+  .total-fila.separador { border-top: 1px solid rgba(201,168,76,0.30); padding-top: 8px; margin-top: 2px; }
+  .total-fila.principal { color: var(--charcoal); font-size: 16px; font-weight: 800; }
   .total-fila.anticipo  { color: var(--gold); font-weight: 700; }
 
   /* Signature canvas */
@@ -228,7 +231,10 @@
 </div>
 
 <div id="state-loading">
-  <div class="spinner"><div class="spinner-ring"></div><span>Cargando tu contrato...</span></div>
+  <div class="progreso-wrap">
+    <div class="progreso-barra"><div class="progreso-relleno"></div></div>
+    <span class="progreso-texto">Cargando tu contrato...</span>
+  </div>
 </div>
 
 <div id="state-error">
@@ -251,8 +257,9 @@ var API   = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5U
 var token = new URLSearchParams(location.search).get('token') || '';
 
 var portalData    = null;
-var adicionalesOn = {};   // { 'ADD-COMOLLEGAR': true, ... }
-var orientaciones = {};   // { 1: 'Horizontal (16:9) — YouTube, sitios web', 2: ... }
+var formData      = null;
+var adicionalesOn = {};
+var orientaciones = {};
 var hasStroke     = false;
 var isDrawing     = false;
 var enviando      = false;
@@ -429,8 +436,8 @@ function renderEtapa1() {
     });
     html += '<div class="total-box" id="total-box">' +
       '<div class="total-fila"><span>Precio base</span><span id="tb-base">' + formatMXN(precioBase) + '</span></div>' +
-      '<div class="total-fila" id="tb-adicionales-row" style="display:none"><span>Adicionales</span><span id="tb-adicionales"></span></div>' +
-      '<div class="total-fila principal"><span>Total</span><span id="tb-total">' + formatMXN(precioBase) + '</span></div>' +
+      '<div id="tb-addons-list"></div>' +
+      '<div class="total-fila principal separador"><span>Total</span><span id="tb-total">' + formatMXN(precioBase) + '</span></div>' +
       '<div class="total-fila anticipo"><span>Anticipo (50%)</span><span id="tb-anticipo">' + formatMXN(precioBase * 0.5) + '</span></div>' +
     '</div>';
     html += '</div>'; // end addons card
@@ -488,37 +495,19 @@ function renderEtapa1() {
     html += '<div class="field" style="margin-bottom:0"><label>¿Hay algo más que debamos saber? (opcional)</label><textarea id="inp-comentarios" placeholder="Referencias visuales, colores de tu marca, datos para el video, o cualquier detalle adicional." style="min-height:100px"></textarea></div></div>';
   }
 
-  // --- Firma ---
-  html += '<div class="card"><p class="section-title">Firma del contrato</p>';
-  html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Dibuja tu firma con el dedo o el cursor. Al firmar aceptas los términos del servicio y el desglose de entregables indicados.</p>';
-  html += '<div class="firma-wrap"><canvas id="firma-canvas"></canvas></div>';
-  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><p class="firma-hint">Dibuja tu firma en el recuadro</p><button class="btn-limpiar" id="btn-limpiar">Limpiar</button></div>';
-  html += '<div style="height:1px;background:var(--border);margin:20px 0"></div>';
-  html += '<div class="terms-row"><input type="checkbox" id="chk-terminos"><label for="chk-terminos">He revisado los detalles del servicio y acepto los <a href="https://inmueblesaudiovisuales.com/terminos.html" target="_blank" rel="noopener">términos y condiciones</a> de Inmuebles Audiovisuales.</label></div>';
-  html += '<button class="btn-primary" id="btn-firmar" disabled>FIRMAR CONTRATO</button>';
-  html += '<div class="error-inline" id="error-firma"></div>';
-  html += '<p style="font-size:11px;color:var(--concrete);text-align:center;margin-top:12px;line-height:1.6">Recibirás una copia del contrato en tu correo electrónico.</p>';
-  html += '</div>'; // end firma card
+  html += '<button class="btn-primary" id="btn-revisar">REVISAR Y FIRMAR CONTRATO</button>';
+  html += '<div class="error-inline" id="error-form"></div>';
 
   html += '</div>'; // end wrap
   document.getElementById('main-content').innerHTML = html;
 
-  // Event listeners add-ons
   document.querySelectorAll('.addon-card').forEach(function(el) {
     el.addEventListener('click', function() { toggleAdicion(el.dataset.clave); });
   });
-
-  // Event listeners orientación
   document.querySelectorAll('.orientacion-btn').forEach(function(el) {
     el.addEventListener('click', function() { seleccionarOrientacion(parseInt(el.dataset.prop, 10), el.dataset.valor); });
   });
-
-  // Terms + canvas button state
-  document.getElementById('chk-terminos').addEventListener('change', actualizarBtnFirmar);
-  document.getElementById('btn-limpiar').addEventListener('click', limpiarFirma);
-  document.getElementById('btn-firmar').addEventListener('click', enviarFirma);
-
-  initCanvas();
+  document.getElementById('btn-revisar').addEventListener('click', validarYRevisar);
 }
 
 /* ── ADD-ONS ────────────────────────────────────────────────────────────────── */
@@ -540,22 +529,24 @@ function actualizarTotales() {
   var total    = base + addSum;
   var anticipo = Math.round(total * 0.5);
 
-  // Update resumen card
   var elTotal    = document.getElementById('txt-total');
   var elAnticipo = document.getElementById('txt-anticipo');
   if (elTotal)    elTotal.textContent    = formatMXN(total);
   if (elAnticipo) elAnticipo.textContent = formatMXN(anticipo);
 
-  // Update total box
   var tbTotal    = document.getElementById('tb-total');
   var tbAnticipo = document.getElementById('tb-anticipo');
-  var tbAddRow   = document.getElementById('tb-adicionales-row');
-  var tbAdd      = document.getElementById('tb-adicionales');
+  var tbAddList  = document.getElementById('tb-addons-list');
   if (tbTotal)    tbTotal.textContent    = formatMXN(total);
   if (tbAnticipo) tbAnticipo.textContent = formatMXN(anticipo);
-  if (tbAddRow && tbAdd) {
-    if (addSum > 0) { tbAddRow.style.display = ''; tbAdd.textContent = '+' + formatMXN(addSum); }
-    else              { tbAddRow.style.display = 'none'; }
+  if (tbAddList) {
+    var rows = '';
+    addons.forEach(function(a) {
+      if (adicionalesOn[a.Clave]) {
+        rows += '<div class="total-fila"><span>' + esc(a.Nombre || a.Clave) + '</span><span>+' + formatMXN(a.Precio) + '</span></div>';
+      }
+    });
+    tbAddList.innerHTML = rows;
   }
 }
 
@@ -646,10 +637,9 @@ function actualizarBtnFirmar() {
 
 /* ── ENVIAR FIRMA ───────────────────────────────────────────────────────────── */
 
-function enviarFirma() {
-  if (enviando) return;
-  var errEl = document.getElementById('error-firma');
-  errEl.style.display = 'none';
+function validarYRevisar() {
+  var errEl = document.getElementById('error-form');
+  if (errEl) errEl.style.display = 'none';
 
   var correo   = (document.getElementById('inp-correo')   || {value:''}).value.trim();
   var telefono = (document.getElementById('inp-telefono') || {value:''}).value.trim();
@@ -663,7 +653,6 @@ function enviarFirma() {
     var fc2 = document.getElementById('field-correo');
     if (fc2) fc2.classList.remove('has-error');
   }
-
   if (!telefono || telefono.replace(/\D/g,'').length < 8) {
     var ft = document.getElementById('field-telefono');
     if (ft) ft.classList.add('has-error');
@@ -673,17 +662,16 @@ function enviarFirma() {
     if (ft2) ft2.classList.remove('has-error');
   }
 
-  var esParticular  = portalData && portalData.tipoContrato === 'particular';
-  var props         = (portalData && portalData.propiedades) || [];
-  var propsPayload  = [];
+  var esParticular = portalData && portalData.tipoContrato === 'particular';
+  var props        = (portalData && portalData.propiedades) || [];
+  var propsPayload = [];
 
   if (!esParticular) {
     props.forEach(function(p, i) {
-      var n = i + 1;
+      var n   = i + 1;
       var dir  = (document.getElementById('inp-direccion-' + n) || {value:''}).value.trim();
       var maps = (document.getElementById('inp-mapas-'     + n) || {value:''}).value.trim();
       var ori  = orientaciones[n] || '';
-
       if (!dir || dir.length < 5) {
         var el = document.getElementById('field-direccion-' + n);
         if (el) el.classList.add('has-error');
@@ -701,18 +689,16 @@ function enviarFirma() {
         if (e3) e3.style.display = 'block';
         valido = false;
       }
-
       var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
       var datosEsp  = {};
       if (!esTerreno) {
         datosEsp.presentes = (document.getElementById('inp-presentes-' + n) || {value:''}).value.trim();
       } else {
-        datosEsp.accesoTerreno    = (document.getElementById('inp-acceso-' + n) || {value:''}).value.trim();
-        datosEsp.orientacionFrente= (document.getElementById('inp-frente-' + n) || {value:''}).value.trim();
+        datosEsp.accesoTerreno     = (document.getElementById('inp-acceso-' + n) || {value:''}).value.trim();
+        datosEsp.orientacionFrente = (document.getElementById('inp-frente-' + n) || {value:''}).value.trim();
       }
-      var comentariosEl = document.getElementById('inp-comentarios');
-      if (comentariosEl && n === 1) datosEsp.comentarios = comentariosEl.value.trim();
-
+      var comsEl = document.getElementById('inp-comentarios');
+      if (comsEl && n === 1) datosEsp.comentarios = comsEl.value.trim();
       propsPayload.push({
         direccion        : dir,
         linkMaps         : maps,
@@ -730,22 +716,176 @@ function enviarFirma() {
     return;
   }
 
-  var firmaDataUrl = canvas.toDataURL('image/png');
-  var adicionalesSeleccionados = Object.keys(adicionalesOn).filter(function(c) { return adicionalesOn[c]; });
+  formData = {
+    correo                 : correo,
+    telefono               : telefono,
+    adicionalesSeleccionados: Object.keys(adicionalesOn).filter(function(c) { return adicionalesOn[c]; }),
+    adicionalesSnapshot    : Object.assign({}, adicionalesOn),
+    propsPayload           : propsPayload,
+  };
+  renderRevision();
+}
 
-  var btn       = document.getElementById('btn-firmar');
-  btn.disabled  = true;
+function _terminosPortal() {
+  var ts = [
+    ['01. Pre-producción y planificación', 'El cliente deberá proporcionar la dirección exacta y enlace de ubicación (Google Maps, Waze o equivalente) antes de la sesión. La omisión o inexactitud de esta información puede afectar la calidad del resultado final y es responsabilidad exclusiva del cliente.'],
+    ['02. Sesión de producción', 'El cliente o su representante deberá garantizar el acceso a la propiedad en la fecha y hora acordadas. En caso de cancelación o cambio de fecha con menos de 48 horas de anticipación, el anticipo no es reembolsable. Las reprogramaciones por causa mayor se coordinan sin costo adicional.'],
+    ['03. Entregables y tiempos', 'Los entregables descritos en este contrato se entregarán conforme a los plazos habituales de Inmuebles Audiovisuales. Cualquier plazo específico deberá acordarse por escrito. Los tiempos pueden variar por carga de trabajo.'],
+    ['04. Pagos', 'El servicio requiere un anticipo del 50% al momento de la firma del contrato. El saldo restante se liquida al momento de la entrega del material. Inmuebles Audiovisuales se reserva el derecho de retener el material hasta la liquidación total del servicio.'],
+    ['05. Uso del material', 'Los archivos entregados son para uso exclusivo del cliente en la promoción del inmueble contratado. Queda prohibida la reventa, redistribución o modificación del material audiovisual sin autorización expresa y por escrito de Inmuebles Audiovisuales.'],
+    ['06. Responsabilidad', 'Inmuebles Audiovisuales no se hace responsable por condiciones climáticas adversas, accesos denegados por terceros, o cualquier circunstancia ajena a su control que impida la sesión. En dichos casos se coordinará una nueva fecha sin costo adicional.'],
+  ];
+  return ts.map(function(t) {
+    return '<div style="margin-bottom:16px">' +
+      '<p style="font-size:11px;font-weight:800;letter-spacing:0.8px;color:var(--gold);text-transform:uppercase;margin-bottom:6px">' + esc(t[0]) + '</p>' +
+      '<p style="font-size:12px;color:var(--charcoal);line-height:1.7">' + esc(t[1]) + '</p>' +
+    '</div>';
+  }).join('');
+}
+
+function renderRevision() {
+  var d     = portalData;
+  var esP   = d.tipoContrato === 'particular';
+  var props = d.propiedades || [];
+  var addons = d.paquetesDisponibles || [];
+  var base  = parseFloat(d.precioBase) || 0;
+  var addSum = 0;
+  addons.forEach(function(a) { if (adicionalesOn[a.Clave]) addSum += (parseFloat(a.Precio) || 0); });
+  var total    = base + addSum;
+  var anticipo = Math.round(total * 0.5);
+  var activos  = addons.filter(function(a) { return adicionalesOn[a.Clave]; });
+
+  var html = '<div class="wrap">';
+
+  html += '<button class="btn-limpiar" id="btn-volver" style="margin-bottom:20px;padding:8px 16px;display:inline-flex;align-items:center;gap:6px">' +
+    '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>Volver al formulario</button>';
+
+  html += '<p class="page-greeting">Revisa tu <span>contrato.</span></p>';
+  html += '<p class="page-sub">Confirma que todos los datos son correctos antes de firmar. Al firmar, cualquier error en la información proporcionada es responsabilidad del cliente.</p>';
+
+  // --- Resumen del servicio ---
+  html += '<div class="card"><p class="section-title">Resumen del servicio</p>';
+  html += '<div class="resumen-fila"><span class="resumen-label">Cliente</span><span class="resumen-valor">' + esc(d.nombre) + '</span></div>';
+  html += '<div class="resumen-fila"><span class="resumen-label">Correo</span><span class="resumen-valor">' + esc(formData.correo) + '</span></div>';
+  html += '<div class="resumen-fila"><span class="resumen-label">Teléfono</span><span class="resumen-valor">' + esc(formData.telefono) + '</span></div>';
+
+  if (esP) {
+    props.forEach(function(p, i) {
+      var label = props.length > 1 ? 'Propiedad ' + (i + 1) : 'Paquete';
+      if (p.paquete) html += '<div class="resumen-fila"><span class="resumen-label">' + label + '</span><span class="resumen-valor">' + esc(p.paquete) + '</span></div>';
+      if (p.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(p.fechaSesion)) + '</span></div>';
+      if (p.entregables) {
+        var items = p.entregables.split('·').map(function(e) { return e.trim(); }).filter(Boolean);
+        if (items.length) html += '<div class="resumen-fila"><span class="resumen-label">Entregables</span><span class="resumen-valor" style="text-align:right">' + items.join('<br>') + '</span></div>';
+      }
+    });
+  } else {
+    formData.propsPayload.forEach(function(p, i) {
+      var prop  = props[i] || {};
+      var label = props.length > 1 ? 'Propiedad ' + (i + 1) : 'Paquete';
+      if (prop.paquete) html += '<div class="resumen-fila"><span class="resumen-label">' + label + '</span><span class="resumen-valor">' + esc(prop.paquete) + '</span></div>';
+      if (prop.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(prop.fechaSesion)) + '</span></div>';
+      if (p.direccion) html += '<div class="resumen-fila"><span class="resumen-label">Dirección</span><span class="resumen-valor">' + esc(p.direccion) + '</span></div>';
+      if (p.orientacion) html += '<div class="resumen-fila"><span class="resumen-label">Orientación del video</span><span class="resumen-valor">' + esc(p.orientacion.split(' — ')[0] || p.orientacion) + '</span></div>';
+    });
+  }
+
+  if (activos.length > 0) {
+    html += '<div class="resumen-fila"><span class="resumen-label">Servicios adicionales</span><span class="resumen-valor" style="text-align:right">' + activos.map(function(a) { return esc(a.Nombre || a.Clave); }).join('<br>') + '</span></div>';
+  }
+  html += '<div class="resumen-fila"><span class="resumen-label">Total del servicio</span><span class="resumen-valor gold">' + formatMXN(total) + '</span></div>';
+  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Anticipo requerido (50%)</span><span class="resumen-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
+  html += '</div>';
+
+  // --- Aviso de responsabilidad ---
+  html += '<div class="card" style="background:var(--warn-bg);border-color:var(--warn-border)">';
+  html += '<p style="font-size:12px;font-weight:700;color:var(--warn);margin-bottom:8px">Responsabilidad sobre la información</p>';
+  html += '<p style="font-size:12px;color:var(--charcoal);line-height:1.7">Al firmar, el cliente declara que toda la información proporcionada en este contrato —incluyendo datos personales, domicilio, enlace de ubicación y detalles de la propiedad— es correcta y verídica. Inmuebles Audiovisuales no asume responsabilidad por errores, omisiones o imprecisiones en los datos suministrados por el cliente, ni por las consecuencias que de ellos se deriven.</p>';
+  html += '</div>';
+
+  // --- Términos y condiciones ---
+  html += '<div class="card"><p class="section-title">Términos y condiciones</p>';
+  html += _terminosPortal();
+  html += '</div>';
+
+  // --- Firma ---
+  html += '<div class="card"><p class="section-title">Firma digital</p>';
+  html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Dibuja tu firma con el dedo o el cursor para formalizar el contrato.</p>';
+  html += '<div class="firma-wrap"><canvas id="firma-canvas"></canvas></div>';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><p class="firma-hint">Dibuja tu firma en el recuadro</p><button class="btn-limpiar" id="btn-limpiar">Limpiar</button></div>';
+  html += '<div style="height:1px;background:var(--border);margin:20px 0"></div>';
+  html += '<div class="terms-row"><input type="checkbox" id="chk-terminos"><label for="chk-terminos">He revisado los detalles del servicio y acepto los términos y condiciones de Inmuebles Audiovisuales.</label></div>';
+  html += '<button class="btn-primary" id="btn-firmar" disabled>FIRMAR CONTRATO</button>';
+  html += '<div class="error-inline" id="error-firma"></div>';
+  html += '<p style="font-size:11px;color:var(--concrete);text-align:center;margin-top:12px;line-height:1.6">Recibirás una copia del contrato en tu correo electrónico.</p>';
+  html += '</div>';
+
+  html += '</div>'; // end wrap
+  document.getElementById('main-content').innerHTML = html;
+
+  document.getElementById('btn-volver').addEventListener('click', function() {
+    hasStroke = false;
+    renderEtapa1();
+    requestAnimationFrame(function() {
+      var correoEl = document.getElementById('inp-correo');
+      if (correoEl) correoEl.value = formData.correo || '';
+      var telEl = document.getElementById('inp-telefono');
+      if (telEl) telEl.value = formData.telefono || '';
+      formData.propsPayload.forEach(function(p, i) {
+        var n = i + 1;
+        var pairs = [
+          ['inp-direccion-'  + n, p.direccion],
+          ['inp-mapas-'      + n, p.linkMaps],
+          ['inp-sobre-'      + n, p.sobreLaPropiedad],
+          ['inp-referencias-'+ n, p.referencias],
+          ['inp-presentes-'  + n, p.datosEspecificos && p.datosEspecificos.presentes],
+          ['inp-acceso-'     + n, p.datosEspecificos && p.datosEspecificos.accesoTerreno],
+          ['inp-frente-'     + n, p.datosEspecificos && p.datosEspecificos.orientacionFrente],
+        ];
+        pairs.forEach(function(pair) { var el = document.getElementById(pair[0]); if (el && pair[1]) el.value = pair[1]; });
+        if (i === 0 && p.datosEspecificos && p.datosEspecificos.comentarios) {
+          var cEl = document.getElementById('inp-comentarios');
+          if (cEl) cEl.value = p.datosEspecificos.comentarios;
+        }
+        if (p.orientacion) seleccionarOrientacion(n, p.orientacion);
+      });
+      adicionalesOn = Object.assign({}, formData.adicionalesSnapshot);
+      var adds = (portalData && portalData.paquetesDisponibles) || [];
+      adds.forEach(function(a) {
+        var el = document.getElementById('addon-' + a.Clave);
+        if (el) el.classList.toggle('activo', !!adicionalesOn[a.Clave]);
+      });
+      actualizarTotales();
+    });
+  });
+
+  document.getElementById('chk-terminos').addEventListener('change', actualizarBtnFirmar);
+  document.getElementById('btn-limpiar').addEventListener('click', limpiarFirma);
+  document.getElementById('btn-firmar').addEventListener('click', enviarFirma);
+  hasStroke = false;
+  initCanvas();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function enviarFirma() {
+  if (enviando || !formData) return;
+  var errEl = document.getElementById('error-firma');
+  errEl.style.display = 'none';
+
+  var firmaDataUrl = canvas.toDataURL('image/png');
+  var btn = document.getElementById('btn-firmar');
+  btn.disabled    = true;
   btn.textContent = 'Firmando contrato...';
-  enviando      = true;
+  enviando        = true;
 
   apiPost({
-    action         : 'manejarFirmaCliente',
-    token          : token,
-    correoCliente  : correo,
-    telefonoCliente: telefono,
-    firmaBase64    : firmaDataUrl,
-    adicionales    : adicionalesSeleccionados,
-    propiedades    : propsPayload,
+    action          : 'manejarFirmaCliente',
+    token           : token,
+    correoCliente   : formData.correo,
+    telefonoCliente : formData.telefono,
+    firmaBase64     : firmaDataUrl,
+    adicionales     : formData.adicionalesSeleccionados,
+    propiedades     : formData.propsPayload,
   })
     .then(function(data) {
       enviando = false;
@@ -757,8 +897,8 @@ function enviarFirma() {
         actualizarBtnFirmar();
         return;
       }
-      // Reload portal to show Etapa 2
       portalData = null;
+      formData   = null;
       init();
     })
     .catch(function() {
@@ -798,15 +938,8 @@ function renderEtapa2() {
   html += '<div class="card"><p class="section-title">Opciones de pago</p>';
   html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Realiza el pago del anticipo para confirmar la fecha de tu sesión. Trabajamos por orden de confirmación.</p>';
 
-  if (d.clipLink) {
-    html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:10px">';
-    html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>';
-    html += 'PAGAR CON CLIP · ' + formatMXN(anticipo) + '</a>';
-    html += '<p style="font-size:11px;color:var(--concrete);text-align:center;margin-bottom:16px">Tarjeta de crédito o débito · Link de pago seguro</p>';
-  }
-
-  // CLABE transfer
-  html += '<details style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
+  // CLABE primero, acordeón abierto
+  html += '<details open style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
   html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Transferencia bancaria<span style="font-size:11px;color:var(--concrete);font-weight:500">CLABE / SPEI</span></summary>';
   html += '<div style="padding:0 16px 16px">';
   html += '<div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">' + esc(d.banco || 'Banamex') + '</span></div>';
@@ -816,7 +949,12 @@ function renderEtapa2() {
   html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
   html += '</div></details>';
 
-  // WhatsApp notify
+  if (d.clipLink) {
+    html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">';
+    html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>';
+    html += 'Pagar con Clip · ' + formatMXN(anticipo) + '</a>';
+  }
+
   var waMsg = encodeURIComponent('Hola, acabo de realizar el pago del anticipo (' + formatMXN(anticipo) + '). Mi folio es ' + folio + '.');
   html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsg + '" target="_blank" rel="noopener" class="btn-wa">';
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>';
@@ -887,14 +1025,14 @@ function renderEtapa3() {
   if (saldo > 0) {
     html += '<div class="card"><p class="section-title">Pagar saldo restante</p>';
     html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Puedes liquidar el saldo antes, durante o después de la entrega del material.</p>';
-    if (d.clipLink) {
-      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:10px">PAGAR SALDO · ' + formatMXN(saldo) + '</a>';
-    }
-    html += '<details style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px"><summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Transferencia bancaria<span style="font-size:11px;color:var(--concrete);font-weight:500">CLABE / SPEI</span></summary>';
+    html += '<details open style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px"><summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Transferencia bancaria<span style="font-size:11px;color:var(--concrete);font-weight:500">CLABE / SPEI</span></summary>';
     html += '<div style="padding:0 16px 16px"><div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">' + esc(d.banco || '') + '</span></div>';
     html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">' + esc(d.titular || '') + '</span></div>';
     html += '<div class="dato-fila"><span class="dato-label">CLABE</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="clabe-saldo">' + esc(d.clabe || '') + '</span><button class="btn-copy" id="btn-copy-clabe2">Copiar</button></span></div>';
     html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(saldo) + '</span></div></div></details>';
+    if (d.clipLink) {
+      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">Pagar saldo con Clip · ' + formatMXN(saldo) + '</a>';
+    }
     var waMsg2 = encodeURIComponent('Hola, acabo de realizar el pago del saldo restante (' + formatMXN(saldo) + '). Mi folio es ' + (d.folio || '') + '.');
     html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsg2 + '" target="_blank" rel="noopener" class="btn-wa">Ya pagué — avisar a Inmuebles Audiovisuales</a>';
     html += '</div>';
