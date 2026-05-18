@@ -218,10 +218,93 @@
     #card-comprobante {
       display: block !important;
       box-shadow: none !important;
-      border: 1px solid #ddd !important;
+      border: none !important;
       margin: 0 !important;
     }
-    #card-comprobante .section-title { font-size: 13pt; }
+  }
+
+  /* ── COMPROBANTE PROFESIONAL ─────────────────────────────── */
+  #card-comprobante { padding: 0; overflow: hidden; }
+  .comp-header {
+    background: var(--charcoal);
+    padding: 16px 22px;
+    display: flex; align-items: center; justify-content: space-between;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .comp-header-logo { height: 28px; width: auto; }
+  .comp-header-titulo {
+    font-size: 13px; font-weight: 800; letter-spacing: 2.5px;
+    text-transform: uppercase; color: white;
+  }
+  .comp-body { padding: 20px 22px; }
+  .comp-meta {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 16px; margin-bottom: 18px;
+    padding-bottom: 16px; border-bottom: 1.5px solid var(--border);
+  }
+  .comp-sec {
+    font-size: 9px; font-weight: 800; letter-spacing: 1.2px;
+    text-transform: uppercase; color: var(--charcoal);
+    border-left: 2.5px solid var(--gold); padding-left: 7px;
+    margin: 16px 0 10px;
+  }
+  .comp-sec-first { margin-top: 0; }
+  .comp-info-lbl {
+    font-size: 9px; font-weight: 800; letter-spacing: 1px;
+    text-transform: uppercase; color: var(--gold); margin-bottom: 8px;
+  }
+  .comp-info-fila { display: flex; gap: 8px; font-size: 12px; margin-bottom: 3px; }
+  .comp-info-key { font-weight: 700; min-width: 58px; flex-shrink: 0; color: var(--charcoal); }
+  .comp-info-val { color: var(--concrete); word-break: break-all; }
+  .comp-num-fila { display: flex; gap: 10px; justify-content: flex-end; font-size: 12px; margin-bottom: 4px; }
+  .comp-num-key { font-weight: 700; color: var(--charcoal); }
+  .comp-num-val { font-family: 'Courier New', monospace; font-weight: 700; color: var(--charcoal); }
+  .comp-tabla { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .comp-tabla thead tr {
+    background: var(--charcoal); color: white;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .comp-tabla th {
+    padding: 9px 10px; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.8px; text-transform: uppercase; text-align: left;
+  }
+  .comp-tabla th:last-child, .comp-tabla td:last-child { text-align: right; }
+  .comp-tabla td { padding: 9px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .comp-tabla tbody tr:nth-child(even) td {
+    background: var(--surface);
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .comp-tabla tbody tr:last-child td { border-bottom: none; }
+  .comp-totales { display: flex; justify-content: flex-end; margin-top: 8px; }
+  .comp-totales-inner { min-width: 220px; }
+  .comp-total-fila {
+    display: flex; justify-content: space-between; gap: 20px;
+    font-size: 12px; padding: 5px 0; color: var(--concrete);
+    border-bottom: 1px solid var(--border);
+  }
+  .comp-total-fila .val { font-weight: 700; color: var(--charcoal); }
+  .comp-total-final {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; margin-top: 6px; padding: 10px 12px; border-radius: 6px;
+    font-size: 12px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;
+    background: var(--charcoal); color: white;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .comp-total-final .val { color: var(--gold); font-size: 14px; }
+  .comp-total-final.liquidado { background: var(--success); }
+  .comp-total-final.liquidado .val { color: white; }
+  .comp-footer {
+    margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--border);
+    display: flex; justify-content: center; gap: 12px; flex-wrap: wrap;
+    font-size: 10px; color: var(--concrete);
+  }
+  .comp-footer a { color: var(--concrete); text-decoration: none; }
+  .comp-footer-sep { color: var(--border-strong); }
+  @media (max-width: 420px) {
+    .comp-meta { grid-template-columns: 1fr; }
+    .comp-num-fila { justify-content: flex-start; }
+    .comp-totales { justify-content: stretch; }
+    .comp-totales-inner { width: 100%; }
   }
 </style>
 </head>
@@ -419,12 +502,19 @@ function renderEtapa1() {
     }
   }
 
-  var precioBase = parseFloat(d.precioBase) || 0;
+  // Usar precioTotal (precio que Bruno fijó) como base de visualización.
+  // precioBase (precio de catálogo) sirve solo de referencia contable.
+  var precioBase = parseFloat(d.precioTotal) || parseFloat(d.precioBase) || 0;
+  var anticipo0  = parseFloat(d.anticipo) || Math.round(precioBase * 0.5);
   if (precioBase > 0) {
     html += '<div class="resumen-fila"><span class="resumen-label">Precio base</span><span class="resumen-valor" id="txt-precio-base">' + esc(formatMXN(precioBase)) + '</span></div>';
   }
-  html += '<div class="resumen-fila"><span class="resumen-label">Total estimado</span><span class="resumen-valor gold" id="txt-total">' + esc(formatMXN(precioBase)) + '</span></div>';
-  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Anticipo (50%)</span><span class="resumen-valor" id="txt-anticipo" style="color:var(--gold);font-size:15px">' + esc(formatMXN(precioBase * 0.5)) + '</span></div>';
+  html += '<div class="resumen-fila"><span class="resumen-label">Total</span><span class="resumen-valor gold" id="txt-total">' + esc(formatMXN(precioBase)) + '</span></div>';
+  var pctAnticipo0 = precioBase > 0 ? Math.round(anticipo0 / precioBase * 100) : 50;
+  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label" id="txt-anticipo-label">Anticipo (' + pctAnticipo0 + '%)</span><span class="resumen-valor" id="txt-anticipo" style="color:var(--gold);font-size:15px">' + esc(formatMXN(anticipo0)) + '</span></div>';
+  if (esParticular && d.notasContrato) {
+    html += '<div class="resumen-fila" style="border-bottom:none;margin-top:8px"><span class="resumen-label">Notas</span><span class="resumen-valor" style="font-size:12px;color:var(--concrete);text-align:right;white-space:pre-wrap;line-height:1.5">' + esc(d.notasContrato) + '</span></div>';
+  }
 
   // Propiedad resúmenes en particular
   if (esParticular && props.length > 0) {
@@ -440,8 +530,8 @@ function renderEtapa1() {
   }
   html += '</div>'; // end resumen card
 
-  // --- Add-ons ---
-  if (addons.length > 0) {
+  // --- Add-ons (solo en contratos estándar) ---
+  if (addons.length > 0 && !esParticular) {
     html += '<div class="card"><p class="section-title">Servicios adicionales</p><p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Agrega servicios opcionales a tu producción. El total se actualiza automáticamente.</p>';
     addons.forEach(function(a) {
       var clave = esc(a.Clave || '');
@@ -456,7 +546,7 @@ function renderEtapa1() {
       '<div class="total-fila"><span>Precio base</span><span id="tb-base">' + formatMXN(precioBase) + '</span></div>' +
       '<div id="tb-addons-list"></div>' +
       '<div class="total-fila principal separador"><span>Total</span><span id="tb-total">' + formatMXN(precioBase) + '</span></div>' +
-      '<div class="total-fila anticipo"><span>Anticipo (50%)</span><span id="tb-anticipo">' + formatMXN(precioBase * 0.5) + '</span></div>' +
+      '<div class="total-fila anticipo"><span id="tb-anticipo-label">Anticipo (' + pctAnticipo0 + '%)</span><span id="tb-anticipo">' + formatMXN(anticipo0) + '</span></div>' +
     '</div>';
     html += '</div>'; // end addons card
   }
@@ -508,7 +598,20 @@ function renderEtapa1() {
         html += '<div class="field"><label>Sobre el terreno (opcional)</label><textarea id="inp-sobre-' + n + '" placeholder="Superficie en m², frente, fondo, zonificación, servicios disponibles, tipo de terreno..." style="min-height:100px"></textarea></div>';
         html += '<div class="field"><label>Acceso al terreno (opcional)</label><textarea id="inp-acceso-' + n + '" placeholder="¿Hay candado o reja? ¿Quién abre?"></textarea></div>';
         html += '<div class="field"><label>Orientación del frente (opcional)</label><textarea id="inp-frente-' + n + '" placeholder="¿Cuál es el frente oficial? ¿Hacia dónde da?"></textarea></div>';
-        html += '<div class="field"><label>Perímetro del terreno</label><p class="field-hint" style="margin-top:0;margin-bottom:8px">Puedes subir la captura en la sección de archivos de más abajo, o enviárnosla por WhatsApp. Sin esta referencia no podemos garantizar capturar los límites correctos.</p></div>';
+        // Instrucciones y upload del perímetro
+        html += '<div class="field"><label>Screenshot del perímetro o levantamiento</label>';
+        html += '<p class="field-hint" style="margin-top:0;margin-bottom:12px">Sin esta referencia no podemos garantizar capturar los límites correctos del terreno.</p>';
+        html += '<img src="https://inmueblesaudiovisuales.com/perimetro-terreno.svg" alt="Ejemplo perímetro" style="display:block;width:100%;max-width:340px;margin:0 auto 12px;border-radius:8px">';
+        html += '<details style="border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden">';
+        html += '<summary style="padding:11px 14px;cursor:pointer;font-size:12px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Método con Google Earth <span style="background:var(--gold);color:var(--charcoal);font-size:9px;font-weight:700;letter-spacing:1px;padding:3px 7px;border-radius:3px">RECOMENDADO</span></summary>';
+        html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.7"><ol style="padding-left:16px;margin:8px 0 0"><li>Abre <strong style="color:var(--charcoal)">Google Earth</strong> (app gratis o earth.google.com)</li><li>Busca la dirección del terreno</li><li>Selecciona la herramienta <strong style="color:var(--charcoal)">Medir</strong></li><li>Marca cada esquina hasta cerrar el contorno</li><li>Toma screenshot y súbelo aquí</li></ol></div>';
+        html += '</details>';
+        html += '<details style="border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden">';
+        html += '<summary style="padding:11px 14px;cursor:pointer;font-size:12px;font-weight:700;color:var(--charcoal);list-style:none">Método rápido (screenshot dibujado a mano)</summary>';
+        html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.7"><ol style="padding-left:16px;margin:8px 0 0"><li>Abre <strong style="color:var(--charcoal)">Google Maps</strong> en tu celular</li><li>Busca la dirección y toma screenshot</li><li>Dibuja el contorno con las herramientas de marcado de tu celular</li><li>Súbelo aquí</li></ol></div>';
+        html += '</details>';
+        html += renderUploadField('perimetro', i, '', '');
+        html += '</div>';
       }
       html += '</div>'; // end prop card
     });
@@ -521,13 +624,10 @@ function renderEtapa1() {
   // --- Archivos del proyecto ---
   html += '<div class="card"><p class="section-title">Archivos del proyecto</p>';
   html += '<p class="upload-hint" style="margin-bottom:16px">Opcional. Puedes subir estos archivos ahora o enviárnoslos por WhatsApp después. No bloquean la firma.</p>';
-  html += renderUploadField('logo', 0, 'Logo de la agencia o cliente', 'Se incluye en el PDF de referencias');
+  html += renderUploadField('logo', 0, 'Logo de la agencia o cliente', 'Opcional. PNG con fondo transparente y buena resolución.');
   props.forEach(function(p, i) {
     var sufijo = props.length > 1 ? ' — Propiedad ' + (i + 1) : '';
-    if ((p.tipo || '').toLowerCase() === 'terreno') {
-      html += renderUploadField('perimetro', i, 'Perímetro del terreno' + sufijo, 'Captura de Google Earth o Maps con el contorno del terreno marcado');
-    }
-    html += renderUploadField('fachada', i, 'Fachada o acceso' + sufijo, 'Foto de la entrada, portón o código QR de acceso');
+    html += renderUploadField('fachada', i, 'Código QR de acceso' + sufijo, 'Solo si la propiedad está en fraccionamiento o condominio cerrado. La foto de la fachada mándanosla después por WhatsApp.');
   });
   html += '</div>';
 
@@ -556,14 +656,16 @@ function toggleAdicion(clave) {
 }
 
 function actualizarTotales() {
-  var base   = parseFloat((portalData && portalData.precioBase) || 0);
+  var base   = parseFloat((portalData && (portalData.precioTotal || portalData.precioBase)) || 0);
   var addons = (portalData && portalData.paquetesDisponibles) || [];
   var addSum  = 0;
   addons.forEach(function(a) {
     if (adicionalesOn[a.Clave]) addSum += (parseFloat(a.Precio) || 0);
   });
   var total    = base + addSum;
-  var anticipo = Math.round(total * 0.5);
+  var anticipo = addSum === 0
+    ? (parseFloat(portalData && portalData.anticipo) || Math.round(total * 0.5))
+    : Math.round(total * 0.5);
 
   var elTotal    = document.getElementById('txt-total');
   var elAnticipo = document.getElementById('txt-anticipo');
@@ -573,8 +675,13 @@ function actualizarTotales() {
   var tbTotal    = document.getElementById('tb-total');
   var tbAnticipo = document.getElementById('tb-anticipo');
   var tbAddList  = document.getElementById('tb-addons-list');
+  var pctAnticipo = total > 0 ? Math.round(anticipo / total * 100) : 50;
   if (tbTotal)    tbTotal.textContent    = formatMXN(total);
   if (tbAnticipo) tbAnticipo.textContent = formatMXN(anticipo);
+  var tbLabel = document.getElementById('tb-anticipo-label');
+  if (tbLabel) tbLabel.textContent = 'Anticipo (' + pctAnticipo + '%)';
+  var elLabel = document.getElementById('txt-anticipo-label');
+  if (elLabel) elLabel.textContent = 'Anticipo (' + pctAnticipo + '%)';
   if (tbAddList) {
     var rows = '';
     addons.forEach(function(a) {
@@ -760,6 +867,85 @@ function validarYRevisar() {
   renderRevision();
 }
 
+function _renderComprobante(d) {
+  var abonos    = d.abonos || [];
+  var pagado    = parseFloat(d.totalAbonado) || 0;
+  var total     = parseFloat(d.precioTotal)  || 0;
+  var saldo     = Math.max(0, total - pagado);
+  var props     = d.propiedades || [];
+  var liquidado = saldo <= 0;
+  var hoy       = new Date().toLocaleDateString('es-MX', {day:'2-digit', month:'2-digit', year:'numeric'});
+
+  var srvcRows = props.map(function(p, i) {
+    var label = props.length > 1
+      ? 'Propiedad ' + (i + 1) + (p.paquete ? ': ' + p.paquete : '')
+      : (p.paquete || 'Producción audiovisual');
+    var fecha = p.fechaSesion ? formatFecha(p.fechaSesion) : '—';
+    var monto = props.length === 1
+      ? '<strong>' + formatMXN(total) + '</strong>'
+      : '<span style="color:var(--concrete)">—</span>';
+    return '<tr><td>' + esc(label) + '</td><td style="color:var(--concrete)">' + esc(fecha) + '</td><td>' + monto + '</td></tr>';
+  }).join('');
+  if (!srvcRows) srvcRows = '<tr><td colspan="3" style="color:var(--concrete);font-style:italic;font-size:11px">Sin servicios registrados</td></tr>';
+
+  var pagoRows = abonos.map(function(a) {
+    return '<tr>' +
+      '<td style="font-weight:600">' + esc(a.metodo || 'Transferencia') + '</td>' +
+      '<td style="color:var(--concrete)">' + esc(a.fecha ? formatFecha(a.fecha) : '—') + '</td>' +
+      '<td style="color:var(--success);font-weight:700">+' + esc(formatMXN(a.monto)) + '</td>' +
+    '</tr>';
+  }).join('');
+  if (!pagoRows) pagoRows = '<tr><td colspan="3" style="color:var(--concrete);font-style:italic;font-size:11px">Sin pagos registrados aún</td></tr>';
+
+  var totalFilas =
+    '<div class="comp-total-fila"><span>Total del servicio</span><span class="val">' + formatMXN(total) + '</span></div>' +
+    '<div class="comp-total-fila" style="border-bottom:none"><span>Total pagado</span><span class="val" style="color:var(--success)">' + formatMXN(pagado) + '</span></div>';
+  var finalRow = liquidado
+    ? '<div class="comp-total-final liquidado"><span>Liquidado</span><span class="val">$0</span></div>'
+    : '<div class="comp-total-final"><span>Saldo pendiente</span><span class="val">' + formatMXN(saldo) + '</span></div>';
+
+  return (
+    '<div class="card" id="card-comprobante">' +
+      '<div class="comp-header">' +
+        '<img class="comp-header-logo" src="https://inmueblesaudiovisuales.com/logo-invertido.svg" alt="Inmuebles Audiovisuales">' +
+        '<span class="comp-header-titulo">Comprobante de pago</span>' +
+      '</div>' +
+      '<div class="comp-body">' +
+        '<div class="comp-meta">' +
+          '<div>' +
+            '<p class="comp-info-lbl">Información del cliente</p>' +
+            '<div class="comp-info-fila"><span class="comp-info-key">Nombre</span><span class="comp-info-val">' + esc(d.nombre || '—') + '</span></div>' +
+            (d.telefono ? '<div class="comp-info-fila"><span class="comp-info-key">Teléfono</span><span class="comp-info-val">' + esc(d.telefono) + '</span></div>' : '') +
+            (d.correo   ? '<div class="comp-info-fila"><span class="comp-info-key">Correo</span><span class="comp-info-val">' + esc(d.correo) + '</span></div>' : '') +
+          '</div>' +
+          '<div>' +
+            (d.folio ? '<div class="comp-num-fila"><span class="comp-num-key">Folio</span><span class="comp-num-val">' + esc(d.folio) + '</span></div>' : '') +
+            '<div class="comp-num-fila"><span class="comp-num-key">Fecha</span><span class="comp-num-val">' + hoy + '</span></div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="comp-sec comp-sec-first">Servicios</p>' +
+        '<table class="comp-tabla">' +
+          '<thead><tr><th>Servicio</th><th>Fecha de sesión</th><th>Total</th></tr></thead>' +
+          '<tbody>' + srvcRows + '</tbody>' +
+        '</table>' +
+        '<div class="comp-totales"><div class="comp-totales-inner">' + totalFilas + finalRow + '</div></div>' +
+        '<p class="comp-sec">Historial de pagos</p>' +
+        '<table class="comp-tabla">' +
+          '<thead><tr><th>Método</th><th>Fecha</th><th>Monto</th></tr></thead>' +
+          '<tbody>' + pagoRows + '</tbody>' +
+        '</table>' +
+        '<div class="comp-footer">' +
+          '<span>inmueblesaudiovisuales.com</span>' +
+          '<span class="comp-footer-sep">·</span>' +
+          '<a href="https://wa.me/5218127174207" target="_blank" rel="noopener">WhatsApp</a>' +
+          '<span class="comp-footer-sep">·</span>' +
+          '<span>Monterrey, NL</span>' +
+        '</div>' +
+      '</div>' +
+    '</div>'
+  );
+}
+
 function _terminosPortal() {
   var ts = [
     ['01. Pre-producción', 'Antes de la sesión necesitamos la dirección exacta de la propiedad y el enlace de ubicación en Google Maps, Waze o similar. Si esa información llega incompleta o incorrecta, puede afectar el resultado final y queda bajo responsabilidad del cliente.'],
@@ -782,15 +968,18 @@ function _terminosPortal() {
 }
 
 function renderRevision() {
+  mostrarEstado('');
   var d     = portalData;
   var esP   = d.tipoContrato === 'particular';
   var props = d.propiedades || [];
   var addons = d.paquetesDisponibles || [];
-  var base  = parseFloat(d.precioBase) || 0;
+  var base  = parseFloat(d.precioTotal) || parseFloat(d.precioBase) || 0;
   var addSum = 0;
   addons.forEach(function(a) { if (adicionalesOn[a.Clave]) addSum += (parseFloat(a.Precio) || 0); });
   var total    = base + addSum;
-  var anticipo = Math.round(total * 0.5);
+  var anticipo = addSum === 0
+    ? (parseFloat(d.anticipo) || Math.round(total * 0.5))
+    : Math.round(total * 0.5);
   var activos  = addons.filter(function(a) { return adicionalesOn[a.Clave]; });
 
   var html = '<div class="wrap">';
@@ -835,7 +1024,8 @@ function renderRevision() {
     html += '<div class="resumen-fila"><span class="resumen-label">Servicios adicionales</span><span class="resumen-valor" style="text-align:right">' + activos.map(function(a) { return esc(a.Nombre || a.Clave); }).join('<br>') + '</span></div>';
   }
   html += '<div class="resumen-fila"><span class="resumen-label">Total del servicio</span><span class="resumen-valor gold">' + formatMXN(total) + '</span></div>';
-  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Anticipo requerido (50%)</span><span class="resumen-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
+  var pctRevision = total > 0 ? Math.round(anticipo / total * 100) : 50;
+  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Anticipo requerido (' + pctRevision + '%)</span><span class="resumen-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
   html += '</div>';
 
   // --- Aviso de responsabilidad ---
@@ -950,9 +1140,27 @@ function enviarFirma() {
         actualizarBtnFirmar();
         return;
       }
-      portalData = null;
-      formData   = null;
-      init();
+      // Actualizar estado local con los datos de la respuesta para que
+      // renderEtapa2 funcione aunque la recarga de datos falle.
+      if (portalData) {
+        portalData.estatus     = 'Firmado';
+        portalData.precioTotal = data.total    || portalData.precioTotal;
+        portalData.anticipo    = data.anticipo || portalData.anticipo;
+        if (data.folio) portalData.folio = data.folio;
+      }
+      formData = null;
+      // Intentar recargar datos frescos del servidor; si falla, renderizar
+      // con los datos locales para no dejar al cliente en pantalla de error.
+      apiGet('?action=obtenerPortal&token=' + encodeURIComponent(token))
+        .then(function(freshData) {
+          if (freshData.ok) portalData = freshData;
+          actualizarStepper(2);
+          renderEtapa2();
+        })
+        .catch(function() {
+          actualizarStepper(2);
+          renderEtapa2();
+        });
     })
     .catch(function() {
       enviando = false;
@@ -983,13 +1191,18 @@ function renderEtapa2() {
   html += '<div><div class="banner-title">Contrato firmado</div><div class="banner-desc">Gracias, ' + esc(nombre1) + '. Tu contrato fue registrado correctamente. Recibirás una copia en tu correo.</div></div></div>';
 
   // Resumen de pago
+  var pctAnticipo = total > 0 ? Math.round(anticipo / total * 100) : 50;
   html += '<div class="card"><p class="section-title">Detalles del pago</p>';
   if (folio) html += '<div class="resumen-fila"><span class="resumen-label">Folio</span><span class="resumen-valor">' + esc(folio) + '</span></div>';
   html += '<div class="resumen-fila"><span class="resumen-label">Total del servicio</span><span class="resumen-valor">' + esc(formatMXN(total)) + '</span></div>';
-  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Anticipo a pagar ahora</span><span class="resumen-valor gold">' + esc(formatMXN(anticipo)) + '</span></div>';
+  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Anticipo a pagar ahora (' + pctAnticipo + '%)</span><span class="resumen-valor gold">' + esc(formatMXN(anticipo)) + '</span></div>';
   html += '</div>';
+  if (d.pdfContratoUrl) {
+    html += '<a href="' + esc(d.pdfContratoUrl) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:16px">';
+    html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+    html += 'Descargar contrato (PDF)</a>';
+  }
 
-  // Clip
   html += '<div class="card"><p class="section-title">Opciones de pago</p>';
   html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Realiza el pago del anticipo para confirmar la fecha de tu sesión. Trabajamos por orden de confirmación.</p>';
 
@@ -1005,9 +1218,18 @@ function renderEtapa2() {
   html += '</div></details>';
 
   if (d.clipLink) {
-    html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">';
+    html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:6px">';
     html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>';
-    html += 'Pagar anticipo con Clip</a>';
+    html += 'Pagar anticipo con tarjeta</a>';
+    html += '<details style="border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden">';
+    html += '<summary style="padding:11px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--charcoal);list-style:none">¿Cómo pagar con tarjeta paso a paso?</summary>';
+    html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.8"><ol style="padding-left:16px;margin:8px 0 0">' +
+      '<li>Haz clic en <strong style="color:var(--charcoal)">Pagar anticipo con tarjeta</strong></li>' +
+      '<li>Ingresa el monto del anticipo: <strong style="color:var(--charcoal)">' + formatMXN(anticipo) + '</strong></li>' +
+      '<li>En el campo <strong style="color:var(--charcoal)">Concepto</strong> escribe tu nombre y folio: <strong style="color:var(--charcoal)">' + esc(nombre1) + ' ' + esc(folio) + '</strong></li>' +
+      '<li>Completa el pago con tu tarjeta</li>' +
+      '<li>Envíanos el comprobante por WhatsApp para confirmar tu fecha</li>' +
+    '</ol></div></details>';
   }
 
   var waMsg = encodeURIComponent('Hola, acabo de realizar el pago del anticipo (' + formatMXN(anticipo) + '). Mi folio es ' + folio + '.');
@@ -1036,7 +1258,6 @@ function renderEtapa2() {
 function renderEtapa3() {
   mostrarEstado('');
   var d       = portalData;
-  var abonos  = d.abonos || [];
   var pagado  = parseFloat(d.totalAbonado) || 0;
   var total   = parseFloat(d.precioTotal) || 0;
   var saldo   = Math.max(0, total - pagado);
@@ -1052,25 +1273,7 @@ function renderEtapa3() {
     html += '<div><div class="banner-title">Anticipo recibido</div><div class="banner-desc">Hemos confirmado tu pago. Tu fecha está asegurada.</div></div></div>';
   }
 
-  // Resumen financiero
-  html += '<div class="card" id="card-comprobante"><p class="section-title">Comprobante de pago</p>';
-  if (d.folio) html += '<div class="resumen-fila"><span class="resumen-label">Folio</span><span class="resumen-valor">' + esc(d.folio) + '</span></div>';
-  html += '<div class="resumen-fila"><span class="resumen-label">Total del servicio</span><span class="resumen-valor">' + esc(formatMXN(total)) + '</span></div>';
-  html += '<div class="resumen-fila"><span class="resumen-label">Total pagado</span><span class="resumen-valor" style="color:var(--success)">' + esc(formatMXN(pagado)) + '</span></div>';
-  if (saldo > 0) {
-    html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Saldo pendiente</span><span class="resumen-valor gold">' + esc(formatMXN(saldo)) + '</span></div>';
-  } else {
-    html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Saldo pendiente</span><span class="resumen-valor" style="color:var(--success)">$0</span></div>';
-  }
-
-  // Historial de abonos
-  if (abonos.length > 0) {
-    html += '<div style="height:1px;background:var(--border);margin:14px 0"></div><p style="font-size:11px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;color:var(--concrete);margin-bottom:10px">Historial de abonos</p>';
-    abonos.forEach(function(a) {
-      html += '<div class="abono-fila"><div><div style="font-weight:600;font-size:12px;color:var(--charcoal)">' + esc(a.metodo || '') + '</div><div class="abono-meta">' + esc(a.fecha ? formatFecha(a.fecha) : '') + '</div></div><div class="abono-monto">+' + esc(formatMXN(a.monto)) + '</div></div>';
-    });
-  }
-  html += '</div>'; // end comprobante card
+  html += _renderComprobante(d);
 
   html += '<button class="btn-secondary" id="btn-imprimir" style="margin-bottom:16px">';
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>';
@@ -1086,7 +1289,16 @@ function renderEtapa3() {
     html += '<div class="dato-fila"><span class="dato-label">CLABE</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="clabe-saldo">' + esc(d.clabe || '') + '</span><button class="btn-copy" id="btn-copy-clabe2">Copiar</button></span></div>';
     html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(saldo) + '</span></div></div></details>';
     if (d.clipLink) {
-      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:10px">Pagar saldo restante con Clip</a>';
+      html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:6px">Pagar saldo restante con tarjeta</a>';
+      html += '<details style="border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden">';
+      html += '<summary style="padding:11px 14px;cursor:pointer;font-size:12px;font-weight:600;color:var(--charcoal);list-style:none">¿Cómo pagar con tarjeta paso a paso?</summary>';
+      html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.8"><ol style="padding-left:16px;margin:8px 0 0">' +
+        '<li>Haz clic en <strong style="color:var(--charcoal)">Pagar saldo restante con tarjeta</strong></li>' +
+        '<li>Ingresa el monto: <strong style="color:var(--charcoal)">' + formatMXN(saldo) + '</strong></li>' +
+        '<li>En el campo <strong style="color:var(--charcoal)">Concepto</strong> escribe tu folio: <strong style="color:var(--charcoal)">' + esc(d.folio || '') + '</strong></li>' +
+        '<li>Completa el pago con tu tarjeta</li>' +
+        '<li>Envíanos el comprobante por WhatsApp</li>' +
+      '</ol></div></details>';
     }
     var waMsg2 = encodeURIComponent('Hola, acabo de realizar el pago del saldo restante (' + formatMXN(saldo) + '). Mi folio es ' + (d.folio || '') + '.');
     html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsg2 + '" target="_blank" rel="noopener" class="btn-wa">Ya pagué. Avisarles ahora</a>';
@@ -1118,7 +1330,6 @@ function renderEtapa4() {
   var estatus = d.estatus || '';
   var entrega = (d.entregaDriveLink || '').trim();
   var extras  = (d.entregaLinksExtra || '').trim();
-  var abonos  = d.abonos || [];
   var pagado  = parseFloat(d.totalAbonado) || 0;
   var total   = parseFloat(d.precioTotal)  || 0;
   var saldo   = Math.max(0, total - pagado);
@@ -1153,18 +1364,7 @@ function renderEtapa4() {
     html += '</div>';
   }
 
-  // Comprobante
-  html += '<div class="card" id="card-comprobante"><p class="section-title">Comprobante</p>';
-  if (d.folio) html += '<div class="resumen-fila"><span class="resumen-label">Folio</span><span class="resumen-valor">' + esc(d.folio) + '</span></div>';
-  html += '<div class="resumen-fila"><span class="resumen-label">Total del servicio</span><span class="resumen-valor">' + esc(formatMXN(total)) + '</span></div>';
-  html += '<div class="resumen-fila" style="border-bottom:none"><span class="resumen-label">Total pagado</span><span class="resumen-valor" style="color:var(--success)">' + esc(formatMXN(pagado)) + '</span></div>';
-  if (abonos.length > 0) {
-    html += '<div style="height:1px;background:var(--border);margin:14px 0"></div>';
-    abonos.forEach(function(a) {
-      html += '<div class="abono-fila"><div><div style="font-weight:600;font-size:12px;color:var(--charcoal)">' + esc(a.metodo || '') + '</div><div class="abono-meta">' + esc(a.fecha ? formatFecha(a.fecha) : '') + '</div></div><div class="abono-monto">+' + esc(formatMXN(a.monto)) + '</div></div>';
-    });
-  }
-  html += '</div>';
+  html += _renderComprobante(d);
 
   html += '<button class="btn-secondary" id="btn-imprimir" style="margin-bottom:16px">';
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>';
