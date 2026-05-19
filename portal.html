@@ -357,13 +357,15 @@
 var API   = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5UX56JdQVdpmqQZ_OJkeRndA6INREg4ekebpjj6_YH/exec';
 var token = new URLSearchParams(location.search).get('token') || '';
 
-var portalData    = null;
-var formData      = null;
-var adicionalesOn = {};
-var orientaciones = {};
-var hasStroke     = false;
-var isDrawing     = false;
-var enviando      = false;
+var portalData        = null;
+var formData          = null;
+var adicionalesOn     = {};
+var orientaciones     = {};
+var hasStroke         = false;
+var isDrawing         = false;
+var enviando          = false;
+var uploadsEnProgreso = 0;
+var archivosSubidos   = {};   // clave: "tipo-propIndex", valor: url de Drive
 var canvas, ctx;
 
 /* ── UTILIDADES ─────────────────────────────────────────────────────────────── */
@@ -784,6 +786,15 @@ function validarYRevisar() {
   var errEl = document.getElementById('error-form');
   if (errEl) errEl.style.display = 'none';
 
+  if (uploadsEnProgreso > 0) {
+    if (errEl) {
+      errEl.textContent   = 'Espera a que terminen de subirse los archivos antes de continuar.';
+      errEl.style.display = 'block';
+      errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+
   var correo   = (document.getElementById('inp-correo')   || {value:''}).value.trim();
   var telefono = (document.getElementById('inp-telefono') || {value:''}).value.trim();
   var valido   = true;
@@ -848,6 +859,7 @@ function validarYRevisar() {
       orientacion      : ori,
       sobreLaPropiedad : (document.getElementById('inp-sobre-' + n) || {value:''}).value.trim(),
       datosEspecificos : datosEsp,
+      logoUrl          : archivosSubidos['logo-0'] || '',
     });
   });
 
@@ -1436,6 +1448,9 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
     setUploadStatus(tipo, propIndex, 'error', 'El archivo es muy grande (máx. 8 MB)');
     return;
   }
+  var clave = tipo + '-' + propIndex;
+  delete archivosSubidos[clave];
+  uploadsEnProgreso++;
   setUploadStatus(tipo, propIndex, 'loading', '');
   var reader = new FileReader();
   reader.onload = function(e) {
@@ -1449,17 +1464,21 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
       fileBase64: e.target.result,
     })
     .then(function(data) {
+      uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
       if (data.ok) {
+        if (data.url) archivosSubidos[clave] = data.url;
         setUploadStatus(tipo, propIndex, 'ok', file.name);
       } else {
         setUploadStatus(tipo, propIndex, 'error', data.error || 'Error al subir');
       }
     })
     .catch(function() {
+      uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
       setUploadStatus(tipo, propIndex, 'error', 'Error de conexión');
     });
   };
   reader.onerror = function() {
+    uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
     setUploadStatus(tipo, propIndex, 'error', 'No se pudo leer el archivo');
   };
   reader.readAsDataURL(file);
