@@ -903,7 +903,11 @@ function actualizarPrecio() {
   const baseOpt = sel.options[sel.selectedIndex];
   const base    = parseFloat(baseOpt?.dataset?.precio) || 0;
   if (!precioManual) {
-    document.getElementById('est-precio-total').value = base;
+    let total = base;
+    document.querySelectorAll('#est-adicionales input[type="checkbox"]:checked').forEach(function(cb) {
+      total += parseFloat(cb.dataset.precio) || 0;
+    });
+    document.getElementById('est-precio-total').value = total;
     actualizarAnticipo('est');
   }
 }
@@ -1236,6 +1240,10 @@ async function registrarAbono() {
     setMsg('msg-abono', 'Error: ' + e.message, 'error');
     const b = document.getElementById('btn-abono');
     if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
+  } finally {
+    // Re-habilitar siempre en caso de que abrirPanel falle y el DOM ya no tenga el botón.
+    const b = document.getElementById('btn-abono');
+    if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
   }
 }
 
@@ -1285,6 +1293,9 @@ async function guardarEntrega() {
     setMsg('msg-entrega', 'Error: ' + e.message, 'error');
     const b = document.getElementById('btn-entrega');
     if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-send"></i> Enviar al cliente'; }
+  } finally {
+    const b = document.getElementById('btn-entrega');
+    if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-send"></i> Enviar al cliente'; }
   }
 }
 
@@ -1887,14 +1898,15 @@ async function archivarContrato() {
 async function eliminarContrato() {
   if (!tokenActivo) return;
   const c = todosContratos.find(x => x.token === tokenActivo);
-  const nombre = c ? c.nombre : '';
+  // Fallback: si el contrato no está en el caché local (filtrado o archivado), pedirle al admin que confirme de igual forma.
+  const nombre = c ? c.nombre : null;
   const confirmacion = prompt(`ELIMINAR PERMANENTEMENTE\n\nEsta acción borrará el contrato, sus abonos, propiedades y tokens de Google Sheets. No se puede deshacer.\n\nEscribe el nombre del cliente para confirmar:`);
   if (confirmacion === null) return;
-  if (!nombre || !confirmacion.trim()) {
-    alert('No se puede confirmar la eliminación sin nombre de cliente.');
+  if (!confirmacion.trim()) {
+    alert('Escribe el nombre del cliente para confirmar.');
     return;
   }
-  if (confirmacion.trim().toLowerCase() !== nombre.trim().toLowerCase()) {
+  if (nombre && confirmacion.trim().toLowerCase() !== nombre.trim().toLowerCase()) {
     alert('El nombre no coincide. No se eliminó nada.');
     return;
   }
