@@ -36,7 +36,7 @@ const CONFIG3 = {
   MAX_PROPIEDADES             : 5,
 
   // Cambiar a false cuando el sistema esté en producción.
-  MODO_BORRADOR: true,
+  MODO_BORRADOR: false,
 
   // Llave de autenticación para acciones de administrador.
   ADMIN_KEY: 'framedock',
@@ -472,7 +472,7 @@ function obtenerPaquete3ByClave(clave) {
 
 const ACCIONES_ADMIN_GET3 = new Set([
   'listarContratos','listarClientes','listarStats','obtenerContrato',
-  'listarPaquetesTodos',
+  'listarPaquetesTodos','exportarCSV',
 ]);
 
 function doGet(e) {
@@ -489,6 +489,7 @@ function doGet(e) {
     if (accion === 'obtenerPortal')     return accionObtenerPortal3(e);
     if (accion === 'listarStats')       return accionListarStats3(e);
     if (accion === 'obtenerChecklist')  return accionObtenerChecklist3(e);
+    if (accion === 'exportarCSV')       return accionExportarCSV3(e);
     return jsonResponse3({ error: 'Acción GET no reconocida: ' + accion });
   } catch (err) {
     Logger.log('ERROR doGet [' + accion + ']: ' + err.message);
@@ -501,6 +502,7 @@ const ACCIONES_ADMIN3 = new Set([
   'crearContrato','registrarAbono','actualizarEstatus','guardarEntrega',
   'crearPaquete','editarPaquete','togglePaquete',
   'ocultarContrato','eliminarContrato','reagendarPropiedad',
+  'enviarRecordatorio','guardarNotaPropiedad',
 ]);
 
 function doPost(e) {
@@ -526,6 +528,8 @@ function doPost(e) {
     if (accion === 'eliminarContrato')     return accionEliminarContrato3(body);
     if (accion === 'reagendarPropiedad')   return accionReagendarPropiedad3(body);
     if (accion === 'guardarChecklist')     return accionGuardarChecklist3(body);
+    if (accion === 'enviarRecordatorio')   return accionEnviarRecordatorio3(body);
+    if (accion === 'guardarNotaPropiedad') return accionGuardarNotaPropiedad3(body);
     return jsonResponse3({ error: 'Acción POST no reconocida: ' + accion });
   } catch (err) {
     Logger.log('ERROR doPost: ' + err.message);
@@ -654,6 +658,27 @@ function accionListarContratos3(e) {
   const datos = hoja.getDataRange().getValues();
   const enc   = datos[0];
 
+  // Construir mapa token → fechaSesion (primera propiedad)
+  const fechaSesionMap = {};
+  try {
+    const hojaProp  = getPropiedadesSheet3();
+    const datosProp = hojaProp.getDataRange().getValues();
+    const encProp   = datosProp[0];
+    const iColTok   = encProp.indexOf('ContratoToken');
+    const iColFecha = encProp.indexOf('FechaSesion');
+    const iColNum   = encProp.indexOf('NumPropiedad');
+    if (iColTok !== -1 && iColFecha !== -1) {
+      for (let i = 1; i < datosProp.length; i++) {
+        const tok   = datosProp[i][iColTok];
+        const num   = parseInt(datosProp[i][iColNum]) || 1;
+        const fecha = datosProp[i][iColFecha];
+        if (tok && fecha && (!fechaSesionMap[tok] || num === 1)) {
+          fechaSesionMap[tok] = fecha;
+        }
+      }
+    }
+  } catch(e) { /* continuar sin fechaSesion si falla */ }
+
   const contratos = [];
   for (let i = 1; i < datos.length; i++) {
     const fila = {};
@@ -675,6 +700,7 @@ function accionListarContratos3(e) {
       precioTotal    : fila.PrecioTotal,
       saldoPendiente : fila.SaldoPendiente,
       fechaCreacion  : fila.FechaCreacion,
+      fechaSesion    : fechaSesionMap[fila.Token] || '',
       tipoContrato   : fila.TipoContrato,
       tipoPaquete    : fila.TipoPaquete,
     });
@@ -867,6 +893,7 @@ function accionObtenerContrato3(e) {
       orientacion      : p.Orientacion,
       sobreLaPropiedad : p.SobreLaPropiedad,
       datosEspecificos : p.DatosEspecificos,
+      notaInterna      : p.NotaInterna || '',
     })),
     abonos      : abonos.map(a => ({
       id    : a.ID,
@@ -1528,6 +1555,70 @@ function actualizarEventoCalendar3(calEventId, contrato, prop, folio) {
   return nuevoEvento.getId();
 }
 
+// ─── ENDPOINT: enviarRecordatorio ────────────────────────────────────────────
+
+function accionEnviarRecordatorio3(body) {
+  const token = (body.token || '').trim();
+  if (!token) return jsonResponse3({ error: 'Token requerido' });
+
+  const c = obtenerContrato3(token);
+  if (!c) return jsonResponse3({ error: 'Contrato no encontrado' });
+  if (!c.CorreoCliente) return jsonResponse3({ error: 'El contrato no tiene correo de cliente' });
+
+  const urlPortal  = CONFIG3.BASE_URL_PORTAL + '?token=' + c.Token;
+  const anticipo   = parseFloat(c.Anticipo)    || 0;
+  const precioTotal = parseFloat(c.PrecioTotal) || 0;
+  const pct        = precioTotal > 0 ? Math.round(anticipo / precioTotal * 100) : 50;
+
+  const html = correoRecordatorioAnticipo3(c, urlPortal, anticipo, pct);
+  enviarCorreo3(
+    c.CorreoCliente,
+    'Recordatorio: anticipo pendiente — Inmuebles Audiovisuales',
+    html
+  );
+  return jsonResponse3({ ok: true });
+}
+
+// ─── ENDPOINT: guardarNotaPropiedad ──────────────────────────────────────────
+
+function accionGuardarNotaPropiedad3(body) {
+  const token    = (body.token    || '').trim();
+  const numProp  = parseInt(body.numPropiedad) || 1;
+  const nota     = (body.nota     || '').trim();
+  if (!token) return jsonResponse3({ error: 'Token requerido' });
+
+  const ok = actualizarPropiedad3(token, numProp, { NotaInterna: nota });
+  if (!ok) return jsonResponse3({ error: 'Propiedad no encontrada' });
+  return jsonResponse3({ ok: true });
+}
+
+// ─── ENDPOINT: exportarCSV ────────────────────────────────────────────────────
+
+function accionExportarCSV3(e) {
+  const hoja  = getContratosSheet3();
+  const datos = hoja.getDataRange().getValues();
+  const enc   = datos[0];
+
+  const cols = ['Folio','NombreCliente','CorreoCliente','TelefonoCliente',
+                'Estatus','TipoContrato','TipoPaquete','PrecioTotal',
+                'Anticipo','SaldoPendiente','FechaCreacion'];
+
+  const filas = [cols.join(',')];
+  for (let i = 1; i < datos.length; i++) {
+    const fila = {};
+    enc.forEach((col, j) => { fila[col] = datos[i][j]; });
+    if (!fila.Token) continue;
+    if (esSi3(fila.Oculto)) continue;
+    filas.push(cols.map(col => {
+      let v = fila[col];
+      if (v instanceof Date) v = Utilities.formatDate(v, 'America/Monterrey', 'yyyy-MM-dd');
+      v = String(v || '').replace(/"/g, '""');
+      return '"' + v + '"';
+    }).join(','));
+  }
+  return jsonResponse3({ ok: true, csv: filas.join('\n'), total: filas.length - 1 });
+}
+
 // ─── PLANTILLAS DE CORREO ─────────────────────────────────────────────────────
 
 function htmlEsc3(s) {
@@ -1547,6 +1638,39 @@ function _pieCorreo3() {
   return '<div style="padding:14px 24px;text-align:center;border-top:1px solid #E8E8EA">' +
          '<p style="margin:0;font-size:11px;color:#9B9B9F">© 2026 Inmuebles Audiovisuales · Monterrey, NL</p>' +
          '</div>';
+}
+
+function correoRecordatorioAnticipo3(contrato, urlPortal, anticipo, pct) {
+  const nombre1 = (contrato.NombreCliente || '').split(' ')[0];
+  return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
+    _encabezadoCorreo3() +
+    '<div style="padding:28px 24px;background:#FAFAFA">' +
+      '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Hola, ' + htmlEsc3(nombre1) + '.</h2>' +
+      '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">' +
+        'Te recordamos que tienes un anticipo pendiente para confirmar tu fecha de sesión con Inmuebles Audiovisuales. ' +
+        'Trabajamos por orden de confirmación.' +
+      '</p>' +
+      '<table style="width:100%;border-collapse:collapse;margin-bottom:20px">' +
+        '<tr>' +
+          '<td style="padding:8px 0;border-bottom:1px solid #E8E8EA;font-size:13px;color:#9B9B9F;width:140px">Cliente</td>' +
+          '<td style="padding:8px 0;border-bottom:1px solid #E8E8EA;font-size:13px;font-weight:600;color:#1C1C1E">' + htmlEsc3(contrato.NombreCliente) + '</td>' +
+        '</tr>' +
+        '<tr>' +
+          '<td style="padding:8px 0;border-bottom:1px solid #E8E8EA;font-size:13px;color:#9B9B9F">Folio</td>' +
+          '<td style="padding:8px 0;border-bottom:1px solid #E8E8EA;font-size:13px;font-weight:600;color:#1C1C1E">' + htmlEsc3(contrato.Folio) + '</td>' +
+        '</tr>' +
+        '<tr>' +
+          '<td style="padding:8px 0;font-size:13px;color:#9B9B9F">Anticipo (' + pct + '%)</td>' +
+          '<td style="padding:8px 0;font-size:16px;font-weight:700;color:#C9A84C">' + formatMXN3(anticipo) + '</td>' +
+        '</tr>' +
+      '</table>' +
+      '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:16px">VER OPCIONES DE PAGO</a>' +
+      '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
+        'Cualquier duda escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
+      '</p>' +
+    '</div>' +
+    _pieCorreo3() +
+  '</div>';
 }
 
 function correoReagendamiento3(contrato, prop, nuevaFechaStr, nuevaHora) {
