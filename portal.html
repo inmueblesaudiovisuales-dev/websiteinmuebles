@@ -918,11 +918,8 @@ function _renderComprobante(d) {
       var items = p.entregables.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
       if (items.length) {
         var lista = '<ul style="margin:4px 0 8px;padding-left:14px">' + items.map(function(item) {
-          var partes = item.split(' — ');
-          if (partes.length > 1) {
-            return '<li style="font-size:11px;color:var(--concrete);line-height:1.5;margin-bottom:2px"><strong style="color:var(--charcoal)">' + esc(partes[0]) + '</strong> — ' + esc(partes.slice(1).join(' — ')) + '</li>';
-          }
-          return '<li style="font-size:11px;color:var(--concrete);line-height:1.5;margin-bottom:2px">' + esc(item) + '</li>';
+          var nombre = item.split(' — ')[0];
+          return '<li style="font-size:11px;color:var(--charcoal);line-height:1.5;margin-bottom:2px">' + esc(nombre) + '</li>';
         }).join('') + '</ul>';
         row += '<tr><td colspan="3" style="padding-top:0;border-bottom:1px solid var(--border)">' + lista + '</td></tr>';
       }
