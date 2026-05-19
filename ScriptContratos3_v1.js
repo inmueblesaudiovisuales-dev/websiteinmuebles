@@ -1146,7 +1146,7 @@ function accionManejarFirmaCliente3(body) {
     cambios.PrecioTotal     = precioTotal;
     cambios.Anticipo        = anticipo;
     cambios.SaldoPendiente  = precioTotal;
-    cambios.Estatus         = 'Firmado';
+    cambios.Estatus         = anticipo === 0 ? 'En produccion' : 'Firmado';
     cambios.FechaFirma      = new Date().toISOString();
 
     actualizarContrato3(tokenID, cambios);
