@@ -34,13 +34,12 @@
 
     /* ── TOP BAR ── */
     .topbar {
-      background: var(--onyx);
-      color: #fff;
-      padding: 14px 16px env(safe-area-inset-top, 0);
+      background: var(--onyx); color: #fff;
       padding-top: max(14px, env(safe-area-inset-top));
+      padding-left: 16px; padding-right: 16px; padding-bottom: 0;
       position: sticky; top: 0; z-index: 50;
     }
-    .topbar-inner { display: flex; align-items: center; gap: 10px; }
+    .topbar-row1 { display: flex; align-items: center; gap: 10px; padding-bottom: 10px; }
     .topbar-info { flex: 1; min-width: 0; }
     .topbar-folio {
       font-size: 10px; font-weight: 700;
@@ -61,145 +60,171 @@
     .sync-label { font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 600; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-    /* ── NOMBRE BAR ── */
-    .nombre-bar {
-      background: var(--onyx);
-      padding: 0 16px 12px;
+    /* nombre dentro del topbar */
+    .nombre-row {
       display: flex; align-items: center; gap: 10px;
+      padding-bottom: 12px;
     }
     .nombre-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.45); white-space: nowrap; }
     .nombre-input {
       flex: 1;
       background: rgba(255,255,255,0.1);
       border: 1px solid rgba(255,255,255,0.18);
-      border-radius: 8px;
-      color: #fff;
-      font-family: inherit;
-      font-size: 13px; font-weight: 600;
-      padding: 7px 12px;
-      outline: none;
+      border-radius: 8px; color: #fff;
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      padding: 7px 12px; outline: none;
     }
     .nombre-input::placeholder { color: rgba(255,255,255,0.3); }
     .nombre-input:focus { border-color: var(--gold); }
 
-    /* ── PROGRESS ── */
-    .progress-bar {
-      background: #fff;
+    /* ── COLUMNAS CONFIG ── */
+    .columnas-bar {
+      background: var(--card);
       border-bottom: 1px solid var(--border);
       padding: 10px 16px;
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
+    .columnas-label { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); margin-right: 2px; }
+    .col-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: 99px;
+      border: 1.5px solid var(--border);
+      background: var(--page);
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      color: var(--ink-3); cursor: pointer; transition: all 0.18s;
+    }
+    .col-chip.activo {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.12);
+      color: var(--gold-d);
+    }
+    .col-chip .chip-ico { font-size: 14px; }
+
+    /* ── PROGRESS ── */
+    .progress-section {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px 12px;
+    }
+    .progress-row { display: flex; align-items: center; gap: 12px; margin-bottom: 7px; }
     .progress-track {
       flex: 1; height: 6px;
-      background: var(--border);
-      border-radius: 99px; overflow: hidden;
+      background: var(--border); border-radius: 99px; overflow: hidden;
     }
     .progress-fill {
       height: 100%; border-radius: 99px;
-      background: var(--gold);
-      transition: width 0.35s ease;
+      background: var(--gold); transition: width 0.35s ease;
     }
     .progress-fill.completo { background: var(--success); }
     .progress-text { font-size: 12px; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+    .progress-detalle { font-size: 11px; color: var(--ink-3); font-weight: 600; }
+    .progress-detalle span { color: var(--ink-2); }
+
+    /* ── PENDIENTES ── */
+    .pendientes-section {
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+    }
+    .pendientes-toggle {
+      width: 100%; background: none; border: none;
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 16px;
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      color: var(--ink-2); cursor: pointer; text-align: left;
+    }
+    .pendientes-toggle .badge {
+      background: var(--gold); color: #fff;
+      border-radius: 99px; padding: 1px 7px;
+      font-size: 10px; font-weight: 700;
+    }
+    .pendientes-toggle .chevron { margin-left: auto; font-size: 12px; transition: transform 0.2s; }
+    .pendientes-toggle.abierto .chevron { transform: rotate(180deg); }
+    .pendientes-body { padding: 0 16px 12px; display: none; }
+    .pendiente-item {
+      display: flex; align-items: baseline; gap: 8px;
+      padding: 5px 0; border-bottom: 1px solid var(--border); font-size: 13px;
+    }
+    .pendiente-item:last-child { border-bottom: none; }
+    .pendiente-nombre { font-weight: 700; min-width: 0; flex: 1; }
+    .pendiente-falta { color: var(--ink-3); font-size: 11px; font-weight: 600; white-space: nowrap; }
+    .pendientes-vacio { font-size: 13px; color: var(--success); font-weight: 700; padding: 4px 0; }
 
     /* ── LISTA ── */
     .lista { padding: 12px 16px 120px; max-width: 620px; margin: 0 auto; }
 
     /* ── CUARTO CARD ── */
     .cuarto-card {
-      background: var(--card);
-      border-radius: var(--r);
-      margin-bottom: 10px;
-      overflow: hidden;
+      background: var(--card); border-radius: var(--r);
+      margin-bottom: 10px; overflow: hidden;
       box-shadow: 0 1px 4px rgba(0,0,0,0.07);
     }
     .cuarto-header {
       display: flex; align-items: center;
-      padding: 12px 14px 10px;
-      gap: 10px;
+      padding: 12px 14px 10px; gap: 10px;
     }
     .cuarto-nombre {
       flex: 1; font-size: 15px; font-weight: 700;
       border: none; background: transparent;
       font-family: inherit; color: var(--ink-1);
-      padding: 0; outline: none;
-      min-width: 0;
+      padding: 0; outline: none; min-width: 0;
     }
     .cuarto-nombre::placeholder { color: var(--ink-3); }
     .btn-borrar-cuarto {
-      background: none; border: none;
-      color: var(--ink-3); cursor: pointer;
-      width: 28px; height: 28px;
-      display: flex; align-items: center; justify-content: center;
-      border-radius: 6px; flex-shrink: 0;
+      background: none; border: none; color: var(--ink-3); cursor: pointer;
+      width: 28px; height: 28px; display: flex; align-items: center;
+      justify-content: center; border-radius: 6px; flex-shrink: 0;
       font-size: 16px; transition: color 0.15s, background 0.15s;
     }
     .btn-borrar-cuarto:hover { color: #dc2626; background: rgba(220,38,38,0.08); }
 
     /* ── CHECKS ROW ── */
-    .checks-row {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 6px; padding: 0 14px 12px;
-    }
+    .checks-row { display: grid; gap: 6px; padding: 0 14px 12px; }
+    .checks-row.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+    .checks-row.cols-2 { grid-template-columns: 1fr 1fr; }
+    .checks-row.cols-1 { grid-template-columns: 1fr; }
     .check-btn {
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      gap: 3px;
-      padding: 10px 6px;
-      border-radius: 10px;
-      border: 1.5px solid var(--border);
-      background: var(--page);
-      cursor: pointer; transition: all 0.18s;
-      font-family: inherit;
-      min-height: 64px;
+      align-items: center; justify-content: center; gap: 3px;
+      padding: 10px 6px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--page);
+      cursor: pointer; transition: border-color 0.18s, background 0.18s;
+      font-family: inherit; min-height: 64px;
     }
     .check-btn:active { transform: scale(0.96); }
-    .check-btn.marcado {
-      border-color: var(--gold);
-      background: rgba(201,168,76,0.1);
-    }
-    .check-icon { font-size: 20px; line-height: 1; }
+    .check-btn.marcado { border-color: var(--gold); background: rgba(201,168,76,0.1); }
+    .check-icon  { font-size: 20px; line-height: 1; }
     .check-label { font-size: 11px; font-weight: 700; color: var(--ink-2); letter-spacing: 0.03em; }
     .check-btn.marcado .check-label { color: var(--gold-d); }
     .check-quien {
-      font-size: 9px; font-weight: 700;
-      color: var(--gold-d);
+      font-size: 9px; font-weight: 700; color: var(--gold-d);
       letter-spacing: 0.02em;
-      white-space: nowrap; overflow: hidden;
-      text-overflow: ellipsis; max-width: 90px;
-      text-align: center;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 90px; text-align: center;
     }
 
     /* ── COMENTARIOS ── */
     .comentarios-wrap { border-top: 1px solid var(--border); }
     .comentarios-toggle {
       width: 100%; background: none; border: none;
-      display: flex; align-items: center; gap: 7px;
-      padding: 9px 14px;
+      display: flex; align-items: center; gap: 7px; padding: 9px 14px;
       font-family: inherit; font-size: 12px; font-weight: 600;
-      color: var(--ink-2); cursor: pointer;
-      text-align: left;
+      color: var(--ink-2); cursor: pointer; text-align: left;
     }
     .comentarios-toggle .ico { font-size: 14px; }
     .comentarios-toggle .badge {
       background: var(--gold); color: #fff;
-      border-radius: 99px; padding: 1px 6px;
-      font-size: 9px; font-weight: 700;
+      border-radius: 99px; padding: 1px 6px; font-size: 9px; font-weight: 700;
     }
     .comentarios-toggle .chevron { margin-left: auto; font-size: 12px; transition: transform 0.2s; }
     .comentarios-toggle.abierto .chevron { transform: rotate(180deg); }
-
-    .comentarios-body { padding: 0 14px 12px; }
+    .comentarios-body { padding: 0 14px 12px; display: none; }
     .comentario-item {
-      background: var(--page);
-      border-radius: 8px;
-      padding: 9px 12px;
-      margin-bottom: 7px;
+      background: var(--page); border-radius: 8px;
+      padding: 9px 12px; margin-bottom: 7px;
     }
     .comentario-texto { font-size: 13px; line-height: 1.5; word-break: break-word; }
     .comentario-meta {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-top: 4px;
+      display: flex; justify-content: space-between; align-items: center; margin-top: 4px;
     }
     .comentario-autor { font-size: 10px; font-weight: 700; color: var(--gold-d); }
     .comentario-hora  { font-size: 10px; color: var(--ink-3); }
@@ -209,89 +234,69 @@
     }
     .btn-borrar-comentario:hover { color: #dc2626; }
     .comentarios-vacio { font-size: 12px; color: var(--ink-3); padding: 4px 0 8px; }
-
     .comentario-form { display: flex; gap: 7px; margin-top: 4px; }
     .comentario-input {
-      flex: 1;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-family: inherit; font-size: 13px;
-      outline: none; resize: none;
-      background: var(--card);
+      flex: 1; border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 8px 10px; font-family: inherit; font-size: 13px;
+      outline: none; resize: none; background: var(--card);
     }
     .comentario-input:focus { border-color: var(--gold); }
     .btn-enviar-comentario {
-      background: var(--onyx); color: #fff;
-      border: none; border-radius: 8px;
+      background: var(--onyx); color: #fff; border: none; border-radius: 8px;
       padding: 0 14px; cursor: pointer;
-      font-family: inherit; font-size: 12px; font-weight: 700;
-      flex-shrink: 0;
+      font-family: inherit; font-size: 12px; font-weight: 700; flex-shrink: 0;
     }
     .btn-enviar-comentario:active { background: #333; }
 
     /* ── AGREGAR CUARTO ── */
-    .agregar-wrap {
-      display: flex; gap: 8px; margin-top: 4px;
-    }
+    .agregar-wrap { display: flex; gap: 8px; margin-top: 4px; }
     .agregar-input {
-      flex: 1;
-      border: 1.5px dashed var(--border);
-      border-radius: var(--r);
-      background: var(--card);
-      padding: 13px 14px;
-      font-family: inherit; font-size: 14px;
-      color: var(--ink-1); outline: none;
+      flex: 1; border: 1.5px dashed var(--border); border-radius: var(--r);
+      background: var(--card); padding: 13px 14px;
+      font-family: inherit; font-size: 14px; color: var(--ink-1); outline: none;
     }
     .agregar-input::placeholder { color: var(--ink-3); }
     .agregar-input:focus { border-color: var(--gold); border-style: solid; }
     .btn-agregar {
-      background: var(--onyx); color: #fff;
-      border: none; border-radius: var(--r);
+      background: var(--onyx); color: #fff; border: none; border-radius: var(--r);
       padding: 0 18px; cursor: pointer;
-      font-family: inherit; font-size: 13px; font-weight: 700;
-      white-space: nowrap;
+      font-family: inherit; font-size: 13px; font-weight: 700; white-space: nowrap;
     }
     .btn-agregar:active { background: #333; }
 
-    /* ── ERROR / LOADING ── */
+    /* ── ESTADOS ── */
     .estado-pantalla {
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      min-height: 60vh; padding: 32px;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 60vh; padding: 32px;
       text-align: center; gap: 14px;
     }
     .estado-pantalla .ico { font-size: 36px; }
-    .estado-pantalla h2 { font-size: 18px; font-weight: 700; }
-    .estado-pantalla p  { font-size: 14px; color: var(--ink-2); max-width: 300px; line-height: 1.6; }
+    .estado-pantalla h2  { font-size: 18px; font-weight: 700; }
+    .estado-pantalla p   { font-size: 14px; color: var(--ink-2); max-width: 300px; line-height: 1.6; }
     .spinner {
-      width: 36px; height: 36px;
-      border: 3px solid var(--border);
-      border-top-color: var(--gold);
-      border-radius: 50%;
+      width: 36px; height: 36px; border: 3px solid var(--border);
+      border-top-color: var(--gold); border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     /* ── TOAST ── */
     .toast {
-      position: fixed; bottom: 24px; left: 50%;
-      transform: translateX(-50%);
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
       background: var(--onyx); color: #fff;
       padding: 11px 18px; border-radius: 10px;
       font-size: 13px; font-weight: 600;
       box-shadow: 0 6px 20px rgba(0,0,0,0.25);
       opacity: 0; transition: opacity 0.2s;
-      pointer-events: none; z-index: 200;
-      white-space: nowrap;
+      pointer-events: none; z-index: 200; white-space: nowrap;
     }
     .toast.visible { opacity: 1; }
   </style>
 </head>
 <body>
 
-<div id="topbar" class="topbar" style="display:none">
-  <div class="topbar-inner">
+<div id="topbar" style="display:none" class="topbar">
+  <div class="topbar-row1">
     <div class="topbar-info">
       <div class="topbar-folio" id="top-folio">—</div>
       <div class="topbar-nombre" id="top-nombre">—</div>
@@ -301,16 +306,40 @@
       <span class="sync-label" id="sync-label"></span>
     </div>
   </div>
+  <div class="nombre-row">
+    <span class="nombre-label">Tu nombre:</span>
+    <input class="nombre-input" id="mi-nombre" type="text" placeholder="Ej. Bruno" maxlength="30" autocomplete="off">
+  </div>
 </div>
 
-<div id="nombre-bar" class="nombre-bar" style="display:none">
-  <span class="nombre-label">Tu nombre:</span>
-  <input class="nombre-input" id="mi-nombre" type="text" placeholder="Ej. Bruno" maxlength="30" autocomplete="off">
+<div id="columnas-bar" class="columnas-bar" style="display:none">
+  <span class="columnas-label">Columnas</span>
+  <button class="col-chip activo" id="chip-foto"  onclick="toggleColumna('foto')">
+    <span class="chip-ico">&#128247;</span> Foto
+  </button>
+  <button class="col-chip activo" id="chip-video" onclick="toggleColumna('video')">
+    <span class="chip-ico">&#127916;</span> Video
+  </button>
+  <button class="col-chip activo" id="chip-t360"  onclick="toggleColumna('t360')">
+    <span class="chip-ico">&#128260;</span> 360°
+  </button>
 </div>
 
-<div id="progress-wrap" class="progress-bar" style="display:none">
-  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-  <span class="progress-text" id="progress-text">0 / 0</span>
+<div id="progress-section" class="progress-section" style="display:none">
+  <div class="progress-row">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <span class="progress-text" id="progress-text">0 / 0</span>
+  </div>
+  <div class="progress-detalle" id="progress-detalle"></div>
+</div>
+
+<div id="pendientes-section" class="pendientes-section" style="display:none">
+  <button class="pendientes-toggle" id="pendientes-toggle" onclick="togglePendientes()">
+    <span>Pendientes</span>
+    <span class="badge" id="pendientes-badge">0</span>
+    <span class="chevron">&#8964;</span>
+  </button>
+  <div class="pendientes-body" id="pendientes-body"></div>
 </div>
 
 <div id="main">
@@ -320,29 +349,42 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5UX56JdQVdpmqQZ_OJkeRndA6INREg4ekebpjj6_YH/exec';
+const API   = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5UX56JdQVdpmqQZ_OJkeRndA6INREg4ekebpjj6_YH/exec';
+const TOKEN = new URLSearchParams(location.search).get('token') || '';
 
-const params = new URLSearchParams(location.search);
-const TOKEN  = params.get('token') || '';
+// ── ESTADO GLOBAL ──
+let cuartos   = [];
+let columnas  = { foto: true, video: true, t360: true };
 
-let cuartos     = [];
 let pollingId   = null;
 let guardandoId = null;
 let pendiente   = false;
 let guardando   = false;
 
-// ── NOMBRE PERSISTIDO ──
+const COLS_DEF = [
+  { campo: 'foto',  label: 'Foto',  ico: '&#128247;' },
+  { campo: 'video', label: 'Video', ico: '&#127916;' },
+  { campo: 't360',  label: '360°',  ico: '&#128260;' },
+];
+
+// ── HELPERS ──
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function miNombre() {
   return document.getElementById('mi-nombre').value.trim() || 'Anónimo';
 }
 
+function colsActivas() {
+  return COLS_DEF.filter(c => columnas[c.campo]);
+}
+
+// ── NOMBRE PERSISTIDO ──
 function iniciarNombreInput() {
   const inp = document.getElementById('mi-nombre');
-  const guardado = localStorage.getItem('checklist_nombre') || '';
-  if (guardado) inp.value = guardado;
-  inp.addEventListener('input', () => {
-    localStorage.setItem('checklist_nombre', inp.value.trim());
-  });
+  inp.value = localStorage.getItem('checklist_nombre') || '';
+  inp.addEventListener('input', () => localStorage.setItem('checklist_nombre', inp.value.trim()));
 }
 
 // ── SYNC VISUAL ──
@@ -354,57 +396,36 @@ function setSync(estado) {
 }
 
 // ── TOAST ──
-let toastTimer;
+let _toastTimer;
 function toast(msg) {
   const el = document.getElementById('toast');
   el.textContent = msg;
   el.classList.add('visible');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('visible'), 2500);
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('visible'), 2500);
 }
 
 // ── API ──
-async function apiGet(params) {
-  const qs  = new URLSearchParams({ ...params, token: TOKEN }).toString();
+async function apiGet(p) {
+  const qs  = new URLSearchParams({ ...p, token: TOKEN }).toString();
   const res = await fetch(API + '?' + qs, { redirect: 'follow' });
   return res.json();
 }
 
 async function apiPost(body) {
   const res = await fetch(API, {
-    method  : 'POST',
-    headers : { 'Content-Type': 'text/plain' },
-    body    : JSON.stringify({ ...body, token: TOKEN }),
-    redirect: 'follow',
+    method: 'POST', redirect: 'follow',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({ ...body, token: TOKEN }),
   });
   return res.json();
-}
-
-// ── CARGAR ──
-async function cargar(silencioso) {
-  if (!silencioso) mostrarCargando();
-  try {
-    const data = await apiGet({ action: 'obtenerChecklist' });
-    if (data.error) { mostrarError(data.error); return; }
-    cuartos = data.cuartos || [];
-    if (!silencioso) {
-      document.getElementById('top-folio').textContent  = data.folio        || '—';
-      document.getElementById('top-nombre').textContent = data.nombreCliente || '—';
-      document.getElementById('topbar').style.display       = '';
-      document.getElementById('nombre-bar').style.display   = '';
-      document.getElementById('progress-wrap').style.display = '';
-    }
-    renderLista();
-  } catch (err) {
-    if (!silencioso) mostrarError('No se pudo cargar el checklist.');
-  }
 }
 
 // ── GUARDAR ──
 function guardarDebounce() {
   pendiente = true;
   clearTimeout(guardandoId);
-  guardandoId = setTimeout(guardarAhora, 600);
+  guardandoId = setTimeout(guardarAhora, 500);
 }
 
 async function guardarAhora() {
@@ -413,11 +434,11 @@ async function guardarAhora() {
   guardando = true;
   setSync('syncing');
   try {
-    const data = await apiPost({ action: 'guardarChecklist', cuartos });
+    const data = await apiPost({ action: 'guardarChecklist', cuartos, columnas });
     guardando = false;
     if (data.error) { setSync('error'); toast('Error al guardar: ' + data.error); return; }
     setSync('ok');
-  } catch (err) {
+  } catch (_) {
     guardando = false;
     setSync('error');
     toast('Sin conexión. Reintentando...');
@@ -425,14 +446,67 @@ async function guardarAhora() {
   }
 }
 
+// ── CARGAR ──
+async function cargar() {
+  try {
+    const data = await apiGet({ action: 'obtenerChecklist' });
+    if (data.error) { mostrarError(data.error); return; }
+    cuartos  = data.cuartos  || [];
+    columnas = data.columnas || { foto: true, video: true, t360: true };
+
+    document.getElementById('top-folio').textContent  = data.folio        || '—';
+    document.getElementById('top-nombre').textContent = data.nombreCliente || '—';
+    document.getElementById('topbar').style.display           = '';
+    document.getElementById('columnas-bar').style.display     = '';
+    document.getElementById('progress-section').style.display = '';
+    document.getElementById('pendientes-section').style.display = '';
+
+    buildLista();
+    actualizarColChips();
+    actualizarProgreso();
+  } catch (_) {
+    mostrarError('No se pudo cargar el checklist.');
+  }
+}
+
 // ── POLLING ──
 async function poll() {
-  if (pendiente || guardando) return; // no pisar cambios locales sin guardar
+  if (pendiente || guardando) return;
   try {
     const data = await apiGet({ action: 'obtenerChecklist' });
     if (data.error || !data.cuartos) return;
-    cuartos = data.cuartos;
-    renderLista();
+
+    const nuevasColumnas = data.columnas || { foto: true, video: true, t360: true };
+    const colsChanged = JSON.stringify(nuevasColumnas) !== JSON.stringify(columnas);
+    columnas = nuevasColumnas;
+
+    // Detectar cambios estructurales (cuartos añadidos o eliminados)
+    if (data.cuartos.length !== cuartos.length || colsChanged) {
+      cuartos = data.cuartos;
+      buildLista();
+      actualizarColChips();
+      actualizarProgreso();
+      return;
+    }
+
+    // Actualizar solo botones que cambiaron — sin tocar el DOM del resto
+    let huboNombres = false;
+    data.cuartos.forEach((c, idx) => {
+      if (c.nombre !== cuartos[idx].nombre) huboNombres = true;
+      COLS_DEF.forEach(({ campo }) => {
+        if (c[campo] !== cuartos[idx][campo]) {
+          cuartos[idx][campo] = c[campo];
+          actualizarCheckBtn(idx, campo);
+        }
+      });
+      cuartos[idx].comentarios = c.comentarios;
+    });
+
+    if (huboNombres) {
+      cuartos = data.cuartos;
+      buildLista();
+    }
+    actualizarProgreso();
   } catch (_) {}
 }
 
@@ -443,43 +517,112 @@ function iniciarPolling() {
 
 // ── PROGRESO ──
 function actualizarProgreso() {
-  const total    = cuartos.length;
-  const completos = cuartos.filter(c => c.foto && c.video && c.t360).length;
+  const activas = colsActivas();
+  const total   = cuartos.length;
+
+  // Por cuarto: completo si todas las columnas activas están marcadas
+  const completos = cuartos.filter(c => activas.every(col => c[col.campo])).length;
   const pct = total > 0 ? Math.round(completos / total * 100) : 0;
+
   const fill = document.getElementById('progress-fill');
   fill.style.width = pct + '%';
   fill.className = 'progress-fill' + (pct === 100 ? ' completo' : '');
-  document.getElementById('progress-text').textContent = completos + ' / ' + total + ' completos';
+  document.getElementById('progress-text').textContent = completos + ' / ' + total + ' cuartos';
+
+  // Desglose por columna activa
+  const detalle = activas.map(col => {
+    const hechos = cuartos.filter(c => c[col.campo]).length;
+    return `<span>${col.label} ${hechos}/${total}</span>`;
+  }).join(' &nbsp;·&nbsp; ');
+  document.getElementById('progress-detalle').innerHTML = detalle;
+
+  // Pendientes
+  const pendientesItems = cuartos.map((c, idx) => {
+    const faltantes = activas.filter(col => !c[col.campo]).map(col => col.label);
+    return faltantes.length ? { idx, nombre: c.nombre, faltantes } : null;
+  }).filter(Boolean);
+
+  const badge = document.getElementById('pendientes-badge');
+  badge.textContent = pendientesItems.length;
+
+  const body = document.getElementById('pendientes-body');
+  if (pendientesItems.length === 0) {
+    body.innerHTML = '<p class="pendientes-vacio">Todo listo.</p>';
+  } else {
+    body.innerHTML = pendientesItems.map(p =>
+      `<div class="pendiente-item">
+        <span class="pendiente-nombre">${esc(p.nombre)}</span>
+        <span class="pendiente-falta">${p.faltantes.join(', ')}</span>
+      </div>`
+    ).join('');
+  }
 }
 
-// ── RENDER ──
-function renderLista() {
+// ── COLUMNAS ──
+function actualizarColChips() {
+  COLS_DEF.forEach(({ campo }) => {
+    const chip = document.getElementById('chip-' + campo);
+    if (chip) chip.classList.toggle('activo', !!columnas[campo]);
+  });
+}
+
+function toggleColumna(campo) {
+  const estaActivo = columnas[campo];
+
+  if (estaActivo) {
+    // Contar marcas existentes en esa columna
+    const marcas = cuartos.filter(c => c[campo]).length;
+    if (marcas > 0) {
+      const ok = confirm(
+        'La columna "' + COLS_DEF.find(c => c.campo === campo).label +
+        '" tiene ' + marcas + ' cuarto' + (marcas > 1 ? 's' : '') + ' marcado' + (marcas > 1 ? 's' : '') + '.\n\n' +
+        'Las marcas se conservan pero la columna quedará oculta. ¿Desactivarla?'
+      );
+      if (!ok) return;
+    }
+  }
+
+  columnas[campo] = !estaActivo;
+  actualizarColChips();
+
+  // Actualizar la grid de checks en cada tarjeta
+  document.querySelectorAll('.checks-row').forEach((row, idx) => {
+    actualizarGridCols(row);
+    COLS_DEF.forEach(({ campo: c }) => {
+      const btn = row.querySelector('[data-campo="' + c + '"]');
+      if (btn) btn.style.display = columnas[c] ? '' : 'none';
+    });
+  });
+
   actualizarProgreso();
+  guardarDebounce();
+}
+
+// ── BUILD LISTA (render completo — solo en carga inicial y cambios estructurales) ──
+function buildLista() {
   const main = document.getElementById('main');
   main.innerHTML = '';
 
   const lista = document.createElement('div');
   lista.className = 'lista';
 
-  cuartos.forEach((c, idx) => {
-    lista.appendChild(renderCuarto(c, idx));
-  });
+  cuartos.forEach((c, idx) => lista.appendChild(crearCardCuarto(c, idx)));
 
-  // Agregar cuarto
   const agrWrap = document.createElement('div');
   agrWrap.className = 'agregar-wrap';
   agrWrap.innerHTML = `
     <input class="agregar-input" id="nuevo-cuarto" type="text" placeholder="Nombre del cuarto o espacio..." maxlength="60">
     <button class="btn-agregar" onclick="agregarCuarto()">Agregar</button>
   `;
-  const inp = agrWrap.querySelector('#nuevo-cuarto');
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') agregarCuarto(); });
-  lista.appendChild(agrWrap);
+  agrWrap.querySelector('#nuevo-cuarto').addEventListener('keydown', e => {
+    if (e.key === 'Enter') agregarCuarto();
+  });
 
+  lista.appendChild(agrWrap);
   main.appendChild(lista);
 }
 
-function renderCuarto(c, idx) {
+function crearCardCuarto(c, idx) {
   const card = document.createElement('div');
   card.className = 'cuarto-card';
   card.id = 'cuarto-' + idx;
@@ -490,66 +633,99 @@ function renderCuarto(c, idx) {
 
   const inp = document.createElement('input');
   inp.className = 'cuarto-nombre';
-  inp.type = 'text';
-  inp.value = c.nombre;
+  inp.type = 'text'; inp.value = c.nombre;
   inp.placeholder = 'Nombre del espacio';
-  inp.setAttribute('data-idx', idx);
   inp.addEventListener('change', e => {
     cuartos[idx].nombre = e.target.value.trim() || 'Sin nombre';
     guardarDebounce();
   });
 
-  const btnBorrar = document.createElement('button');
-  btnBorrar.className = 'btn-borrar-cuarto';
-  btnBorrar.title = 'Eliminar espacio';
-  btnBorrar.innerHTML = '&#10005;';
-  btnBorrar.addEventListener('click', () => borrarCuarto(idx));
+  const btnDel = document.createElement('button');
+  btnDel.className = 'btn-borrar-cuarto';
+  btnDel.title = 'Eliminar espacio';
+  btnDel.innerHTML = '&#10005;';
+  btnDel.addEventListener('click', () => borrarCuarto(idx));
 
   header.appendChild(inp);
-  header.appendChild(btnBorrar);
+  header.appendChild(btnDel);
   card.appendChild(header);
 
   // Checks
   const checksRow = document.createElement('div');
   checksRow.className = 'checks-row';
+  checksRow.setAttribute('data-idx', idx);
+  actualizarGridCols(checksRow);
 
-  [
-    { campo: 'foto',  label: 'Foto',  ico: '&#128247;' },
-    { campo: 'video', label: 'Video', ico: '&#127916;' },
-    { campo: 't360',  label: '360°',  ico: '&#128260;' },
-  ].forEach(({ campo, label, ico }) => {
-    const btn = document.createElement('button');
-    const val = c[campo];
-    btn.className = 'check-btn' + (val ? ' marcado' : '');
-    btn.innerHTML = `
-      <span class="check-icon">${ico}</span>
-      <span class="check-label">${label}</span>
-      ${val ? `<span class="check-quien">${esc(val)}</span>` : ''}
-    `;
-    btn.addEventListener('click', () => toggleCheck(idx, campo));
+  COLS_DEF.forEach(({ campo, label, ico }) => {
+    const btn = crearCheckBtn(idx, campo, label, ico, c[campo]);
+    if (!columnas[campo]) btn.style.display = 'none';
     checksRow.appendChild(btn);
   });
 
   card.appendChild(checksRow);
 
   // Comentarios
-  const comentariosWrap = document.createElement('div');
-  comentariosWrap.className = 'comentarios-wrap';
+  card.appendChild(crearComentariosSection(c, idx));
 
-  const numComentarios = (c.comentarios || []).length;
+  return card;
+}
+
+function crearCheckBtn(idx, campo, label, ico, valor) {
+  const btn = document.createElement('button');
+  btn.className = 'check-btn' + (valor ? ' marcado' : '');
+  btn.setAttribute('data-campo', campo);
+  btn.innerHTML = buildCheckBtnInner(ico, label, valor);
+  btn.addEventListener('click', () => toggleCheck(idx, campo));
+  return btn;
+}
+
+function buildCheckBtnInner(ico, label, valor) {
+  return `<span class="check-icon">${ico}</span>
+    <span class="check-label">${label}</span>
+    ${valor ? `<span class="check-quien">${esc(valor)}</span>` : ''}`;
+}
+
+// Actualizar un solo botón sin tocar el resto del DOM
+function actualizarCheckBtn(idx, campo) {
+  const row  = document.querySelector('#cuarto-' + idx + ' .checks-row');
+  if (!row) return;
+  const btn  = row.querySelector('[data-campo="' + campo + '"]');
+  if (!btn) return;
+  const col  = COLS_DEF.find(c => c.campo === campo);
+  const valor = cuartos[idx][campo];
+  btn.className = 'check-btn' + (valor ? ' marcado' : '');
+  btn.innerHTML = buildCheckBtnInner(col.ico, col.label, valor);
+  if (!columnas[campo]) btn.style.display = 'none';
+}
+
+function actualizarGridCols(row) {
+  const n = Object.values(columnas).filter(Boolean).length;
+  row.className = 'checks-row cols-' + Math.max(1, n);
+}
+
+// ── COMENTARIOS ──
+function crearComentariosSection(c, idx) {
+  const wrap = document.createElement('div');
+  wrap.className = 'comentarios-wrap';
+
+  const num = (c.comentarios || []).length;
   const togBtn = document.createElement('button');
   togBtn.className = 'comentarios-toggle';
   togBtn.innerHTML = `
     <span class="ico">&#128172;</span>
-    <span>${numComentarios > 0 ? 'Comentarios' : 'Agregar comentario'}</span>
-    ${numComentarios > 0 ? `<span class="badge">${numComentarios}</span>` : ''}
+    <span>${num > 0 ? 'Comentarios' : 'Agregar comentario'}</span>
+    ${num > 0 ? `<span class="badge">${num}</span>` : ''}
     <span class="chevron">&#8964;</span>
   `;
-  togBtn.addEventListener('click', () => toggleComentarios(togBtn, bodyDiv));
 
-  const bodyDiv = document.createElement('div');
-  bodyDiv.className = 'comentarios-body';
-  bodyDiv.style.display = 'none';
+  const body = document.createElement('div');
+  body.className = 'comentarios-body';
+
+  togBtn.addEventListener('click', () => {
+    const abierto = body.style.display !== 'none';
+    body.style.display = abierto ? 'none' : 'block';
+    togBtn.classList.toggle('abierto', !abierto);
+  });
 
   const comentariosHtml = (c.comentarios || []).map((cm, ci) => `
     <div class="comentario-item">
@@ -559,67 +735,63 @@ function renderCuarto(c, idx) {
           <span class="comentario-autor">${esc(cm.autor)}</span>
           <span class="comentario-hora"> · ${esc(cm.hora || '')}</span>
         </span>
-        <button class="btn-borrar-comentario" data-cuarto="${idx}" data-comentario="${ci}" onclick="borrarComentario(${idx},${ci})">Borrar</button>
+        <button class="btn-borrar-comentario" onclick="borrarComentario(${idx},${ci})">Borrar</button>
       </div>
     </div>
   `).join('');
 
-  bodyDiv.innerHTML = comentariosHtml
-    + (numComentarios === 0 ? '<p class="comentarios-vacio">Sin comentarios aún.</p>' : '')
+  body.innerHTML = comentariosHtml
+    + (num === 0 ? '<p class="comentarios-vacio">Sin comentarios aún.</p>' : '')
     + `<div class="comentario-form">
          <textarea class="comentario-input" rows="1" placeholder="Escribe un comentario..." maxlength="300"></textarea>
          <button class="btn-enviar-comentario">Enviar</button>
        </div>`;
 
-  const textarea = bodyDiv.querySelector('.comentario-input');
-  const btnEnviar = bodyDiv.querySelector('.btn-enviar-comentario');
-  btnEnviar.addEventListener('click', () => enviarComentario(idx, textarea));
+  const textarea = body.querySelector('.comentario-input');
+  body.querySelector('.btn-enviar-comentario').addEventListener('click', () => enviarComentario(idx, textarea));
   textarea.addEventListener('keydown', e => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarComentario(idx, textarea); }
   });
 
-  comentariosWrap.appendChild(togBtn);
-  comentariosWrap.appendChild(bodyDiv);
-  card.appendChild(comentariosWrap);
-
-  return card;
+  wrap.appendChild(togBtn);
+  wrap.appendChild(body);
+  return wrap;
 }
 
-function toggleComentarios(btn, body) {
+// ── PENDIENTES TOGGLE ──
+function togglePendientes() {
+  const body   = document.getElementById('pendientes-body');
+  const toggle = document.getElementById('pendientes-toggle');
   const abierto = body.style.display !== 'none';
   body.style.display = abierto ? 'none' : 'block';
-  btn.classList.toggle('abierto', !abierto);
+  toggle.classList.toggle('abierto', !abierto);
 }
 
 // ── ACCIONES ──
 function toggleCheck(idx, campo) {
-  const actual = cuartos[idx][campo];
-  cuartos[idx][campo] = actual ? null : miNombre();
+  cuartos[idx][campo] = cuartos[idx][campo] ? null : miNombre();
+  actualizarCheckBtn(idx, campo);
+  actualizarProgreso();
   guardarDebounce();
-  renderLista();
 }
 
 function borrarCuarto(idx) {
   if (!confirm('¿Eliminar "' + cuartos[idx].nombre + '"?')) return;
   cuartos.splice(idx, 1);
   guardarDebounce();
-  renderLista();
+  buildLista();
+  actualizarProgreso();
 }
 
 function agregarCuarto() {
   const inp = document.getElementById('nuevo-cuarto');
   const nombre = (inp.value || '').trim();
   if (!nombre) { inp.focus(); return; }
-  cuartos.push({
-    id: 'cuarto-' + Date.now(),
-    nombre,
-    foto: null, video: null, t360: null,
-    comentarios: [],
-  });
+  cuartos.push({ id: 'c-' + Date.now(), nombre, foto: null, video: null, t360: null, comentarios: [] });
   inp.value = '';
   guardarDebounce();
-  renderLista();
-  // Scroll al último cuarto
+  buildLista();
+  actualizarProgreso();
   setTimeout(() => {
     const cards = document.querySelectorAll('.cuarto-card');
     if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -635,15 +807,16 @@ function enviarComentario(idx, textarea) {
   cuartos[idx].comentarios.push({ texto, autor: miNombre(), hora });
   textarea.value = '';
   guardarDebounce();
-  renderLista();
-  // Abrir el hilo del cuarto que acaba de recibir un comentario
+  buildLista();
+  actualizarProgreso();
   setTimeout(() => {
     const card = document.getElementById('cuarto-' + idx);
     if (!card) return;
     const toggle = card.querySelector('.comentarios-toggle');
     const body   = card.querySelector('.comentarios-body');
     if (toggle && body && body.style.display === 'none') {
-      toggleComentarios(toggle, body);
+      body.style.display = 'block';
+      toggle.classList.add('abierto');
     }
     card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }, 50);
@@ -653,14 +826,11 @@ function borrarComentario(idxCuarto, idxComentario) {
   if (!confirm('¿Borrar este comentario?')) return;
   cuartos[idxCuarto].comentarios.splice(idxComentario, 1);
   guardarDebounce();
-  renderLista();
+  buildLista();
+  actualizarProgreso();
 }
 
-// ── UTILIDADES ──
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
+// ── ESTADOS ──
 function mostrarCargando() {
   document.getElementById('main').innerHTML =
     '<div class="estado-pantalla"><div class="spinner"></div></div>';
@@ -677,15 +847,10 @@ function mostrarError(msg) {
 
 // ── INIT ──
 if (!TOKEN) {
-  document.getElementById('main').innerHTML = `
-    <div class="estado-pantalla">
-      <div class="ico">&#128274;</div>
-      <h2>Enlace inválido</h2>
-      <p>Este enlace no tiene un token de contrato. Usa el botón "Checklist de rodaje" desde el panel de administración.</p>
-    </div>`;
+  mostrarError('Este enlace no tiene un token de contrato. Usa el botón "Checklist de rodaje" desde el panel de administración.');
 } else {
   iniciarNombreInput();
-  cargar(false).then(() => iniciarPolling());
+  cargar().then(() => iniciarPolling());
 }
 </script>
 </body>
