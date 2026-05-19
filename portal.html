@@ -403,16 +403,18 @@ function formatMXN(val) {
 
 function formatFecha(str) {
   if (!str) return '';
-  var s = (typeof str === 'string' && str.indexOf('T') === -1) ? str + 'T12:00:00' : str;
+  var hasTime = typeof str === 'string' && str.indexOf('T') !== -1;
+  var s = hasTime ? str : str + 'T12:00:00';
   var d = new Date(s);
   if (isNaN(d)) return str;
   var dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  var base = dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
+  // Solo mostrar hora si la fecha original tenía componente de tiempo.
+  if (!hasTime) return base;
   var h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
   var ampm = h >= 12 ? 'p.m.' : 'a.m.';
   h = h % 12 || 12;
-  var base = dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
-  if (h === 12 && m === '00' && ampm === 'p.m.') return base;
   return base + ' · ' + h + ':' + m + ' ' + ampm;
 }
 
