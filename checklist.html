@@ -329,6 +329,7 @@ let cuartos     = [];
 let pollingId   = null;
 let guardandoId = null;
 let pendiente   = false;
+let guardando   = false;
 
 // ── NOMBRE PERSISTIDO ──
 function miNombre() {
@@ -409,12 +410,15 @@ function guardarDebounce() {
 async function guardarAhora() {
   if (!pendiente) return;
   pendiente = false;
+  guardando = true;
   setSync('syncing');
   try {
     const data = await apiPost({ action: 'guardarChecklist', cuartos });
+    guardando = false;
     if (data.error) { setSync('error'); toast('Error al guardar: ' + data.error); return; }
     setSync('ok');
   } catch (err) {
+    guardando = false;
     setSync('error');
     toast('Sin conexión. Reintentando...');
     pendiente = true;
@@ -423,7 +427,7 @@ async function guardarAhora() {
 
 // ── POLLING ──
 async function poll() {
-  if (pendiente) return; // no pisar cambios locales sin guardar
+  if (pendiente || guardando) return; // no pisar cambios locales sin guardar
   try {
     const data = await apiGet({ action: 'obtenerChecklist' });
     if (data.error || !data.cuartos) return;
