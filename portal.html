@@ -363,6 +363,11 @@ var adicionalesOn     = {};
 var orientaciones     = {};
 var hasStroke         = false;
 var isDrawing         = false;
+var _pctAnticipo      = 0.5; // porcentaje fijado por Bruno; se deriva al cargar datos
+
+function calcAnticipo(total) {
+  return Math.round(total * _pctAnticipo);
+}
 var enviando          = false;
 var uploadsEnProgreso = 0;
 var archivosSubidos   = {};   // clave: "tipo-propIndex", valor: url de Drive
@@ -480,6 +485,9 @@ function init() {
         return;
       }
       portalData = data;
+      var _base = parseFloat(data.precioTotal || data.precioBase) || 0;
+      var _ant  = parseFloat(data.anticipo) || 0;
+      if (_base > 0 && _ant > 0) _pctAnticipo = _ant / _base;
       if (history.replaceState) history.replaceState({}, '', location.pathname);
       var estatus = data.estatus || '';
       if      (estatus === 'Pendiente firma')   { actualizarStepper(1); renderEtapa1(); }
@@ -694,10 +702,8 @@ function actualizarTotales() {
   addons.forEach(function(a) {
     if (adicionalesOn[a.Clave]) addSum += (parseFloat(a.Precio) || 0);
   });
-  var total       = base + addSum;
-  var baseAnticipo = parseFloat(portalData && portalData.anticipo) || 0;
-  var pctBase      = base > 0 && baseAnticipo > 0 ? baseAnticipo / base : 0.5;
-  var anticipo     = Math.round(total * pctBase);
+  var total    = base + addSum;
+  var anticipo = calcAnticipo(total);
 
   var elTotal    = document.getElementById('txt-total');
   var elAnticipo = document.getElementById('txt-anticipo');
@@ -1026,9 +1032,7 @@ function renderRevision() {
   var addSum = 0;
   addons.forEach(function(a) { if (adicionalesOn[a.Clave]) addSum += (parseFloat(a.Precio) || 0); });
   var total    = base + addSum;
-  var anticipo = addSum === 0
-    ? (parseFloat(d.anticipo) || Math.round(total * 0.5))
-    : Math.round(total * 0.5);
+  var anticipo = calcAnticipo(total);
   var activos  = addons.filter(function(a) { return adicionalesOn[a.Clave]; });
 
   var html = '<div class="wrap">';
@@ -1247,8 +1251,8 @@ function enviarFirma() {
 function renderEtapa2() {
   mostrarEstado('');
   var d        = portalData;
-  var anticipo = parseFloat(d.anticipo) || 0;
   var total    = parseFloat(d.precioTotal) || 0;
+  var anticipo = total > 0 ? calcAnticipo(total) : (parseFloat(d.anticipo) || 0);
   var folio    = d.folio || '';
   var nombre1  = (d.nombre || '').split(' ')[0];
 
