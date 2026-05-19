@@ -1131,6 +1131,23 @@ function enviarFirma() {
     .then(function(data) {
       enviando = false;
       if (!data.ok) {
+        // Si el contrato ya fue firmado (request anterior llegó pero respuesta se perdió),
+        // recuperar datos del servidor y avanzar a etapa 2 en lugar de mostrar error.
+        if (data.error && data.error.indexOf('ya fue firmado') !== -1) {
+          formData = null;
+          if (wrap) wrap.style.display = 'none';
+          apiGet('?action=obtenerPortal&token=' + encodeURIComponent(token))
+            .then(function(freshData) {
+              if (freshData.ok) portalData = freshData;
+              actualizarStepper(2);
+              renderEtapa2();
+            })
+            .catch(function() {
+              actualizarStepper(2);
+              renderEtapa2();
+            });
+          return;
+        }
         errEl.textContent   = data.error || 'Ocurrió un error. Intenta de nuevo.';
         errEl.style.display = 'block';
         btn.disabled        = false;
