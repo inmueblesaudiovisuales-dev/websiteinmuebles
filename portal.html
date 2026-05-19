@@ -694,10 +694,10 @@ function actualizarTotales() {
   addons.forEach(function(a) {
     if (adicionalesOn[a.Clave]) addSum += (parseFloat(a.Precio) || 0);
   });
-  var total    = base + addSum;
-  var anticipo = addSum === 0
-    ? (parseFloat(portalData && portalData.anticipo) || Math.round(total * 0.5))
-    : Math.round(total * 0.5);
+  var total       = base + addSum;
+  var baseAnticipo = parseFloat(portalData && portalData.anticipo) || 0;
+  var pctBase      = base > 0 && baseAnticipo > 0 ? baseAnticipo / base : 0.5;
+  var anticipo     = Math.round(total * pctBase);
 
   var elTotal    = document.getElementById('txt-total');
   var elAnticipo = document.getElementById('txt-anticipo');
