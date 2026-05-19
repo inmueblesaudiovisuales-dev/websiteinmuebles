@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guía de Publicación · Inmuebles Audiovisuales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --onyx:#1C1C1E;
+  --gold:#C9A84C;
+  --white:#FAFAFA;
+  --gray:#9B9B9F;
+  --rule:#D8D4CC;
+  --cream:#F5F2EC;
+  --ios-bg:#000;
+  --ios-card:#1C1C1E;
+  --ios-card2:#2C2C2E;
+  --ios-t1:#FFFFFF;
+  --ios-t2:#8E8E93;
+  --ios-sep:rgba(255,255,255,0.1);
+  --ios-blue:#007AFF;
+  --ios-green:#34C759;
+}
+
+body{
+  background:var(--cream);
+  font-family:'Montserrat',sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* PAGES */
+.page{
+  width:210mm;
+  min-height:297mm;
+  background:#fff;
+  margin:0 auto 24px;
+  position:relative;
+  overflow:hidden;
+}
+
+@media print{
+  body{background:#fff}
+  .page{margin:0;page-break-after:always}
+  @page{size:A4 portrait;margin:0}
+}
+
+/* COVER */
+.pg-cover{
+  background:var(--onyx);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:297mm;
+  padding:20mm 20mm;
+  text-align:center;
+  gap:0;
+}
+
+.cover-logo{
+  width:340px;
+  margin-bottom:44px;
+  overflow:visible;
+}
+.cover-logo .la{fill:#FAFAFA}
+.cover-logo .lb{fill:#C9A84C}
+
+.cover-rule{
+  width:48px;
+  height:2px;
+  background:var(--gold);
+  margin:0 auto 36px;
+}
+
+.cover-title{
+  font-size:30px;
+  font-weight:800;
+  letter-spacing:-0.02em;
+  color:#FAFAFA;
+  text-transform:uppercase;
+  line-height:1.15;
+  margin-bottom:18px;
+}
+
+.cover-sub{
+  font-size:12px;
+  font-weight:400;
+  color:var(--gray);
+  line-height:1.8;
+  max-width:380px;
+  margin-bottom:64px;
+}
+
+.cover-chips{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+
+.cover-chip{
+  border:1px solid rgba(201,168,76,0.4);
+  border-radius:20px;
+  padding:6px 16px;
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:0.06em;
+  color:var(--gold);
+  text-transform:uppercase;
+}
+
+.cover-foot{
+  position:absolute;
+  bottom:14mm;
+  left:0;right:0;
+  display:flex;
+  justify-content:space-between;
+  padding:0 16mm;
+  font-size:9.5px;
+  color:var(--gray);
+  font-weight:500;
+}
+
+/* SECTION PAGES */
+.pg-section{
+  padding:13mm 15mm 16mm;
+  display:flex;
+  flex-direction:column;
+}
+
+.sec-hd{
+  display:flex;
+  align-items:center;
+  gap:18px;
+  padding-bottom:12px;
+  border-bottom:2px solid var(--rule);
+  margin-bottom:12px;
+}
+
+.sec-num{
+  font-size:52px;
+  font-weight:800;
+  color:var(--gold);
+  letter-spacing:-0.05em;
+  line-height:1;
+  flex-shrink:0;
+}
+
+.sec-title{
+  font-size:22px;
+  font-weight:700;
+  color:var(--onyx);
+  text-transform:uppercase;
+  letter-spacing:0.04em;
+}
+
+.sec-sub{
+  font-size:10.5px;
+  color:var(--gray);
+  font-weight:500;
+  text-transform:uppercase;
+  letter-spacing:0.07em;
+  margin-top:3px;
+}
+
+.intro{
+  font-size:12px;
+  color:#3C3C3E;
+  line-height:1.75;
+  margin-bottom:22px;
+  max-width:580px;
+}
+
+/* STEPS LAYOUT */
+.steps{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:0;
+  flex:1;
+}
+
+.step{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:14px;
+  max-width:240px;
+  flex:1;
+  overflow:visible;
+}
+
+.step-badge{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--gold);
+  color:var(--onyx);
+  font-size:11px;
+  font-weight:700;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.step-cap{
+  font-size:11px;
+  font-weight:500;
+  color:var(--onyx);
+  text-align:center;
+  line-height:1.6;
+  max-width:180px;
+  margin-top:160px;
+}
+
+.step-cap strong{
+  font-weight:700;
+  color:var(--onyx);
+}
+
+.arr{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:48px;
+  flex-shrink:0;
+  margin-top:288px;
+}
+
+.arr svg{fill:var(--gold)}
+
+/* NOTE */
+.note{
+  margin-top:22px;
+  background:#F0EBE0;
+  border-left:3px solid var(--gold);
+  border-radius:0 4px 4px 0;
+  padding:10px 14px;
+  font-size:11px;
+  color:#3C3C3E;
+  line-height:1.7;
+}
+
+/* PHONE FRAME */
+.pw{
+  position:relative;
+  display:inline-block;
+  transform:scale(1.45);
+  transform-origin:top center;
+  overflow:visible;
+}
+
+/* volume buttons left */
+.pw::before{
+  content:'';
+  position:absolute;
+  left:-3.5px;top:76px;
+  width:3px;height:52px;
+  background:linear-gradient(to right,#989899,#BBBBBE);
+  border-radius:2px 0 0 2px;
+}
+
+/* power button right */
+.pw::after{
+  content:'';
+  position:absolute;
+  right:-3.5px;top:110px;
+  width:3px;height:56px;
+  background:linear-gradient(to left,#989899,#BBBBBE);
+  border-radius:0 2px 2px 0;
+}
+
+.iph{
+  width:162px;
+  height:351px;
+  border-radius:38px;
+  background:linear-gradient(155deg,
+    #D6D6D8 0%,#AEAEB0 18%,
+    #C0C0C2 35%,#8C8C8E 55%,
+    #ABABAE 72%,#888 100%);
+  box-shadow:
+    0 0 0 0.5px rgba(0,0,0,0.5),
+    0 10px 24px rgba(0,0,0,0.28),
+    0 4px 10px rgba(0,0,0,0.14),
+    inset 0 1px 0 rgba(255,255,255,0.28),
+    inset 0 -1px 0 rgba(0,0,0,0.18);
+  padding:4.5px;
+}
+
+.scr{
+  width:100%;height:100%;
+  background:var(--ios-bg);
+  border-radius:33px;
+  overflow:hidden;
+  position:relative;
+  font-family:-apple-system,'Helvetica Neue',sans-serif;
+}
+
+/* Dynamic Island */
+.di{
+  position:absolute;
+  top:8px;left:50%;
+  transform:translateX(-50%);
+  width:56px;height:14px;
+  background:#000;
+  border-radius:100px;
+  z-index:10;
+}
+
+/* Status bar */
+.sb{
+  position:absolute;
+  top:0;left:0;right:0;
+  height:40px;
+  display:flex;
+  align-items:flex-start;
+  padding:5px 13px 0;
+  z-index:5;
+}
+.sb-t{font-size:8.5px;font-weight:700;color:#fff;letter-spacing:-0.01em}
+.sb-i{margin-left:auto;display:flex;align-items:center;gap:3px}
+.sb-i svg{fill:#fff}
+
+/* Nav bar */
+.nav{
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  height:35px;
+  border-bottom:0.5px solid var(--ios-sep);
+  position:relative;
+}
+.nav-back{
+  font-size:8px;color:var(--ios-blue);
+  display:flex;align-items:center;gap:2px;
+}
+.nav-back::before{
+  content:'';width:5px;height:5px;
+  border-left:1.5px solid var(--ios-blue);
+  border-bottom:1.5px solid var(--ios-blue);
+  transform:rotate(45deg);display:block;
+}
+.nav-ttl{
+  position:absolute;left:50%;transform:translateX(-50%);
+  font-size:10px;font-weight:600;color:#fff;
+  white-space:nowrap;
+}
+
+/* Rows */
+.r{
+  display:flex;align-items:center;
+  padding:7px 12px;gap:8px;
+  border-bottom:0.5px solid var(--ios-sep);
+}
+.r:last-child{border-bottom:none}
+.ri{
+  width:18px;height:18px;border-radius:4px;
+  background:#636366;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.rl{font-size:8.5px;color:#fff;flex:1;line-height:1.3}
+.rl.dim{color:var(--ios-t2)}
+.rl.sm{font-size:7.5px;color:var(--ios-t2);margin-top:1px}
+.rc{
+  width:5px;height:5px;flex-shrink:0;
+  border-right:1.5px solid var(--ios-t2);
+  border-top:1.5px solid var(--ios-t2);
+  transform:rotate(45deg);
+}
+.tog{
+  width:26px;height:15px;border-radius:8px;
+  position:relative;flex-shrink:0;
+}
+.tog.on{background:var(--ios-green)}
+.tog.off{background:#3A3A3C}
+.tog::after{
+  content:'';position:absolute;top:2px;
+  width:11px;height:11px;border-radius:50%;
+  background:#fff;box-shadow:0 1px 2px rgba(0,0,0,0.3);
+}
+.tog.on::after{left:13px}
+.tog.off::after{left:2px}
+
+/* Highlighted row */
+.hl{
+  background:rgba(201,168,76,0.12);
+  box-shadow:inset 0 0 0 1.5px #C9A84C;
+  border-radius:6px;
+  margin:2px 8px;
+  padding-left:8px;padding-right:8px;
+  border-bottom:none!important;
+}
+
+/* Bottom sheet */
+.sheet{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  background:#2C2C2E;
+  border-radius:14px 14px 0 0;
+}
+.sh-hand{
+  width:28px;height:3px;
+  background:rgba(255,255,255,0.18);
+  border-radius:2px;
+  margin:6px auto 8px;
+}
+.sh-ttl{
+  font-size:9px;font-weight:600;color:#fff;
+  padding:0 12px 8px;
+  display:flex;align-items:center;gap:6px;
+  border-bottom:0.5px solid var(--ios-sep);
+}
+.sh-sec{
+  font-size:7.5px;color:var(--ios-t2);font-weight:600;
+  text-transform:uppercase;letter-spacing:0.04em;
+  padding:8px 12px 4px;
+}
+
+/* Instagram pills */
+.ig-pills{
+  display:flex;gap:5px;padding:6px 12px;
+  border-bottom:0.5px solid var(--ios-sep);
+}
+.ig-pill{
+  font-size:7.5px;color:#fff;
+  border:0.5px solid rgba(255,255,255,0.3);
+  border-radius:10px;padding:3px 8px;
+}
+
+/* Contact circles (censored) */
+.contacts{
+  display:flex;gap:10px;
+  padding:10px 12px;
+  border-bottom:0.5px solid var(--ios-sep);
+}
+.contact{
+  display:flex;flex-direction:column;
+  align-items:center;gap:3px;
+}
+.contact-circle{
+  width:28px;height:28px;border-radius:50%;
+  background:#48484A;
+}
+.contact-lbl{
+  font-size:6.5px;color:var(--ios-t2);
+  white-space:nowrap;
+}
+
+/* Share sheet app row */
+.share-apps{
+  display:flex;gap:8px;
+  padding:8px 12px;
+  border-bottom:0.5px solid var(--ios-sep);
+}
+.share-app{
+  display:flex;flex-direction:column;
+  align-items:center;gap:3px;flex:1;
+}
+.share-icon{
+  width:28px;height:28px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+.share-lbl{font-size:6.5px;color:#fff;text-align:center}
+
+/* Share actions row */
+.share-acts{
+  display:flex;gap:8px;
+  padding:8px 12px;
+}
+.share-act{
+  display:flex;flex-direction:column;
+  align-items:center;gap:3px;flex:1;
+}
+.share-act-ico{
+  width:28px;height:28px;border-radius:50%;
+  background:#3A3A3C;
+  display:flex;align-items:center;justify-content:center;
+}
+.share-act-lbl{font-size:6.5px;color:#fff;text-align:center}
+.share-act.hl-act .share-act-ico{
+  box-shadow:0 0 0 2px #C9A84C;
+  background:rgba(201,168,76,0.18);
+}
+.share-act.hl-act .share-act-lbl{color:#C9A84C;font-weight:600}
+
+/* TikTok posting */
+.tt-desc{
+  padding:8px 12px;
+  border-bottom:0.5px solid var(--ios-sep);
+  font-size:8.5px;color:var(--ios-t2);
+}
+.tt-preview{
+  position:absolute;right:10px;top:48px;
+  width:42px;height:56px;
+  background:#1A1A1A;border-radius:4px;
+  display:flex;align-items:flex-end;
+  justify-content:center;padding-bottom:3px;
+}
+.tt-preview-lbl{font-size:6px;color:var(--ios-t2);text-align:center}
+.tt-chips{
+  display:flex;gap:5px;
+  padding:6px 12px;
+  border-bottom:0.5px solid var(--ios-sep);
+}
+.tt-chip{
+  font-size:7.5px;color:#fff;font-weight:600;
+  border:0.5px solid rgba(255,255,255,0.25);
+  border-radius:4px;padding:3px 8px;
+}
+.loc-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.loc-tag{
+  font-size:6.5px;color:var(--ios-t2);
+  background:#3A3A3C;border-radius:10px;
+  padding:2px 6px;
+}
+
+/* TikTok bottom buttons */
+.tt-btns{
+  position:absolute;
+  bottom:0;left:0;right:0;
+  display:flex;gap:8px;padding:8px 12px 14px;
+  background:var(--ios-bg);
+  border-top:0.5px solid var(--ios-sep);
+}
+.tt-btn{
+  flex:1;text-align:center;
+  font-size:8px;font-weight:600;
+  padding:7px 0;border-radius:6px;
+}
+.tt-btn.outline{
+  border:1px solid rgba(255,255,255,0.2);
+  color:#fff;
+}
+.tt-btn.pink{
+  background:#FE2C55;color:#fff;
+}
+
+/* Section page footer logo */
+.pg-foot{
+  position:absolute;
+  bottom:6mm;right:14mm;
+  font-size:9px;color:var(--gray);
+  font-weight:500;letter-spacing:0.04em;
+  text-align:right;
+}
+
+/* Archivos→Fotos mini-step card (Safari page) */
+.ig-extra{
+  margin-top:14px;
+}
+.ig-extra-title{
+  font-size:9.5px;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--gold);
+  margin-bottom:8px;
+}
+.ig-extra-label{
+  font-size:9px;
+  font-weight:600;
+  color:#9B9B9F;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+.ig-steps-row{
+  display:flex;
+  align-items:center;
+  gap:0;
+}
+.ig-step-box{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:5px;
+  flex:1;
+}
+.ig-step-icon{
+  width:38px;height:38px;
+  border-radius:10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+.ig-step-icon.ic-files{
+  background:linear-gradient(145deg,#F9F2D2,#F4E28A);
+}
+.ig-step-icon.ic-share{
+  background:linear-gradient(145deg,#3A7BD5,#1254C8);
+}
+.ig-step-icon.ic-save{
+  background:linear-gradient(145deg,#3A7BD5,#1254C8);
+}
+.ig-step-icon.ic-photos{
+  background:linear-gradient(135deg,#FF6B6B,#FFB347,#FFD700,#7EC8A0,#6EC6FF,#A78BFA);
+}
+.ig-step-num{
+  font-size:8.5px;
+  font-weight:700;
+  color:var(--gold);
+  background:#FFF8EA;
+  width:16px;height:16px;
+  border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  border:1.5px solid var(--gold);
+  flex-shrink:0;
+  align-self:flex-start;
+  margin-bottom:-3px;
+}
+.ig-step-text{
+  font-size:8px;
+  color:#3C3C3E;
+  line-height:1.4;
+  text-align:center;
+  max-width:60px;
+}
+.ig-step-text strong{
+  font-weight:700;
+  display:block;
+}
+.ig-arr{
+  font-size:13px;
+  color:#C9A84C;
+  margin:0 2px;
+  padding-bottom:14px;
+  flex-shrink:0;
+}
+.ig-note-text{
+  font-size:9px;
+  color:#9B9B9F;
+  margin-top:8px;
+  line-height:1.5;
+}
+
+/* Safari 2x2 layout — 2 phones per row */
+.pg-safari .pw{
+  transform:scale(0.92);
+}
+.pg-safari .step-cap{
+  margin-top:-34px;
+  max-width:175px;
+}
+.pg-safari .arr{
+  margin-top:190px;
+}
+.pg-safari .step{
+  max-width:210px;
+}
+.pg-safari .steps{
+  flex:0 0 auto;
+}
+.pg-safari .sec-hd{
+  margin-bottom:8px;
+  padding-bottom:8px;
+}
+.pg-safari .note{
+  margin-top:10px;
+  font-size:10px;
+}
+.safari-connector{
+  display:flex;
+  justify-content:flex-end;
+  padding:0 calc(25% - 10px) 0 0;
+  margin:0;
+}
+
+/* Content scroll area in screen */
+.scr-body{
+  position:absolute;
+  top:75px;left:0;right:0;bottom:0;
+  overflow:hidden;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     PORTADA
+     ============================================================ -->
+<div class="page pg-cover">
+
+  <!-- Logo SVG inline (cls-1 -> .la white, cls-2 -> .lb gold) -->
+  <svg class="cover-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 472.68">
+    <defs><style>.la{fill:#FAFAFA}.lb{fill:#C9A84C}</style></defs>
+    <path d="M409.51 281.05h-59.12a20.86 20.86 0 0 1-20.83-20.83V147.84a21.18 21.18 0 0 1 21.16-21.16h27.11a2.6 2.6 0 0 0 1.61-.55l94.3-73.5 79.49 61.73-4 5.21L473.75 61l-90.26 70.35a9.28 9.28 0 0 1-5.66 1.94h-27.11a14.57 14.57 0 0 0-14.56 14.56v112.37a14.25 14.25 0 0 0 14.23 14.23h59.12ZM596.86 281.05H541.8v-6.6h55.06A14.18 14.18 0 0 0 611 260.28V148a15.51 15.51 0 0 0-15.49-15.49H560v-6.6h35.56A22.12 22.12 0 0 1 617.63 148v112.28a20.79 20.79 0 0 1-20.77 20.77" class="la"/>
+    <path d="M489.29 133.28v147.77h-6.5v-142l-45.38 27.78v114.22h-6.5V165a3.26 3.26 0 0 1 1.55-2.77l51.89-31.76a3.24 3.24 0 0 1 4.94 2.77Z" class="lb"/>
+    <path d="M523.59 196.34v84.71h-6.5v-82.83l-27.8-16-4.87-2.81a3.25 3.25 0 0 1 3.24-5.64l1.63.94L522 193.52a3.25 3.25 0 0 1 1.59 2.82M380.9 108.32l-3.96-5.15 96.81-74.58 80.63 62.05-3.97 5.16-76.66-59.01z" class="lb"/>
+    <circle cx="576.04" cy="157.87" r="8" class="lb"/>
+    <path d="M18 322.33h4.42l.12 38.82H18ZM74.17 322.33v38.82h-3.9L45 328.29l.47 32.86h-4v-38.82h4.13l25.08 32.56-.47-32.56ZM127.38 361.15l-1-32.81-13.45 31.51h-2.07l-13.68-31.56-.83 32.86h-3.83L94 322.33h4.43l13.86 30.74 13.22-30.74h4.3l1.95 38.82ZM156.32 359.56a13.66 13.66 0 0 1-5.6-5.52 16.93 16.93 0 0 1-2-8.35v-23.36h4.37v22.48q0 6.13 3.36 9.73a11.76 11.76 0 0 0 9 3.6 11.16 11.16 0 0 0 8.64-3.42q3.17-3.42 3.16-9.21v-23.18h3.83v22.48a18.34 18.34 0 0 1-2 8.79 14.4 14.4 0 0 1-5.78 5.84 17.7 17.7 0 0 1-8.65 2.06 17.5 17.5 0 0 1-8.33-1.94M223.08 357.67v3.48H198.6v-38.82h22.77v3.48H203v13.92h16.17v3.48H203v14.46ZM261.52 344.16a9.28 9.28 0 0 1 2 6 9.85 9.85 0 0 1-1.71 5.73 11.17 11.17 0 0 1-4.89 3.86 18.3 18.3 0 0 1-7.38 1.39h-11v-38.81h10.85c3.54 0 6.37.84 8.47 2.53a8.29 8.29 0 0 1 3.16 6.79 9.8 9.8 0 0 1-1.39 5.1 10 10 0 0 1-3.8 3.69 11.74 11.74 0 0 1 5.69 3.72m-18.79-18.53v13.69h7a7.3 7.3 0 0 0 5.27-1.92 6.58 6.58 0 0 0 2-5 6.27 6.27 0 0 0-2.07-5q-2.07-1.83-6.19-1.83Zm14.19 30.15a7.05 7.05 0 0 0 2.39-5.61 6.74 6.74 0 0 0-2.63-5.63q-2.62-2-7.58-2h-6.37v15.34h7.49a9.93 9.93 0 0 0 6.7-2.1M304.5 357.67v3.48h-26v-38.82h4.37v35.34ZM342.44 357.67v3.48H318v-38.82h22.78v3.48h-18.46v13.92h16.16v3.48h-16.16v14.46ZM374 347.93a9.8 9.8 0 0 0-2.92-2.62q-1.74-1-4.75-2.45a51 51 0 0 1-5.31-2.78 11 11 0 0 1-3.39-3.27 8.5 8.5 0 0 1-1.39-4.93 8.75 8.75 0 0 1 3.36-7.25 13.52 13.52 0 0 1 8.62-2.66 21.5 21.5 0 0 1 5.43.71 16 16 0 0 1 4.72 2l-2.13 3.36a13.8 13.8 0 0 0-4.07-2.07 15 15 0 0 0-4.66-.76 7.74 7.74 0 0 0-5.43 1.74 5.58 5.58 0 0 0-1.89 4.28 5.13 5.13 0 0 0 1.1 3.27 10 10 0 0 0 2.68 2.36 50 50 0 0 0 4.43 2.33 58 58 0 0 1 5.57 3.1 12.4 12.4 0 0 1 3.66 3.63 9.5 9.5 0 0 1 1.5 5.42 8.89 8.89 0 0 1-3.54 7.56 14.82 14.82 0 0 1-9.14 2.65 21 21 0 0 1-6.76-1.06 15 15 0 0 1-5.22-2.89l2.48-3.54a14.4 14.4 0 0 0 4.72 3.13 14.6 14.6 0 0 0 5.55 1.12 8.87 8.87 0 0 0 5.84-1.77 5.92 5.92 0 0 0 2.12-4.78 6.24 6.24 0 0 0-1.18-3.83M435.77 347.81H419.9l-5 13.34h-4.43l15.64-38.82H430l15.58 38.82h-4.66Zm-1.35-3.48L427.75 327l-6.55 17.34ZM465.6 359.56A13.7 13.7 0 0 1 460 354a16.93 16.93 0 0 1-2-8.35v-23.32h4.36v22.48q0 6.13 3.37 9.73a11.75 11.75 0 0 0 9 3.6 11.2 11.2 0 0 0 8.65-3.42q3.15-3.42 3.15-9.21v-23.18h3.84v22.48a18.2 18.2 0 0 1-2 8.79 14.26 14.26 0 0 1-5.78 5.84 17.7 17.7 0 0 1-8.59 2.06 17.5 17.5 0 0 1-8.4-1.94M507.87 322.33h10.8a26.24 26.24 0 0 1 11.41 2.39 18.85 18.85 0 0 1 7.88 6.66 17 17 0 0 1 2.83 9.59 19.28 19.28 0 0 1-10.59 17.58 24.2 24.2 0 0 1-11.36 2.6h-11ZM519.2 358a19.2 19.2 0 0 0 9-2 14.16 14.16 0 0 0 5.9-5.7 17.3 17.3 0 0 0 2.06-8.58 15.6 15.6 0 0 0-2.27-8.38 15.2 15.2 0 0 0-6.4-5.69 21.06 21.06 0 0 0-9.44-2h-5.78V358ZM556.54 322.33H561l.12 38.82h-4.55ZM586.43 358.94a18.65 18.65 0 0 1-7-7 19.6 19.6 0 0 1-2.53-9.94 19.83 19.83 0 0 1 2.68-10.23 19.24 19.24 0 0 1 7.32-7.17 20.6 20.6 0 0 1 10.24-2.6 20.14 20.14 0 0 1 10.12 2.57 18.5 18.5 0 0 1 7 7 19.9 19.9 0 0 1 2.53 10 19.53 19.53 0 0 1-10.09 17.35 20.7 20.7 0 0 1-10.26 2.59 19.8 19.8 0 0 1-10.01-2.57m18.57-2.66a14.07 14.07 0 0 0 5.31-5.66 17.45 17.45 0 0 0 1.92-8.29 19.3 19.3 0 0 0-2-8.88 14.9 14.9 0 0 0-5.55-6.05 15.4 15.4 0 0 0-8.17-2.18 15 15 0 0 0-7.79 2 14 14 0 0 0-5.31 5.67 17.7 17.7 0 0 0-1.89 8.29 19.2 19.2 0 0 0 2 8.88 14.84 14.84 0 0 0 5.54 6 15.33 15.33 0 0 0 8.18 2.19 14.73 14.73 0 0 0 7.76-1.97M663 322.33l-15.58 38.82h-4.24l-15.64-38.82h4.6l13.51 34.45 12.81-34.45ZM678 322.33h4.42l.12 38.82H678ZM717.5 347.93a9.8 9.8 0 0 0-2.93-2.62q-1.74-1-4.74-2.45a49 49 0 0 1-5.31-2.78 11.1 11.1 0 0 1-3.4-3.27 8.6 8.6 0 0 1-1.38-4.93 8.75 8.75 0 0 1 3.36-7.25 13.47 13.47 0 0 1 8.61-2.66 21.5 21.5 0 0 1 5.43.71 16 16 0 0 1 4.72 2l-2.12 3.36a13.8 13.8 0 0 0-4.07-2.07 15.1 15.1 0 0 0-4.66-.76 7.74 7.74 0 0 0-5.43 1.74 5.58 5.58 0 0 0-1.89 4.28 5.12 5.12 0 0 0 1.09 3.27 10.1 10.1 0 0 0 2.69 2.36 49 49 0 0 0 4.42 2.33 60 60 0 0 1 5.58 3.1 12.5 12.5 0 0 1 3.65 3.63 9.44 9.44 0 0 1 1.51 5.42 8.89 8.89 0 0 1-3.54 7.56 14.85 14.85 0 0 1-9.15 2.65 21 21 0 0 1-6.75-1.06 14.9 14.9 0 0 1-5.22-2.89l2.47-3.54a14.4 14.4 0 0 0 4.72 3.13 14.6 14.6 0 0 0 5.55 1.12 8.84 8.84 0 0 0 5.84-1.77 5.9 5.9 0 0 0 2.13-4.78 6.3 6.3 0 0 0-1.18-3.83M744.43 359.56a13.7 13.7 0 0 1-5.61-5.52 17 17 0 0 1-2-8.35v-23.36h4.36v22.48q0 6.13 3.37 9.73a11.75 11.75 0 0 0 9 3.6 11.2 11.2 0 0 0 8.65-3.42q3.15-3.42 3.15-9.21v-23.18h3.84v22.48a18.2 18.2 0 0 1-2 8.79 14.26 14.26 0 0 1-5.78 5.84 17.7 17.7 0 0 1-8.64 2.06 17.5 17.5 0 0 1-8.34-1.94M806.88 347.81H791l-5 13.34h-4.42l15.63-38.82h3.9l15.57 38.82H812Zm-1.36-3.48L798.86 327l-6.55 17.34ZM857.21 357.67v3.48h-26v-38.82h4.36v35.34ZM895.14 357.67v3.48h-24.48v-38.82h22.77v3.48H875v13.92h16.17v3.48H875v14.46ZM926.71 347.93a9.8 9.8 0 0 0-2.92-2.62c-1.16-.69-2.75-1.51-4.75-2.45a50 50 0 0 1-5.31-2.78 11 11 0 0 1-3.39-3.27 8.5 8.5 0 0 1-1.39-4.93 8.75 8.75 0 0 1 3.36-7.25 13.5 13.5 0 0 1 8.62-2.66 21.5 21.5 0 0 1 5.42.71 15.9 15.9 0 0 1 4.72 2l-2.07 3.37a13.8 13.8 0 0 0-4.07-2.07 15 15 0 0 0-4.66-.76 7.74 7.74 0 0 0-5.43 1.74 5.58 5.58 0 0 0-1.89 4.28 5.18 5.18 0 0 0 1.09 3.27 10.2 10.2 0 0 0 2.69 2.36c1.06.65 2.54 1.43 4.42 2.33a60 60 0 0 1 5.58 3.1 12.65 12.65 0 0 1 3.66 3.63 9.5 9.5 0 0 1 1.5 5.42 8.89 8.89 0 0 1-3.54 7.56 14.84 14.84 0 0 1-9.14 2.65 21 21 0 0 1-6.76-1.06 15 15 0 0 1-5.22-2.89l2.48-3.54a14.3 14.3 0 0 0 4.72 3.13 14.5 14.5 0 0 0 5.54 1.12 8.84 8.84 0 0 0 5.84-1.77 5.9 5.9 0 0 0 2.13-4.78 6.3 6.3 0 0 0-1.23-3.84" class="la"/>
+    <path d="M427.63 396.08h92.56v2.4h-92.56z" class="lb"/>
+    <path d="M104.46 435.17h6.44v1.42h-6.44V444h-1.92v-15.86h8.95v1.42h-7ZM125.42 441.71a8.9 8.9 0 0 1 0-11.53 7.61 7.61 0 0 1 11.06 0 8.9 8.9 0 0 1 0 11.53 7.77 7.77 0 0 1-11.06 0m5.53.7a5 5 0 0 0 4-1.84 7.82 7.82 0 0 0 0-9.24 5.22 5.22 0 0 0-8.07 0 7.82 7.82 0 0 0 0 9.24 5 5 0 0 0 4.12 1.84ZM158.22 429.56V444h-1.91v-14.44h-5.86v-1.42h13.63v1.42ZM178 441.71a8.9 8.9 0 0 1 0-11.53 7.61 7.61 0 0 1 11.06 0 8.9 8.9 0 0 1 0 11.53 7.77 7.77 0 0 1-11.06 0m5.53.7a5 5 0 0 0 4-1.84 7.86 7.86 0 0 0 0-9.24 5.23 5.23 0 0 0-8.08 0 7.86 7.86 0 0 0 0 9.24 5 5 0 0 0 4.05 1.84ZM211.32 444.07a7.44 7.44 0 0 1-5.2-1.5c-1.47-1.13-2.27-3-2.41-5.47a9.24 9.24 0 0 1 1.62-6.23 6.84 6.84 0 0 1 5.45-2.63 7.16 7.16 0 0 1 5.54 1.67l-.63 1.5a5.5 5.5 0 0 0-4.24-1.6 4.87 4.87 0 0 0-4.43 2 7.78 7.78 0 0 0-1.25 5.18 5.65 5.65 0 0 0 2 4.37 6 6 0 0 0 4 1.14 6.4 6.4 0 0 0 3.06-1v-4.07h-3.51V436h5.42v6a10.14 10.14 0 0 1-5.42 2.07M233.09 428.14c3.74.06 5.64 1.57 5.72 4.53v.08q-.1 3.72-4.27 4.43a4.14 4.14 0 0 1 1.72 1.53l4.07 5.29h-2.5l-3.57-4.81c-1-1.27-1.83-1.91-2.47-1.92H231V444h-2v-15.86Zm-2.09 1.49v6.15h2.15c2.46 0 3.72-1 3.8-2.91v-.32c-.08-1.91-1.34-2.88-3.8-2.92ZM255.37 438.94l-2.1 5.06h-2l6.68-15.86h1.44L266 444h-2l-2.09-5.06Zm6-1.41-2.69-6.87-2.7 6.87ZM279.65 435.17h6.44v1.42h-6.44V444h-1.91v-15.86h8.94v1.42h-7ZM301.28 428.14V444h-1.91v-15.86ZM317.6 438.94l-2.1 5.06h-2l6.68-15.86h1.44l6.65 15.86h-2l-2.09-5.06Zm6-1.41-2.69-6.87-2.7 6.87ZM361.42 435.42v-.05l4.44-7.23h2.23l-5.75 8.72V444h-1.91v-7.14l-5.74-8.72h2.23l4.44 7.23ZM401.91 441.48l5.36-13.34h2.15L402.74 444h-1.68l-6.68-15.86h2.15ZM423.21 428.14V444h-1.91v-15.86ZM441 428.14q7.48.09 7.59 8v.08c-.07 5.11-2.6 7.68-7.59 7.74h-4.51v-15.82Zm-2.6 1.49v12.88h2.6q5.56-.06 5.67-6.13v-.31q-.11-6.37-5.67-6.44ZM463.05 435.17h6.44v1.42h-6.44v6h7V444h-8.94v-15.86h8.94v1.42h-7ZM484 441.71a8.9 8.9 0 0 1 0-11.53 7.63 7.63 0 0 1 11.07 0 8.9 8.9 0 0 1 0 11.53 7.79 7.79 0 0 1-11.07 0m5.53.7a5 5 0 0 0 4-1.84 7.82 7.82 0 0 0 0-9.24 5.22 5.22 0 0 0-8.07 0 7.82 7.82 0 0 0 0 9.24 5 5 0 0 0 4.08 1.84ZM530.65 428.14q7.49.09 7.59 8v.08c-.07 5.11-2.6 7.68-7.59 7.74h-4.52v-15.82Zm-2.65 1.49v12.88h2.62q5.57-.06 5.67-6.13v-.31q-.11-6.37-5.67-6.44ZM552.72 435.17h6.45v1.42h-6.45v6h7V444h-9v-15.86h9v1.42h-7ZM590.63 428.14V444h-1.91v-15.86Zm3.31 7.18c1.53 0 2.32-.94 2.39-2.69v-.31c-.07-1.75-1.14-2.65-3.21-2.69h-3v-1.49h3q5 .09 5.13 4.29v.08a3.62 3.62 0 0 1-2.12 3.32q3.2.63 3.29 3.66v.34c-.07 2.72-1.89 4.11-5.48 4.17h-4l.06-1.49h3.79c2.39 0 3.61-.89 3.68-2.57v-.57c-.07-1.67-1.14-2.53-3.21-2.57H590l.06-1.48ZM613.58 428.14V444h-1.91v-15.86ZM628.74 435.17h6.44v1.42h-6.44v6h7V444h-8.94v-15.86h8.94v1.42h-7ZM650.25 431.65V444h-1.91v-15.86h1.56l9.23 12.71v-12.71H661V444h-1.68ZM675.94 435.17h6.45v1.42h-6.45v6h7V444H674v-15.86h9v1.42h-7ZM700.15 435.23q3.4 1.92 3.66 4.09a3.89 3.89 0 0 1-1.08 3.45 5.34 5.34 0 0 1-3.79 1.28 6.13 6.13 0 0 1-4.5-2l.59-1.57a5.26 5.26 0 0 0 3.78 1.93 3.12 3.12 0 0 0 2.72-1 2.17 2.17 0 0 0 .17-2.22c-.36-.83-1.58-1.81-3.65-3s-3.19-2.46-3.33-4a3.59 3.59 0 0 1 1.08-3.19 5.34 5.34 0 0 1 3.58-1 6.14 6.14 0 0 1 3.74 1.14l-.35 1.46a6.06 6.06 0 0 0-2.58-1 3.84 3.84 0 0 0-2.65.32 1.88 1.88 0 0 0-.94 2q.17 1.4 3.55 3.31M736.4 428.14c3.75.06 5.65 1.57 5.72 4.53v.08q-.09 3.72-4.26 4.43a4.2 4.2 0 0 1 1.72 1.53l4.07 5.29h-2.5l-3.57-4.81c-1-1.27-1.84-1.91-2.48-1.92h-.83V444h-1.91v-15.86Zm-2.13 1.49v6.15h2.15q3.69-.06 3.79-2.91v-.32q-.11-2.87-3.79-2.92ZM758.68 438.94l-2.1 5.06h-2l6.68-15.86h1.44l6.66 15.86h-2l-2.1-5.06Zm6-1.41-2.7-6.87-2.69 6.87ZM783 428.14V444h-1.91v-15.86ZM803.7 444.07a7.42 7.42 0 0 1-5.19-1.5c-1.47-1.13-2.3-3-2.48-5.53a9.06 9.06 0 0 1 1.63-6.34 6.93 6.93 0 0 1 5.5-2.69 7.1 7.1 0 0 1 5.54 1.67l-.62 1.5a5.53 5.53 0 0 0-4.25-1.61 5 5 0 0 0-4.48 2.08 7.68 7.68 0 0 0-1.25 5.3q.28 3.14 2 4.43a5.93 5.93 0 0 0 4 1.15 10.6 10.6 0 0 0 4.42-1.32l.12 1.24a9.6 9.6 0 0 1-4.94 1.62M823.34 435.17h6.44v1.42h-6.44v6h7V444h-8.94v-15.86h8.94v1.42h-7ZM847.55 435.23c2.27 1.28 3.48 2.64 3.65 4.09a3.89 3.89 0 0 1-1.07 3.45 5.35 5.35 0 0 1-3.8 1.28 6.13 6.13 0 0 1-4.5-2l.6-1.57a5.26 5.26 0 0 0 3.78 1.93 3.1 3.1 0 0 0 2.71-1 2.12 2.12 0 0 0 .17-2.22c-.35-.83-1.57-1.81-3.65-3s-3.18-2.46-3.32-4a3.54 3.54 0 0 1 1.08-3.19 5.3 5.3 0 0 1 3.57-1 6.15 6.15 0 0 1 3.75 1.14l-.36 1.46a6.06 6.06 0 0 0-2.57-1 3.87 3.87 0 0 0-2.66.32 1.89 1.89 0 0 0-.93 2c.1.92 1.29 2.08 3.55 3.31" class="lb"/>
+  </svg>
+
+  <div class="cover-rule"></div>
+
+  <h1 class="cover-title">Guía de publicación<br>en alta calidad</h1>
+  <p class="cover-sub">Cómo descargar tu video cinemático desde Google Drive y publicarlo en Instagram y TikTok con la máxima resolución disponible.</p>
+
+  <div class="cover-chips">
+    <div class="cover-chip">Google Drive</div>
+    <div class="cover-chip">Instagram Reels</div>
+    <div class="cover-chip">TikTok</div>
+  </div>
+
+  <div class="cover-foot">
+    <span>inmueblesaudiovisuales.com</span>
+    <span>81 2717 4207</span>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     PARTE 1: GOOGLE DRIVE
+     ============================================================ -->
+<div class="page pg-section">
+
+  <div class="sec-hd">
+    <span class="sec-num">01-A</span>
+    <div>
+      <div class="sec-title">App de Google Drive</div>
+      <div class="sec-sub">Descarga el video a tu iPhone</div>
+    </div>
+  </div>
+
+  <p class="intro">Abre la aplicación Google Drive en tu iPhone y localiza el video que te enviamos. Toca los tres puntos (...) junto al nombre del archivo para abrir el menú de opciones.</p>
+
+  <div class="steps">
+
+    <!-- Step 1: Drive bottom sheet -->
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr">
+            <div class="di"></div>
+            <!-- Status bar -->
+            <div class="sb">
+              <span class="sb-t">11:22</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="10" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- Nav: WhatsApp back, VIDEOS title -->
+            <div style="position:absolute;top:40px;left:0;right:0;height:32px;display:flex;align-items:center;padding:0 10px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+              <span style="font-size:7.5px;color:#007AFF">WhatsApp</span>
+              <span style="position:absolute;left:50%;transform:translateX(-50%);font-size:9px;font-weight:600;color:#fff">VIDEOS</span>
+            </div>
+
+            <!-- File list (peeking above sheet) -->
+            <div style="position:absolute;top:72px;left:0;right:0;padding:0 10px;opacity:0.5">
+              <div style="display:flex;align-items:center;padding:7px 0;border-bottom:0.5px solid rgba(255,255,255,0.1);gap:6px">
+                <div style="width:14px;height:14px;background:#C0392B;border-radius:2px;flex-shrink:0"></div>
+                <span style="font-size:7.5px;color:#fff">SECUENCIA 9X16.mp4</span>
+              </div>
+              <div style="display:flex;align-items:center;padding:7px 0;gap:6px">
+                <div style="width:14px;height:14px;background:#C0392B;border-radius:2px;flex-shrink:0"></div>
+                <span style="font-size:7.5px;color:#fff">SECUENCIA 16X9.mp4</span>
+              </div>
+            </div>
+
+            <!-- Bottom sheet -->
+            <div class="sheet" style="height:82%">
+              <div class="sh-hand"></div>
+              <div class="sh-ttl">
+                <div style="width:14px;height:14px;background:#C0392B;border-radius:2px;flex-shrink:0"></div>
+                SECUENCIA 16X9.mp4
+              </div>
+
+              <div class="r">
+                <div class="ri" style="background:#5A5A5E">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="2.5" stroke="white" stroke-width="1.6"/><circle cx="6" cy="12" r="2.5" stroke="white" stroke-width="1.6"/><circle cx="18" cy="19" r="2.5" stroke="white" stroke-width="1.6"/><line x1="8.5" y1="13.4" x2="15.5" y2="17.6" stroke="white" stroke-width="1.6"/><line x1="15.5" y1="6.4" x2="8.5" y2="10.6" stroke="white" stroke-width="1.6"/></svg>
+                </div>
+                <span class="rl">Compartir</span>
+              </div>
+              <div class="r">
+                <div class="ri" style="background:#5A5A5E">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="7" r="3.5" stroke="white" stroke-width="1.5"/><path d="M4 21c0-4 3.6-7 8-7" stroke="white" stroke-width="1.5" stroke-linecap="round"/><rect x="13.5" y="14.5" width="7" height="5.5" rx="1" stroke="white" stroke-width="1.5"/><circle cx="17" cy="17.3" r="1" fill="white"/></svg>
+                </div>
+                <span class="rl">Gestionar acceso</span>
+              </div>
+              <div class="r">
+                <div class="ri" style="background:#5A5A5E">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 2l2.9 5.9L22 9l-5 4.9L18.2 21 12 17.8 5.8 21 7 13.9 2 9l7.1-1.1L12 2z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="rl">Añadir a Destacados</span>
+              </div>
+              <div class="r">
+                <div class="ri" style="background:#5A5A5E">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 15V7M9 12l3 3 3-3" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M18 15.5A4.5 4.5 0 0 0 14 11a6.5 6.5 0 0 0-12.5 2.5A3.5 3.5 0 0 0 4 21h13.5A2.5 2.5 0 0 0 20 18.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+                <span class="rl">Activar acceso sin conexión</span>
+              </div>
+              <div class="r" style="opacity:0.4">
+                <div class="ri" style="background:#5A5A5E">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="white"><path d="M12 2l1.4 4.2L18 8l-4.6 1.8L12 14l-1.4-4.2L6 8l4.6-1.8L12 2z"/><path d="M5 17l.8 2.2L8 20l-2.2.8L5 23l-.8-2.2L2 20l2.2-.8L5 17z"/></svg>
+                </div>
+                <span class="rl">Resumir este archivo</span>
+              </div>
+
+              <div style="height:0.5px;background:rgba(255,255,255,0.12);margin:2px 0"></div>
+
+              <div class="r">
+                <div class="ri" style="background:#5A5A5E">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M7 12l5 5 5-5" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" stroke="white" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </div>
+                <span class="rl">Descargar</span>
+              </div>
+
+              <!-- HIGHLIGHTED: Enviar una copia -->
+              <div class="r hl">
+                <div class="ri" style="background:rgba(201,168,76,0.4)">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M9 11V6a3 3 0 0 1 6 0v5" stroke="#C9A84C" stroke-width="1.6" stroke-linecap="round"/><rect x="3" y="11" width="18" height="11" rx="2" stroke="#C9A84C" stroke-width="1.6"/><path d="M12 15v3M10.5 16.5l1.5-1.5 1.5 1.5" stroke="#C9A84C" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span class="rl" style="color:#C9A84C;font-weight:600">Enviar una copia</span>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Toca los tres puntos junto al video y selecciona <strong>"Enviar una copia"</strong></p>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arr">
+      <svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+
+    <!-- Step 2: Share sheet (censored) -->
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr">
+            <div class="di"></div>
+            <div class="sb">
+              <span class="sb-t">11:25</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="9" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- Video preview background -->
+            <div style="position:absolute;top:0;left:0;right:0;height:48%;background:#0A0A0A"></div>
+
+            <!-- Share sheet -->
+            <div class="sheet" style="height:62%">
+              <div class="sh-hand"></div>
+
+              <!-- File name + mode -->
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:2px 12px 8px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+                <div style="display:flex;align-items:center;gap:6px">
+                  <div style="width:22px;height:22px;border-radius:4px;background:#1A1A1A;border:0.5px solid rgba(255,255,255,0.2)"></div>
+                  <div>
+                    <div style="font-size:8px;color:#fff;font-weight:600">2604.17 IA 16x9</div>
+                    <div style="font-size:7px;color:#8E8E93">Enviar una copia</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contacts row (censored) -->
+              <div class="contacts">
+                <div class="contact">
+                  <div class="contact-circle"></div>
+                  <div class="contact-lbl">Contacto</div>
+                </div>
+                <div class="contact">
+                  <div class="contact-circle"></div>
+                  <div class="contact-lbl">Contacto</div>
+                </div>
+                <div class="contact">
+                  <div class="contact-circle"></div>
+                  <div class="contact-lbl">Contacto</div>
+                </div>
+                <div class="contact">
+                  <div class="contact-circle"></div>
+                  <div class="contact-lbl">Contacto</div>
+                </div>
+              </div>
+
+              <!-- Apps row -->
+              <div class="share-apps">
+                <div class="share-app">
+                  <div class="share-icon" style="background:linear-gradient(145deg,#5AC8FA,#0071E3)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="18" r="2" fill="white"/><path d="M8.5 15.5a5 5 0 0 1 0-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M15.5 15.5a5 5 0 0 0 0-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M5.5 18.5a9 9 0 0 1 0-13" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M18.5 18.5a9 9 0 0 0 0-13" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="share-lbl">AirDrop</div>
+                </div>
+                <div class="share-app">
+                  <div class="share-icon" style="background:linear-gradient(180deg,#4FC3F7,#0277BD)">
+                    <svg width="16" height="13" viewBox="0 0 24 18" fill="none"><rect x="1" y="1" width="22" height="16" rx="2.5" stroke="white" stroke-width="1.8"/><path d="M1 4l11 7 11-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="share-lbl">Mail</div>
+                </div>
+                <div class="share-app">
+                  <div class="share-icon" style="background:#FECC02">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M6 8h12M6 12h12M6 16h8" stroke="#7A6000" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="share-lbl">Notas</div>
+                </div>
+                <div class="share-app">
+                  <div class="share-icon" style="background:linear-gradient(145deg,#4B2D8F,#9333EA)">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3l2 6h6l-5 3.6 1.9 6L12 15l-4.9 3.6L9 12.6 4 9h6L12 3z" fill="white"/></svg>
+                  </div>
+                  <div class="share-lbl">Journal</div>
+                </div>
+              </div>
+
+              <div style="height:0.5px;background:rgba(255,255,255,0.1)"></div>
+
+              <!-- Actions row (censored personal data) -->
+              <div class="share-acts" style="padding-top:10px">
+                <div class="share-act">
+                  <div class="share-act-ico">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="13" height="13" rx="2" stroke="white" stroke-width="1.8"/><path d="M4 17V4a1 1 0 0 1 1-1h13" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="share-act-lbl">Copiar</div>
+                </div>
+                <!-- HIGHLIGHTED: Guardar video -->
+                <div class="share-act hl-act">
+                  <div class="share-act-ico">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M7 12l5 5 5-5" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <div class="share-act-lbl">Guardar video</div>
+                </div>
+                <div class="share-act">
+                  <div class="share-act-ico">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="7" r="1.5" fill="white"/></svg>
+                  </div>
+                  <div class="share-act-lbl">Agregar tags</div>
+                </div>
+                <div class="share-act">
+                  <div class="share-act-ico">
+                    <svg width="13" height="4" viewBox="0 0 24 8" fill="white"><circle cx="4" cy="4" r="2.2"/><circle cx="12" cy="4" r="2.2"/><circle cx="20" cy="4" r="2.2"/></svg>
+                  </div>
+                  <div class="share-act-lbl">Más</div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Toca <strong>"Guardar video"</strong> para guardarlo en Fotos</p>
+    </div>
+
+  </div><!-- end steps -->
+
+  <div class="note">
+    El video queda guardado en Fotos. Desde ahí lo puedes seleccionar directamente al subir un Reel en Instagram o un video en TikTok.
+  </div>
+
+  <div class="pg-foot">Inmuebles Audiovisuales · inmueblesaudiovisuales.com</div>
+</div>
+
+
+<!-- ============================================================
+     PARTE 1 ALTERNATIVA: SAFARI
+     ============================================================ -->
+<div class="page pg-section pg-safari">
+
+  <div class="sec-hd">
+    <span class="sec-num">01-B</span>
+    <div>
+      <div class="sec-title">Google Drive desde Safari</div>
+      <div class="sec-sub">Alternativa: descarga usando el navegador</div>
+    </div>
+  </div>
+
+  <!-- Row 1 -->
+  <div class="steps" style="justify-content:center">
+
+    <!-- Step 1: Drive warning page + Safari download dialog -->
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#F2F2F2">
+            <div class="di" style="background:#1C1C1E"></div>
+            <div class="sb">
+              <span class="sb-t" style="color:#000">11:23</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5" fill="#000"/><rect x="2.5" y="2" width="2" height="6" rx="0.5" fill="#000"/><rect x="5" y="1" width="2" height="7" rx="0.5" fill="#000"/><rect x="7.5" y="0" width="2" height="8" rx="0.5" fill="#000"/></svg>
+                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="#000" stroke-width="1" fill="none"/><rect x="1" y="2" width="10" height="4" rx="0.8" fill="#000"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="#000"/></svg>
+              </div>
+            </div>
+
+            <!-- Page content -->
+            <div style="position:absolute;top:40px;left:0;right:0;bottom:50px;background:#F2F2F2;padding:14px 12px">
+              <p style="font-size:7.5px;color:#333;line-height:1.5;margin-bottom:6px">Google Drive no puede analizar este archivo en busca de virus.</p>
+              <p style="font-size:7px;color:#007AFF;margin-bottom:3px;word-break:break-all">2604.17 IA 16x9.mp4</p>
+              <p style="font-size:6.5px;color:#555;line-height:1.4;margin-bottom:10px">(1.4 GB) es demasiado grande. Descargar de todas formas?</p>
+              <div style="display:inline-block;background:#007AFF;border-radius:10px;padding:4px 10px">
+                <span style="font-size:7.5px;color:#fff;font-weight:600">Descargar de todas formas</span>
+              </div>
+            </div>
+
+            <!-- Safari dialog overlay -->
+            <div style="position:absolute;inset:0;background:rgba(0,0,0,0.35)"></div>
+            <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:130px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.3)">
+              <div style="padding:14px 12px 10px;text-align:center;border-bottom:0.5px solid #E0E0E0">
+                <div style="font-size:8px;font-weight:600;color:#000;margin-bottom:4px">Descargar</div>
+                <div style="font-size:7px;color:#555;line-height:1.4">"2604.17 IA 16x9.mp4"</div>
+              </div>
+              <div style="display:flex;height:36px">
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;border-right:0.5px solid #E0E0E0">
+                  <span style="font-size:8px;color:#007AFF">Cancelar</span>
+                </div>
+                <!-- HIGHLIGHTED: Descargar -->
+                <div style="flex:1;display:flex;align-items:center;justify-content:center;background:rgba(201,168,76,0.12);box-shadow:inset 0 0 0 1.5px #C9A84C">
+                  <span style="font-size:8px;color:#C9A84C;font-weight:700">Descargar</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Safari bottom bar -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:50px;background:#F2F0EB;border-top:0.5px solid rgba(0,0,0,0.12);display:flex;align-items:center;padding:0 8px;gap:6px">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#bbb" stroke-width="2" stroke-linecap="round"/></svg>
+              <div style="flex:1;background:#fff;border-radius:8px;height:26px;display:flex;align-items:center;justify-content:center;border:0.5px solid rgba(0,0,0,0.1)">
+                <span style="font-size:6.5px;color:#555">.usercontent.google.com</span>
+              </div>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#bbb" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.5" fill="#bbb"/><circle cx="12" cy="12" r="1.5" fill="#bbb"/><circle cx="19" cy="12" r="1.5" fill="#bbb"/></svg>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Toca <strong>"Descargar de todas formas"</strong>. Safari te pide confirmar: toca <strong>"Descargar"</strong>.</p>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arr">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+
+    <!-- Step 2: Safari "..." menu with Downloads highlighted -->
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#F2F2F2">
+            <div class="di" style="background:#1C1C1E"></div>
+            <div class="sb">
+              <span class="sb-t" style="color:#000">11:23</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5" fill="#000"/><rect x="2.5" y="2" width="2" height="6" rx="0.5" fill="#000"/><rect x="5" y="1" width="2" height="7" rx="0.5" fill="#000"/><rect x="7.5" y="0" width="2" height="8" rx="0.5" fill="#000"/></svg>
+                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="#000" stroke-width="1" fill="none"/><rect x="1" y="2" width="9" height="4" rx="0.8" fill="#000"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="#000"/></svg>
+              </div>
+            </div>
+
+            <!-- Blurred page bg -->
+            <div style="position:absolute;top:40px;left:0;right:0;bottom:50px;background:#E8E8E8;opacity:0.7"></div>
+
+            <!-- "..." menu card -->
+            <div style="position:absolute;top:110px;left:8px;right:8px">
+              <!-- Group 1 -->
+              <div style="background:#3A3A3C;border-radius:12px;overflow:hidden;margin-bottom:6px">
+                <div style="padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid rgba(255,255,255,0.08)">
+                  <span style="font-size:7.5px;color:#fff;flex:1">Ocultar elementos</span>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9z" stroke="#8E8E93" stroke-width="1.8"/></svg>
+                </div>
+                <div style="padding:9px 12px;display:flex;align-items:center;gap:8px;border-bottom:0.5px solid rgba(255,255,255,0.08)">
+                  <span style="font-size:7.5px;color:#fff;flex:1">Reducir privacidad</span>
+                </div>
+                <div style="padding:9px 12px;display:flex;align-items:center;gap:8px">
+                  <span style="font-size:7.5px;color:#fff;flex:1">Traducir al español</span>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#8E8E93" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke="#8E8E93" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+              <!-- Group 2: Downloads HIGHLIGHTED -->
+              <div style="background:#3A3A3C;border-radius:12px;overflow:hidden;margin-bottom:6px;box-shadow:0 0 0 1.5px #C9A84C">
+                <div style="padding:10px 12px;display:flex;align-items:center;gap:8px;background:rgba(201,168,76,0.1)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#C9A84C" stroke-width="1.8"/><path d="M12 8v6M9 12l3 3 3-3" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  <span style="font-size:7.5px;color:#C9A84C;font-weight:600;flex:1">Descargas</span>
+                </div>
+              </div>
+              <!-- Group 3 -->
+              <div style="background:#3A3A3C;border-radius:12px;overflow:hidden">
+                <div style="padding:9px 12px;display:flex;align-items:center;gap:8px">
+                  <span style="font-size:7.5px;color:#fff;flex:1">Gestionar extensiones</span>
+                  <svg width="9" height="9" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1.5" stroke="#8E8E93" stroke-width="1.5"/><rect x="13" y="3" width="8" height="8" rx="1.5" stroke="#8E8E93" stroke-width="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5" stroke="#8E8E93" stroke-width="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5" stroke="#8E8E93" stroke-width="1.5"/></svg>
+                </div>
+              </div>
+            </div>
+
+            <!-- Safari bottom bar -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:50px;background:#F2F0EB;border-top:0.5px solid rgba(0,0,0,0.12);display:flex;align-items:center;padding:0 8px;gap:6px">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#bbb" stroke-width="2" stroke-linecap="round"/></svg>
+              <div style="flex:1;background:#fff;border-radius:8px;height:26px;display:flex;align-items:center;justify-content:center;border:0.5px solid rgba(0,0,0,0.1)">
+                <span style="font-size:6.5px;color:#555">.usercontent.google.com</span>
+              </div>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#bbb" stroke-width="2" stroke-linecap="round"/></svg>
+              <div style="width:22px;height:22px;background:rgba(0,0,0,0.06);border-radius:5px;display:flex;align-items:center;justify-content:center">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.5" fill="#333"/><circle cx="12" cy="12" r="1.5" fill="#333"/><circle cx="19" cy="12" r="1.5" fill="#333"/></svg>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Toca los tres puntos <strong>"..."</strong> en la barra de Safari. Luego toca <strong>"Descargas"</strong>.</p>
+    </div>
+
+  </div><!-- end row 1 -->
+
+  <!-- Connector: step 2 → step 3 -->
+  <div class="safari-connector">
+    <svg width="72" height="28" viewBox="0 0 72 28" fill="none">
+      <path d="M70 6 Q70 22 14 22" stroke="#C9A84C" stroke-width="1.5" stroke-dasharray="5 3"/>
+      <path d="M6 18 L14 22 L10 28" stroke="#C9A84C" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </div>
+
+  <!-- Row 2 -->
+  <div class="steps" style="justify-content:center">
+
+    <!-- Step 3: Downloads panel — tap video -->
+    <div class="step">
+      <div class="step-badge">3</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#F2F2F2">
+            <div class="di" style="background:#1C1C1E"></div>
+            <div class="sb">
+              <span class="sb-t" style="color:#000">11:24</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5" fill="#000"/><rect x="2.5" y="2" width="2" height="6" rx="0.5" fill="#000"/><rect x="5" y="1" width="2" height="7" rx="0.5" fill="#000"/><rect x="7.5" y="0" width="2" height="8" rx="0.5" fill="#000"/></svg>
+                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="#000" stroke-width="1" fill="none"/><rect x="1" y="2" width="8" height="4" rx="0.8" fill="#000"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="#000"/></svg>
+              </div>
+            </div>
+
+            <!-- Blurred page -->
+            <div style="position:absolute;top:40px;left:0;right:0;bottom:50px;background:#E8E8E8;opacity:0.5"></div>
+
+            <!-- Downloads panel -->
+            <div style="position:absolute;top:80px;left:8px;right:8px;background:#2C2C2E;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.4)">
+              <div style="display:flex;align-items:center;padding:9px 12px 7px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+                <div style="width:18px;height:18px;border-radius:50%;background:#007AFF;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+                  <svg width="9" height="7" viewBox="0 0 12 10" fill="none"><path d="M2 5l3 3 5-6" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <span style="font-size:9px;font-weight:600;color:#fff;flex:1;text-align:center">Descargas</span>
+                <span style="font-size:7.5px;color:#007AFF">Borrar</span>
+              </div>
+
+              <!-- File row HIGHLIGHTED -->
+              <div style="display:flex;align-items:center;padding:10px 12px;gap:8px;box-shadow:inset 0 0 0 1.5px #C9A84C;background:rgba(201,168,76,0.06)">
+                <div style="width:34px;height:26px;background:#1A1A1A;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 7-14 7V5z" fill="#636366"/></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:7.5px;color:#fff;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">2604.17 IA 16x9</div>
+                  <div style="font-size:6.5px;color:#8E8E93;margin-top:1px">1.52 GB</div>
+                </div>
+                <!-- Magnifier icon (tap to open) -->
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#C9A84C" stroke-width="1.8"/><path d="M16 16l4 4" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+
+            <!-- Safari bottom bar -->
+            <div style="position:absolute;bottom:0;left:0;right:0;height:50px;background:#F2F0EB;border-top:0.5px solid rgba(0,0,0,0.12);display:flex;align-items:center;padding:0 8px;gap:6px">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#bbb" stroke-width="2" stroke-linecap="round"/></svg>
+              <div style="flex:1;background:#fff;border-radius:8px;height:26px;display:flex;align-items:center;justify-content:center;border:0.5px solid rgba(0,0,0,0.1)">
+                <span style="font-size:6.5px;color:#555">.usercontent.google.com</span>
+              </div>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M9 18l6-6-6-6" stroke="#bbb" stroke-width="2" stroke-linecap="round"/></svg>
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="12" r="1.5" fill="#bbb"/><circle cx="12" cy="12" r="1.5" fill="#bbb"/><circle cx="19" cy="12" r="1.5" fill="#bbb"/></svg>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Aparece el panel de Descargas con el video descargado. Tocalo para abrirlo.</p>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arr">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+
+    <!-- Step 4: Share Sheet with Save Video highlighted -->
+    <div class="step">
+      <div class="step-badge">4</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#000">
+            <div class="di"></div>
+            <div class="sb">
+              <span class="sb-t">11:25</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="9" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- Video player bg -->
+            <div style="position:absolute;top:40px;left:0;right:0;bottom:0;background:#0A0A0A;display:flex;align-items:center;justify-content:center">
+              <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="white"><path d="M8 5v14l11-7z"/></svg>
+              </div>
+            </div>
+
+            <!-- Share sheet -->
+            <div style="position:absolute;bottom:0;left:0;right:0;background:#1C1C1E;border-radius:16px 16px 0 0;padding:8px 0 0">
+              <!-- File row -->
+              <div style="display:flex;align-items:center;padding:6px 14px 8px;gap:8px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+                <div style="width:28px;height:22px;background:#2A2A2C;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 7-14 7V5z" fill="#636366"/></svg>
+                </div>
+                <div style="flex:1;min-width:0">
+                  <div style="font-size:7px;color:#fff;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">2604.17 IA 16x9</div>
+                  <div style="font-size:6.5px;color:#8E8E93">Enviar copia</div>
+                </div>
+              </div>
+
+              <!-- Contacts row (censored) -->
+              <div style="display:flex;gap:10px;padding:10px 12px;overflow:hidden">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:34px;height:34px;border-radius:50%;background:#3A3A3C"></div>
+                  <span style="font-size:5.5px;color:#8E8E93;white-space:nowrap">Contacto</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:34px;height:34px;border-radius:50%;background:#3A3A3C"></div>
+                  <span style="font-size:5.5px;color:#8E8E93;white-space:nowrap">Contacto</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:34px;height:34px;border-radius:50%;background:#3A3A3C"></div>
+                  <span style="font-size:5.5px;color:#8E8E93;white-space:nowrap">Contacto</span>
+                </div>
+              </div>
+
+              <!-- Apps row -->
+              <div style="display:flex;gap:10px;padding:0 12px 8px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(145deg,#5AC8FA,#0071E3);display:flex;align-items:center;justify-content:center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="18" r="2" fill="white"/><path d="M8.5 15.5a5 5 0 0 1 0-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M15.5 15.5a5 5 0 0 0 0-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M5.5 18.5a9 9 0 0 1 0-13" stroke="white" stroke-width="1.8" stroke-linecap="round"/><path d="M18.5 18.5a9 9 0 0 0 0-13" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">AirDrop</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(180deg,#4FC3F7,#0277BD);display:flex;align-items:center;justify-content:center">
+                    <svg width="14" height="11" viewBox="0 0 24 18" fill="none"><rect x="1" y="1" width="22" height="16" rx="2.5" stroke="white" stroke-width="1.8"/><path d="M1 4l11 7 11-7" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">Mail</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:36px;height:36px;border-radius:9px;background:#FECC02;display:flex;align-items:center;justify-content:center">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M6 8h12M6 12h12M6 16h8" stroke="#7A6000" stroke-width="2.2" stroke-linecap="round"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">Notas</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0">
+                  <div style="width:36px;height:36px;border-radius:9px;background:linear-gradient(145deg,#4B2D8F,#9333EA);display:flex;align-items:center;justify-content:center">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 3l2 6h6l-5 3.6 1.9 6L12 15l-4.9 3.6L9 12.6 4 9h6L12 3z" fill="white"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">Journal</span>
+                </div>
+              </div>
+
+              <!-- Actions row -->
+              <div style="display:flex;padding:8px 8px 10px;gap:4px">
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+                  <div style="width:36px;height:36px;border-radius:50%;background:#3A3A3C;display:flex;align-items:center;justify-content:center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="13" height="13" rx="2" stroke="white" stroke-width="1.8"/><path d="M4 17V4a1 1 0 0 1 1-1h13" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">Copiar</span>
+                </div>
+                <!-- HIGHLIGHTED: Guardar video -->
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+                  <div style="width:36px;height:36px;border-radius:50%;background:rgba(201,168,76,0.15);box-shadow:0 0 0 1.5px #C9A84C;display:flex;align-items:center;justify-content:center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M12 3v13M7 12l5 5 5-5" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 19h16" stroke="#C9A84C" stroke-width="1.8" stroke-linecap="round"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#C9A84C;font-weight:600">Guardar video</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+                  <div style="width:36px;height:36px;border-radius:50%;background:#3A3A3C;display:flex;align-items:center;justify-content:center">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><circle cx="7" cy="7" r="1.5" fill="white"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">Tags</span>
+                </div>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1">
+                  <div style="width:36px;height:36px;border-radius:50%;background:#3A3A3C;display:flex;align-items:center;justify-content:center">
+                    <svg width="12" height="4" viewBox="0 0 24 8" fill="white"><circle cx="4" cy="4" r="2.2"/><circle cx="12" cy="4" r="2.2"/><circle cx="20" cy="4" r="2.2"/></svg>
+                  </div>
+                  <span style="font-size:5.5px;color:#fff">Mas</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">El video se abre en el reproductor. Toca <strong>Compartir</strong> y selecciona <strong>"Guardar video"</strong>. Queda en Fotos.</p>
+    </div>
+
+  </div><!-- end row 2 -->
+
+  <div class="note">
+    El video queda guardado en Fotos. Desde ahí lo seleccionas al publicar un Reel en Instagram o un video en TikTok.
+  </div>
+
+  <div class="pg-foot">Inmuebles Audiovisuales · inmueblesaudiovisuales.com</div>
+</div>
+
+
+<!-- ============================================================
+     PARTE 2: INSTAGRAM
+     ============================================================ -->
+<div class="page pg-section">
+
+  <div class="sec-hd">
+    <span class="sec-num">02</span>
+    <div>
+      <div class="sec-title">Instagram</div>
+      <div class="sec-sub">Activa la máxima calidad antes de publicar</div>
+    </div>
+  </div>
+
+  <p class="intro">Una vez que seleccionas tu video y llegas a la pantalla de publicación del Reel, hay una opción de calidad oculta que debes activar. Esta opción no viene activa por defecto.</p>
+
+  <div class="steps">
+
+    <!-- Step 1: Nuevo reel screen -->
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#000">
+            <div class="di"></div>
+            <div class="sb">
+              <span class="sb-t">11:25</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="9" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- Nav -->
+            <div class="nav" style="background:#000;margin-top:40px">
+              <div class="nav-back">Atrás</div>
+              <div class="nav-ttl">Nuevo reel</div>
+            </div>
+
+            <!-- Text placeholder -->
+            <div style="padding:6px 12px 6px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+              <span style="font-size:8px;color:#636366">Agrega un texto...</span>
+            </div>
+
+            <!-- Pills -->
+            <div class="ig-pills">
+              <div class="ig-pill"># Hashtags</div>
+              <div class="ig-pill">Encuesta</div>
+              <div class="ig-pill">Tema</div>
+            </div>
+
+            <!-- Rows -->
+            <div class="r">
+              <span class="rl">Etiquetar personas</span>
+              <div class="rc"></div>
+            </div>
+            <div class="r">
+              <span class="rl">Agregar ubicación</span>
+              <div class="rc"></div>
+            </div>
+
+            <!-- Location tags -->
+            <div style="padding:4px 12px 6px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+              <div style="display:flex;gap:3px;flex-wrap:wrap">
+                <span style="font-size:6.5px;background:#1E3A5F;color:#5BA3E8;border-radius:10px;padding:2px 5px">Monterrey</span>
+                <span style="font-size:6.5px;background:#1E3A5F;color:#5BA3E8;border-radius:10px;padding:2px 5px">Monterrey, NL</span>
+              </div>
+            </div>
+
+            <div class="r">
+              <span class="rl">Público</span>
+              <span style="font-size:7.5px;color:#8E8E93;margin-right:4px">Seguidores</span>
+              <div class="rc"></div>
+            </div>
+            <div class="r">
+              <span class="rl">Compartir también en...</span>
+              <span style="font-size:7.5px;color:#8E8E93;margin-right:4px">No</span>
+              <div class="rc"></div>
+            </div>
+
+            <!-- HIGHLIGHTED: Más opciones -->
+            <div class="r hl">
+              <span class="rl" style="color:#C9A84C;font-weight:600">... Más opciones</span>
+              <div class="rc" style="border-color:#C9A84C"></div>
+            </div>
+
+            <!-- Bottom buttons -->
+            <div style="position:absolute;bottom:0;left:0;right:0;display:flex;gap:8px;padding:8px 12px 16px;background:#000;border-top:0.5px solid rgba(255,255,255,0.1)">
+              <div style="flex:1;text-align:center;font-size:8px;font-weight:600;color:#fff;padding:7px;border:1px solid rgba(255,255,255,0.25);border-radius:6px">Guardar borrador</div>
+              <div style="flex:1;text-align:center;font-size:8px;font-weight:600;color:#fff;padding:7px;background:#0095F6;border-radius:6px">Compartir</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">En la pantalla del Reel, desplázate hacia abajo y toca <strong>"Más opciones"</strong></p>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arr">
+      <svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+
+    <!-- Step 2: Más opciones screen -->
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#000">
+            <div class="di"></div>
+            <div class="sb">
+              <span class="sb-t">11:26</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="9" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- Nav -->
+            <div class="nav" style="background:#000;margin-top:40px">
+              <div class="nav-back">Atrás</div>
+              <div class="nav-ttl">Más opciones</div>
+            </div>
+
+            <!-- Body content -->
+            <div class="scr-body" style="top:75px">
+
+              <div class="r">
+                <span class="rl">Agregar recaudación de fondos</span>
+                <div class="rc"></div>
+              </div>
+
+              <div class="sh-sec">Preferencias para compartir</div>
+
+              <!-- HIGHLIGHTED ROW: quality toggle (ON = desired state) -->
+              <div class="hl" style="padding:8px 10px;border-radius:6px;display:flex;align-items:flex-start;gap:8px;margin:4px 8px">
+                <div style="flex:1">
+                  <div style="font-size:8.5px;color:#C9A84C;font-weight:600;line-height:1.3">Subir con la calidad más alta</div>
+                  <div style="font-size:6.5px;color:#8E8E93;margin-top:3px;line-height:1.4">Sube siempre con la calidad más alta posible. Cuando esta opción esté desactivada, ajustaremos automáticamente la calidad.</div>
+                </div>
+                <div class="tog on" style="flex-shrink:0;margin-top:2px"></div>
+              </div>
+
+              <div style="height:0.5px;background:rgba(255,255,255,0.1);margin:8px 0 2px"></div>
+
+              <div class="r" style="opacity:0.5">
+                <div style="flex:1">
+                  <div style="font-size:8px;color:#fff">No permitir como plantilla</div>
+                </div>
+                <div class="tog off"></div>
+              </div>
+              <div class="r" style="opacity:0.5">
+                <div style="flex:1"><div style="font-size:8px;color:#fff">Ocultar recuento de Me gusta</div></div>
+                <div class="tog off"></div>
+              </div>
+              <div class="r" style="opacity:0.5">
+                <div style="flex:1"><div style="font-size:8px;color:#fff">Desactivar comentarios</div></div>
+                <div class="tog off"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Activa <strong>"Subir con la calidad más alta"</strong> y vuelve para publicar</p>
+    </div>
+
+  </div><!-- end steps -->
+
+  <div class="note">
+    Esta opción no viene activa por defecto. Si no la activas, Instagram comprime el video al subirlo y reduce la calidad. Solo debes activarla una vez. Instagram la recordará para los siguientes Reels.
+  </div>
+
+  <div class="pg-foot">Inmuebles Audiovisuales · inmueblesaudiovisuales.com</div>
+</div>
+
+
+<!-- ============================================================
+     PARTE 3: TIKTOK
+     ============================================================ -->
+<div class="page pg-section">
+
+  <div class="sec-hd">
+    <span class="sec-num">03</span>
+    <div>
+      <div class="sec-title">TikTok</div>
+      <div class="sec-sub">Activa la máxima calidad antes de publicar</div>
+    </div>
+  </div>
+
+  <p class="intro">Al llegar a la pantalla de publicación de TikTok, hay una opción de calidad disponible dentro de "Más opciones". El proceso es similar al de Instagram.</p>
+
+  <div class="steps">
+
+    <!-- Step 1: TikTok posting screen -->
+    <div class="step">
+      <div class="step-badge">1</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#000">
+            <div class="di"></div>
+            <div class="sb">
+              <span class="sb-t">11:28</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="8" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- Back button + TikTok style top area -->
+            <div style="position:absolute;top:40px;left:0;right:0;height:28px;display:flex;align-items:center;padding:0 10px">
+              <div style="width:6px;height:6px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(45deg)"></div>
+            </div>
+
+            <!-- Description + preview -->
+            <div style="position:absolute;top:68px;left:0;right:0;padding:0 10px">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between">
+                <span style="font-size:8px;color:#636366">Añade una descripción...</span>
+                <div style="text-align:right">
+                  <div style="font-size:7px;color:#8E8E93;margin-bottom:3px">Vista previa</div>
+                  <div style="width:38px;height:52px;background:#1A1A1A;border-radius:3px"></div>
+                  <div style="font-size:6.5px;color:#8E8E93;margin-top:2px">Editar portada</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main content scrollable area -->
+            <div class="scr-body" style="top:132px">
+
+              <!-- Hashtags / Mencionar pills -->
+              <div class="tt-chips">
+                <div class="tt-chip"># Hashtags</div>
+                <div class="tt-chip">@ Mencionar</div>
+              </div>
+
+              <!-- Ubicacion (censored) -->
+              <div class="r" style="flex-direction:column;align-items:flex-start;padding:7px 12px">
+                <div style="display:flex;align-items:center;width:100%">
+                  <span class="rl">Ubicación</span>
+                  <div class="rc"></div>
+                </div>
+                <div class="loc-tags">
+                  <span class="loc-tag">Lugar 1</span>
+                  <span class="loc-tag">Lugar 2</span>
+                  <span class="loc-tag">Lugar 3</span>
+                  <span class="loc-tag">Lugar 4</span>
+                </div>
+              </div>
+
+              <div class="r">
+                <div style="flex:1">
+                  <div style="font-size:8px;color:#fff">Tus seguidores pueden ver</div>
+                  <div style="font-size:7px;color:#8E8E93">esta publicación</div>
+                </div>
+                <div class="rc"></div>
+              </div>
+
+              <!-- HIGHLIGHTED: Más opciones -->
+              <div class="r hl">
+                <span class="rl" style="color:#C9A84C;font-weight:600">Más opciones</span>
+                <div class="rc" style="border-color:#C9A84C"></div>
+              </div>
+
+              <div class="r">
+                <span class="rl">Compartir en</span>
+                <div class="rc"></div>
+              </div>
+
+            </div>
+
+            <!-- Bottom buttons -->
+            <div class="tt-btns">
+              <div class="tt-btn outline">Borradores</div>
+              <div class="tt-btn pink">Publicar</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">En la pantalla de publicación, toca <strong>"Más opciones"</strong></p>
+    </div>
+
+    <!-- Arrow -->
+    <div class="arr">
+      <svg width="28" height="28" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke="#C9A84C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    </div>
+
+    <!-- Step 2: TikTok Más opciones sheet -->
+    <div class="step">
+      <div class="step-badge">2</div>
+      <div class="pw">
+        <div class="iph">
+          <div class="scr" style="background:#000">
+            <div class="di"></div>
+            <div class="sb">
+              <span class="sb-t">11:28</span>
+              <div class="sb-i">
+                <svg width="10" height="8" viewBox="0 0 10 8"><rect x="0" y="3" width="2" height="5" rx="0.5"/><rect x="2.5" y="2" width="2" height="6" rx="0.5"/><rect x="5" y="1" width="2" height="7" rx="0.5"/><rect x="7.5" y="0" width="2" height="8" rx="0.5"/></svg>
+                                <svg width="18" height="8" viewBox="0 0 18 8"><rect x="0" y="1" width="15" height="6" rx="1.5" stroke="white" stroke-width="1" fill="none"/><rect x="1" y="2" width="8" height="4" rx="0.8" fill="white"/><path d="M16 3v2a1.5 1.5 0 0 0 0-2z" fill="white"/></svg>
+              </div>
+            </div>
+
+            <!-- dim posting screen behind -->
+            <div style="position:absolute;top:40px;left:0;right:0;height:40%;background:#050505;opacity:0.7"></div>
+
+            <!-- Sheet -->
+            <div class="sheet" style="height:66%">
+              <div class="sh-hand"></div>
+
+              <!-- Title row with X -->
+              <div style="display:flex;align-items:center;padding:0 12px 8px;border-bottom:0.5px solid rgba(255,255,255,0.1)">
+                <span style="font-size:10px;font-weight:600;color:#fff;flex:1;text-align:center">Más opciones</span>
+                <div style="width:14px;height:14px;display:flex;align-items:center;justify-content:center">
+                  <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 2l8 8M10 2l-8 8" stroke="rgba(255,255,255,0.5)" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </div>
+              </div>
+
+              <!-- Tiny description text -->
+              <div style="padding:6px 12px 4px">
+                <div style="font-size:7px;color:#636366;line-height:1.4">Los sonidos de tus videos se revisarán automáticamente para detectar problemas de derechos de autor antes de publicarlos.</div>
+              </div>
+
+              <div style="height:0.5px;background:rgba(255,255,255,0.1);margin:2px 0"></div>
+
+              <div class="r">
+                <div style="flex:1">
+                  <div style="font-size:8px;color:#fff">Permite la búsqueda visual</div>
+                </div>
+                <div class="tog on"></div>
+              </div>
+
+              <!-- HIGHLIGHTED: Permitir cargas en alta calidad (already ON) -->
+              <div class="hl" style="padding:8px 10px;display:flex;align-items:flex-start;gap:8px;margin:2px 8px">
+                <div style="flex:1">
+                  <div style="font-size:8.5px;color:#C9A84C;font-weight:600;line-height:1.3">Permitir cargas en alta calidad</div>
+                  <div style="font-size:6.5px;color:#8E8E93;margin-top:3px;line-height:1.4">Los videos de resolución más alta podrían tardar más tiempo en procesarse.</div>
+                </div>
+                <div class="tog on" style="flex-shrink:0;margin-top:2px"></div>
+              </div>
+
+              <div style="height:0.5px;background:rgba(255,255,255,0.1);margin:4px 0 2px"></div>
+
+              <div class="r" style="opacity:0.6">
+                <div style="flex:1"><div style="font-size:8px;color:#fff">Guardar en el dispositivo</div></div>
+                <div class="tog on"></div>
+              </div>
+              <div class="r" style="opacity:0.6">
+                <div style="flex:1"><div style="font-size:8px;color:#fff">Guardar con marca de agua</div></div>
+                <div class="tog off"></div>
+              </div>
+              <div class="r" style="opacity:0.6">
+                <div style="flex:1"><div style="font-size:8px;color:#fff">Idioma del video</div></div>
+                <span style="font-size:7.5px;color:#8E8E93;margin-right:4px">Español</span>
+                <div class="rc"></div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <p class="step-cap">Activa <strong>"Permitir cargas en alta calidad"</strong> y vuelve para publicar</p>
+    </div>
+
+  </div><!-- end steps -->
+
+  <div class="note">
+    Si el interruptor ya aparece activo (en verde), no necesitas hacer nada. TikTok recuerda esta configuración entre publicaciones. Una vez activada, aplica a todos tus videos futuros.
+  </div>
+
+  <div class="pg-foot">Inmuebles Audiovisuales · inmueblesaudiovisuales.com</div>
+</div>
+
+</body>
+</html>
