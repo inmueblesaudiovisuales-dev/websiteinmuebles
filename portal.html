@@ -512,6 +512,20 @@ function renderEtapa1() {
     if (p0.fechaSesion) {
       html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(p0.fechaSesion)) + '</span></div>';
     }
+    if (p0.entregables) {
+      var entItems = p0.entregables.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
+      if (entItems.length) {
+        html += '<div class="resumen-fila" style="align-items:flex-start"><span class="resumen-label" style="padding-top:2px">Incluye</span>';
+        html += '<ul style="margin:0;padding-left:16px;flex:1">' + entItems.map(function(item) {
+          var partes = item.split(' — ');
+          if (partes.length > 1) {
+            return '<li style="font-size:12px;color:var(--charcoal);line-height:1.5;margin-bottom:4px"><strong>' + esc(partes[0]) + '</strong> — ' + esc(partes.slice(1).join(' — ')) + '</li>';
+          }
+          return '<li style="font-size:12px;color:var(--charcoal);line-height:1.5;margin-bottom:4px">' + esc(item) + '</li>';
+        }).join('') + '</ul>';
+        html += '</div>';
+      }
+    }
   }
 
   // Usar precioTotal (precio que Bruno fijó) como base de visualización.
