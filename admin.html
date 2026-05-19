@@ -751,6 +751,8 @@
 <script>
 const API         = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5UX56JdQVdpmqQZ_OJkeRndA6INREg4ekebpjj6_YH/exec';
 const PORTAL_BASE = 'https://inmueblesaudiovisuales.com/portal.html';
+// NOTA: Esta contraseña es solo una barrera de UX. La protección real debe ser a nivel
+// de infraestructura (Cloudflare Access, HTTP Basic Auth, etc.) antes de servir este archivo.
 const PASSWORD    = 'framedock';
 
 let paquetes       = [];
@@ -776,6 +778,7 @@ function intentarLogin() {
   if (document.getElementById('input-pw').value === PASSWORD) {
     document.getElementById('pantalla-login').style.display = 'none';
     document.getElementById('pantalla-admin').style.display = 'block';
+    if (history.replaceState) history.replaceState({}, '', location.pathname);
     cargarPaquetes();
     cargarContratos();
   } else {
@@ -1002,14 +1005,7 @@ function renderTabla(lista) {
 
 async function abrirPanel(token) {
   tokenActivo = token;
-  renderTabla(todosContratos.filter(c => {
-    const q  = document.getElementById('busqueda').value.toLowerCase();
-    const st = document.getElementById('filtro-estatus').value;
-    if (filtroCiclo === 'abiertos' && !ESTATUS_ABIERTOS.includes(c.estatus)) return false;
-    if (st && c.estatus !== st) return false;
-    if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
-    return true;
-  }));
+  filtrarContratos();
 
   document.getElementById('panel-folio').textContent  = '...';
   document.getElementById('panel-nombre').textContent = 'Cargando...';
@@ -1073,7 +1069,7 @@ function renderPanel(data) {
           ${p.paquete     ? `<div class="prop-dato"><span class="lbl">Paquete </span>${esc(p.paquete)}</div>` : ''}
           ${fechatxt      ? `<div class="prop-dato"><span class="lbl">Fecha </span>${esc(fechatxt)}</div>` : ''}
           ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
-          ${p.linkMaps    ? `<div class="prop-dato"><a href="${esc(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
+          ${p.linkMaps    ? `<div class="prop-dato"><a href="${safeHref(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
           ${p.sobreLaPropiedad ? `<div class="prop-dato"><span class="lbl">Notas </span>${esc(p.sobreLaPropiedad)}</div>` : ''}
           <div style="margin-top:8px">
             <button class="btn-secundario btn-sm" onclick="toggleReagendar(${numProp})">
@@ -1494,6 +1490,12 @@ function esc(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function safeHref(url) {
+  if (!url) return '#';
+  var u = String(url).trim();
+  return /^https?:\/\//i.test(u) ? esc(u) : '#';
+}
+
 function badgeEstatus(estatus) {
   const map = {
     'Pendiente firma' : 'badge-pendiente-firma',
@@ -1646,7 +1648,7 @@ function renderListaPaquetes() {
       '<td>' + (p.EsAdicional === true || p.EsAdicional === 'true' || p.EsAdicional === 'Sí' ? '<span class="badge-addon">ADD-ON</span>' : '') + '</td>' +
       '<td>' + (inactivo ? '<span style="font-size:11px;color:var(--ink-3)">No</span>' : '<span style="font-size:11px;color:var(--success);font-weight:700">Si</span>') + '</td>' +
       '<td style="white-space:nowrap">' +
-        '<button class="btn-secundario btn-sm" style="margin-right:4px" onclick=\'editarPaqueteAdmin(' + JSON.stringify(p) + ')\'>Editar</button>' +
+        '<button class="btn-secundario btn-sm" style="margin-right:4px" data-clave="' + esc(p.Clave) + '" onclick="editarPaqueteAdminPorClave(this.dataset.clave)">Editar</button>' +
         '<button class="btn-secundario btn-sm" onclick="togglePaqueteAdmin(\'' + esc(p.Clave) + '\',' + (inactivo ? 'true' : 'false') + ')">' +
           (inactivo ? 'Activar' : 'Desactivar') + '</button>' +
       '</td></tr>';
@@ -1680,6 +1682,11 @@ function editarPaqueteAdmin(p) {
   document.getElementById('mp-es-adicional').checked = p.EsAdicional === true || p.EsAdicional === 'true' || p.EsAdicional === 'Sí';
   document.getElementById('modal-paq-error').style.display = 'none';
   document.getElementById('modal-paquete').style.display = 'flex';
+}
+
+function editarPaqueteAdminPorClave(clave) {
+  var p = (todosPaquetesAdmin || []).find(function(x) { return x.Clave === clave; });
+  if (p) editarPaqueteAdmin(p);
 }
 
 function cerrarModalPaquete() {
