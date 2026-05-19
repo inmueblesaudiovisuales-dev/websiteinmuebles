@@ -364,18 +364,19 @@ function toast(msg) {
 
 // ── API ──
 async function apiGet(params) {
-  const qs = new URLSearchParams({ ...params, token: TOKEN }).toString();
-  const r  = await fetch(API + '?' + qs);
-  return r.json();
+  const qs  = new URLSearchParams({ ...params, token: TOKEN }).toString();
+  const res = await fetch(API + '?' + qs, { redirect: 'follow' });
+  return res.json();
 }
 
 async function apiPost(body) {
-  const r = await fetch(API, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ ...body, token: TOKEN }),
+  const res = await fetch(API, {
+    method  : 'POST',
+    headers : { 'Content-Type': 'text/plain' },
+    body    : JSON.stringify({ ...body, token: TOKEN }),
+    redirect: 'follow',
   });
-  return r.json();
+  return res.json();
 }
 
 // ── CARGAR ──
