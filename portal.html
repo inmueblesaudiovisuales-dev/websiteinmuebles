@@ -842,7 +842,7 @@ function validarYRevisar() {
     var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
     var datosEsp  = {};
     var comsEl = document.getElementById('inp-comentarios');
-    if (comsEl && n === 1) datosEsp.comentarios = comsEl.value.trim();
+    if (comsEl) datosEsp.comentarios = comsEl.value.trim();
     propsPayload.push({
       direccion        : dir,
       linkMaps         : maps,
@@ -1467,7 +1467,12 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
         if (data.url) archivosSubidos[clave] = data.url;
         setUploadStatus(tipo, propIndex, 'ok', file.name);
       } else {
-        setUploadStatus(tipo, propIndex, 'error', data.error || 'Error al subir');
+        var msg = data.error || 'Error al subir';
+        // Token expirado: mostrar error legible para que el cliente no quede atascado.
+        if (msg.indexOf('expirado') !== -1 || msg.indexOf('inválido') !== -1) {
+          msg = 'El enlace expiró. Recarga la página e intenta de nuevo.';
+        }
+        setUploadStatus(tipo, propIndex, 'error', msg);
       }
     })
     .catch(function() {
@@ -1479,7 +1484,12 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
     uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
     setUploadStatus(tipo, propIndex, 'error', 'No se pudo leer el archivo');
   };
-  reader.readAsDataURL(file);
+  try {
+    reader.readAsDataURL(file);
+  } catch (e) {
+    uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
+    setUploadStatus(tipo, propIndex, 'error', 'No se pudo leer el archivo');
+  }
 }
 
 function setUploadStatus(tipo, propIndex, estado, texto) {
