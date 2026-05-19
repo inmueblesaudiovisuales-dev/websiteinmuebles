@@ -1060,13 +1060,38 @@ function renderPanel(data) {
         const titulo = data.propiedades.length > 1 ? `Propiedad ${i + 1}` : 'Propiedad';
         const tipotxt = p.tipo ? ` · ${p.tipo}` : '';
         const fechatxt = p.fechaSesion ? fmxnFechaLarga(p.fechaSesion) + (p.horaSesion ? ' · ' + p.horaSesion : '') : '';
-        return `<div class="prop-card">
+        const numProp  = i + 1;
+        const fechaISO = p.fechaSesion ? new Date(p.fechaSesion).toISOString().substring(0, 10) : '';
+        const horaVal  = p.horaSesion  || '';
+        return `<div class="prop-card" id="prop-card-${numProp}">
           <div class="prop-card-titulo">${esc(titulo)}${esc(tipotxt)}</div>
           ${p.paquete     ? `<div class="prop-dato"><span class="lbl">Paquete </span>${esc(p.paquete)}</div>` : ''}
           ${fechatxt      ? `<div class="prop-dato"><span class="lbl">Fecha </span>${esc(fechatxt)}</div>` : ''}
           ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
           ${p.linkMaps    ? `<div class="prop-dato"><a href="${esc(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
           ${p.sobreLaPropiedad ? `<div class="prop-dato"><span class="lbl">Notas </span>${esc(p.sobreLaPropiedad)}</div>` : ''}
+          <div style="margin-top:8px">
+            <button class="btn-secundario btn-sm" onclick="toggleReagendar(${numProp})">
+              <i class="ti ti-calendar-event"></i> Reagendar
+            </button>
+          </div>
+          <div id="form-reagendar-${numProp}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+              <div class="campo" style="margin:0">
+                <label style="font-size:11px">Nueva fecha</label>
+                <input type="date" id="reagendar-fecha-${numProp}" value="${esc(fechaISO)}">
+              </div>
+              <div class="campo" style="margin:0">
+                <label style="font-size:11px">Hora</label>
+                <input type="time" id="reagendar-hora-${numProp}" value="${esc(horaVal)}">
+              </div>
+            </div>
+            <div class="form-msg" id="msg-reagendar-${numProp}"></div>
+            <div style="display:flex;gap:6px">
+              <button class="btn-primario gold btn-sm" onclick="confirmarReagendar(${numProp})">Confirmar</button>
+              <button class="btn-secundario btn-sm" onclick="toggleReagendar(${numProp})">Cancelar</button>
+            </div>
+          </div>
         </div>`;
       }).join('')
     : '<p style="font-size:12px;color:var(--ink-3)">Sin propiedades configuradas aún.</p>';
@@ -1804,6 +1829,39 @@ function fmxnCorto(n) {
   if (n >= 1000000) return '$' + (n / 1000000).toFixed(1) + 'M';
   if (n >= 1000)    return '$' + Math.round(n / 1000) + 'k';
   return fmxn(n);
+}
+
+// ── REAGENDAR SESIÓN ──────────────────────────────────────────────────────────
+
+function toggleReagendar(numProp) {
+  const form = document.getElementById('form-reagendar-' + numProp);
+  if (!form) return;
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+  setMsg('msg-reagendar-' + numProp, '', '');
+}
+
+async function confirmarReagendar(numProp) {
+  const fecha = (document.getElementById('reagendar-fecha-' + numProp) || {}).value || '';
+  const hora  = (document.getElementById('reagendar-hora-'  + numProp) || {}).value || '';
+  if (!fecha) {
+    setMsg('msg-reagendar-' + numProp, 'Elige una fecha.', 'error');
+    return;
+  }
+  setMsg('msg-reagendar-' + numProp, 'Guardando...', '');
+  try {
+    const data = await apiPost({
+      action       : 'reagendarPropiedad',
+      token        : tokenActivo,
+      numPropiedad : numProp,
+      fecha        : fecha,
+      hora         : hora,
+    });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    setMsg('msg-reagendar-' + numProp, 'Reagendado. Correo enviado al cliente.', 'ok');
+    setTimeout(function() { abrirPanel(tokenActivo); }, 1200);
+  } catch (e) {
+    setMsg('msg-reagendar-' + numProp, 'Error: ' + e.message, 'error');
+  }
 }
 
 // ── ARCHIVAR / ELIMINAR CONTRATO ──────────────────────────────────────────────
