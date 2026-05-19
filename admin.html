@@ -560,13 +560,16 @@
           <option value="Entregado">Entregado</option>
           <option value="Liquidado">Liquidado</option>
         </select>
-        <input type="date" id="filtro-fecha-desde" onchange="filtrarContratos()" style="width:auto" title="Creado desde">
-        <input type="date" id="filtro-fecha-hasta" onchange="filtrarContratos()" style="width:auto" title="Creado hasta">
+        <input type="date" id="filtro-fecha-desde" onchange="filtrarContratos()" style="width:auto" title="Sesión desde">
+        <input type="date" id="filtro-fecha-hasta" onchange="filtrarContratos()" style="width:auto" title="Sesión hasta">
         <button class="btn-primario gold" onclick="irANuevo()">
           <i class="ti ti-plus"></i> Nuevo
         </button>
         <button class="btn-secundario btn-sm" onclick="cargarContratos()" title="Actualizar">
           <i class="ti ti-refresh"></i>
+        </button>
+        <button class="btn-secundario btn-sm" onclick="descargarCSV()" title="Exportar CSV">
+          <i class="ti ti-table-export"></i>
         </button>
         <!-- TEMPORAL: selección masiva para pruebas -->
         <button class="btn-seleccion" id="btn-seleccion" onclick="toggleModoSeleccion()" title="Selección masiva">
@@ -976,6 +979,55 @@ function irANuevo() {
   mostrarTab('nuevo', btn);
 }
 
+async function enviarRecordatorio() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  if (!confirm('¿Enviar recordatorio de anticipo a ' + ctx.c.NombreCliente + '?')) return;
+  try {
+    const data = await apiPost({ action: 'enviarRecordatorio', token: ctx.c.Token });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    alert('Recordatorio enviado a ' + ctx.c.CorreoCliente);
+  } catch(e) {
+    alert('Error: ' + e.message);
+  }
+}
+
+async function descargarCSV() {
+  try {
+    const data = await apiGet({ action: 'exportarCSV' });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    const blob = new Blob([data.csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = 'contratos-' + new Date().toISOString().substring(0, 10) + '.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    alert('Error al exportar: ' + e.message);
+  }
+}
+
+function toggleNotaInterna(numProp) {
+  const div = document.getElementById('form-nota-' + numProp);
+  if (div) div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+async function guardarNotaInterna(numProp) {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const nota  = (document.getElementById('nota-texto-' + numProp) || {}).value || '';
+  const msg   = document.getElementById('msg-nota-' + numProp);
+  if (msg) msg.textContent = 'Guardando...';
+  try {
+    const data = await apiPost({ action: 'guardarNotaPropiedad', token: ctx.c.Token, numPropiedad: numProp, nota });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    if (msg) { msg.textContent = 'Guardado.'; setTimeout(() => { if(msg) msg.textContent = ''; toggleNotaInterna(numProp); }, 1200); }
+  } catch(e) {
+    if (msg) msg.textContent = 'Error: ' + e.message;
+  }
+}
+
 function duplicarContrato() {
   const ctx = window._contratoActivo;
   if (!ctx) return;
@@ -1144,7 +1196,7 @@ function filtrarContratos() {
     if (st && c.estatus !== st) return false;
     if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
     if (desde || hasta) {
-      const fecha = String(c.fechaCreacion || '').substring(0, 10);
+      const fecha = String(c.fechaSesion || c.fechaCreacion || '').substring(0, 10);
       if (desde && fecha < desde) return false;
       if (hasta && fecha > hasta) return false;
     }
@@ -1252,10 +1304,21 @@ function renderPanel(data) {
           ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
           ${p.linkMaps    ? `<div class="prop-dato"><a href="${safeHref(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
           ${p.sobreLaPropiedad ? `<div class="prop-dato"><span class="lbl">Notas </span>${esc(p.sobreLaPropiedad)}</div>` : ''}
-          <div style="margin-top:8px">
+          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn-secundario btn-sm" onclick="toggleReagendar(${numProp})">
               <i class="ti ti-calendar-event"></i> Reagendar
             </button>
+            <button class="btn-secundario btn-sm" onclick="toggleNotaInterna(${numProp})">
+              <i class="ti ti-note"></i> Nota interna
+            </button>
+          </div>
+          <div id="form-nota-${numProp}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+            <textarea id="nota-texto-${numProp}" rows="3" placeholder="Nota interna (solo visible para ti)..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--page);color:var(--ink-1);box-sizing:border-box">${esc(p.notaInterna || '')}</textarea>
+            <div class="form-msg" id="msg-nota-${numProp}" style="margin-top:4px"></div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="btn-primario gold btn-sm" onclick="guardarNotaInterna(${numProp})">Guardar</button>
+              <button class="btn-secundario btn-sm" onclick="toggleNotaInterna(${numProp})">Cancelar</button>
+            </div>
           </div>
           <div id="form-reagendar-${numProp}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
@@ -1300,6 +1363,9 @@ function renderPanel(data) {
         <a class="btn-wa" href="${esc(waUrl)}" target="_blank" rel="noopener">
           <i class="ti ti-brand-whatsapp"></i> WhatsApp
         </a>
+        <button class="btn-secundario btn-sm" onclick="enviarRecordatorio()" title="Recordatorio de anticipo al cliente">
+          <i class="ti ti-bell"></i> Recordatorio
+        </button>
       </div>
     </div>
     <div style="margin-top:12px">
