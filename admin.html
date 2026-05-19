@@ -560,6 +560,8 @@
           <option value="Entregado">Entregado</option>
           <option value="Liquidado">Liquidado</option>
         </select>
+        <input type="date" id="filtro-fecha-desde" onchange="filtrarContratos()" style="width:auto" title="Creado desde">
+        <input type="date" id="filtro-fecha-hasta" onchange="filtrarContratos()" style="width:auto" title="Creado hasta">
         <button class="btn-primario gold" onclick="irANuevo()">
           <i class="ti ti-plus"></i> Nuevo
         </button>
@@ -974,6 +976,36 @@ function irANuevo() {
   mostrarTab('nuevo', btn);
 }
 
+function duplicarContrato() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const { c, adicionales } = ctx;
+  cerrarPanel();
+  irANuevo();
+  requestAnimationFrame(function() {
+    if (c.TipoContrato === 'estandar') {
+      mostrarSubTab('estandar', document.querySelector('.sub-tab-btn'));
+      const sel = document.getElementById('est-paquete');
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === c.PaqueteBase) { sel.selectedIndex = i; break; }
+      }
+      actualizarPrecio();
+      // Marcar add-ons que tenía el contrato original
+      adicionales.forEach(clave => {
+        const cb = document.querySelector(`#lista-adicionales input[value="${CSS.escape(clave)}"]`);
+        if (cb) cb.checked = true;
+      });
+    }
+    document.getElementById('est-nombre').value   = c.NombreCliente   || '';
+    document.getElementById('est-correo').value   = c.CorreoCliente   || '';
+    document.getElementById('est-telefono').value = c.TelefonoCliente || '';
+    precioManual = true;
+    document.getElementById('est-precio-total').value = parseFloat(c.PrecioTotal) || '';
+    anticipoManual = true;
+    document.getElementById('est-anticipo').value = parseFloat(c.Anticipo) || '';
+  });
+}
+
 // ── API ───────────────────────────────────────────────────────────────────────
 
 async function apiGet(params) {
@@ -1103,12 +1135,19 @@ function setCiclo(ciclo) {
 }
 
 function filtrarContratos() {
-  const q  = document.getElementById('busqueda').value.toLowerCase();
-  const st = document.getElementById('filtro-estatus').value;
+  const q     = document.getElementById('busqueda').value.toLowerCase();
+  const st    = document.getElementById('filtro-estatus').value;
+  const desde = document.getElementById('filtro-fecha-desde').value;
+  const hasta = document.getElementById('filtro-fecha-hasta').value;
   const lista = todosContratos.filter(c => {
     if (filtroCiclo === 'abiertos' && !ESTATUS_ABIERTOS.includes(c.estatus)) return false;
     if (st && c.estatus !== st) return false;
     if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
+    if (desde || hasta) {
+      const fecha = String(c.fechaCreacion || '').substring(0, 10);
+      if (desde && fecha < desde) return false;
+      if (hasta && fecha > hasta) return false;
+    }
     return true;
   });
   renderTabla(lista);
@@ -1183,6 +1222,8 @@ function renderPanel(data) {
 
   let adicionales = [];
   try { adicionales = JSON.parse(c.AdicionalesJSON || '[]'); } catch(e) {}
+
+  window._contratoActivo = { c, adicionales };
 
   document.getElementById('panel-folio').textContent  = c.Folio || 'Sin folio';
   document.getElementById('panel-nombre').textContent = c.NombreCliente;
@@ -1273,6 +1314,11 @@ function renderPanel(data) {
           <i class="ti ti-brand-whatsapp"></i> Compartir
         </a>
       </div>
+    </div>
+    <div style="margin-top:12px">
+      <button class="btn-secundario btn-sm" style="display:inline-flex;align-items:center;gap:6px" onclick="duplicarContrato()">
+        <i class="ti ti-copy"></i> Duplicar contrato
+      </button>
     </div>
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:10px">Zona de riesgo</p>
