@@ -384,7 +384,8 @@ function mostrarError(msg) {
 }
 
 function apiGet(params) {
-  return fetch(API + params, { redirect: 'follow' }).then(function(r) { return r.json(); });
+  var qs = typeof params === 'object' ? '?' + new URLSearchParams(params).toString() : params;
+  return fetch(API + qs, { redirect: 'follow' }).then(function(r) { return r.json(); });
 }
 
 function apiPost(body) {
