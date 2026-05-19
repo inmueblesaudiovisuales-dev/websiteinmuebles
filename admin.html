@@ -100,8 +100,12 @@
     .seccion.activa { display: block; }
 
     /* ── TABLA CONTRATOS ────────────────────────────── */
-    .barra { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
-    .barra .campo-busqueda { flex: 1; min-width: 200px; }
+    .barra { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .barra-fila-principal { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .barra-fila-principal .campo-busqueda { flex: 1; min-width: 200px; }
+    .barra-filtros { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; } /* visible en desktop */
+    .filtro-fecha-label { font-size: 11px; font-weight: 700; color: var(--ink-3); white-space: nowrap; letter-spacing: 0.04em; }
+    .btn-filtros-mobile { display: none; }
     .tabla-card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r-lg); overflow: hidden; }
     .tabla-card table { width: 100%; border-collapse: collapse; }
     .tabla-card th {
@@ -412,9 +416,19 @@
       .bottom-nav { display: block; }
       .bulk-bar { bottom: 76px; }
 
-      /* Barra de filtros */
-      .barra .campo-busqueda { min-width: 100%; order: -1; }
+      /* Barra: filtros colapsables en mobile */
+      .barra-fila-principal .campo-busqueda { min-width: 0; }
+      .barra-filtros { display: none; flex-wrap: wrap; }
+      .barra-filtros.visible { display: flex; }
+      .btn-filtros-mobile {
+        display: flex; align-items: center; justify-content: center;
+        background: none; border: 1.5px solid var(--border2);
+        border-radius: var(--r); padding: 7px 10px;
+        font-size: 13px; color: var(--ink-2); cursor: pointer;
+      }
+      .btn-filtros-mobile.activo { border-color: var(--gold); color: var(--gold); }
       #filtro-estatus { flex: 1; min-width: 0; }
+      #filtro-fecha-desde, #filtro-fecha-hasta { flex: 1; min-width: 0; }
 
       /* Tabla → cards en mobile */
       .tabla-card table, .tabla-card thead { display: block; }
@@ -438,8 +452,23 @@
       /* Stats bar: 2 columnas */
       #stats-bar { grid-template-columns: repeat(2,1fr) !important; }
 
-      /* Panel lateral: ancho completo */
-      .panel-lateral { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+      /* Panel lateral como bottom sheet */
+      .panel-lateral {
+        top: auto; bottom: 0;
+        left: 0; right: 0; width: 100%;
+        height: 88dvh;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+      }
+      .panel-lateral.visible { transform: translateY(0); box-shadow: 0 -8px 40px rgba(0,0,0,0.18); }
+      .panel-handle { display: block !important; }
+      .panel-tabs { top: 0; }
+
+      /* Prop-card: botones de acción a ancho completo */
+      .prop-card-acciones { flex-direction: column !important; }
+      .prop-card-acciones button { width: 100% !important; justify-content: center; }
 
       /* Métricas grids */
       .met-cards-grid { grid-template-columns: repeat(2,1fr); }
@@ -544,37 +573,45 @@
     <div id="sec-contratos" class="seccion activa">
       <div id="stats-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px"></div>
       <div class="barra">
-        <div class="campo-busqueda">
-          <input type="text" id="busqueda" placeholder="Buscar por nombre, correo o folio..." oninput="filtrarContratos()">
+        <div class="barra-fila-principal">
+          <div class="campo-busqueda">
+            <input type="text" id="busqueda" placeholder="Buscar por nombre, correo o folio..." oninput="filtrarContratos()">
+          </div>
+          <button class="btn-filtros-mobile" id="btn-filtros-mobile" onclick="toggleFiltrosMobile()" title="Filtros">
+            <i class="ti ti-adjustments-horizontal"></i>
+          </button>
+          <button class="btn-primario gold" onclick="irANuevo()">
+            <i class="ti ti-plus"></i> Nuevo
+          </button>
+          <button class="btn-secundario btn-sm" onclick="cargarContratos()" title="Actualizar">
+            <i class="ti ti-refresh"></i>
+          </button>
+          <button class="btn-secundario btn-sm" onclick="descargarCSV()" title="Exportar CSV">
+            <i class="ti ti-table-export"></i>
+          </button>
+          <!-- TEMPORAL: selección masiva para pruebas -->
+          <button class="btn-seleccion" id="btn-seleccion" onclick="toggleModoSeleccion()" title="Selección masiva">
+            <i class="ti ti-checkbox"></i>
+          </button>
         </div>
-        <div class="ciclo-toggle">
-          <button id="ciclo-btn-abiertos" class="ciclo-btn activo-ciclo" onclick="setCiclo('abiertos')">Abiertos</button>
-          <button id="ciclo-btn-todos"    class="ciclo-btn"              onclick="setCiclo('todos')">Todos</button>
+        <div class="barra-filtros" id="barra-filtros">
+          <div class="ciclo-toggle">
+            <button id="ciclo-btn-abiertos" class="ciclo-btn activo-ciclo" onclick="setCiclo('abiertos')">Abiertos</button>
+            <button id="ciclo-btn-todos"    class="ciclo-btn"              onclick="setCiclo('todos')">Todos</button>
+          </div>
+          <select id="filtro-estatus" onchange="filtrarContratos()" style="width:auto">
+            <option value="">Todos los estatus</option>
+            <option value="Pendiente firma">Pendiente firma</option>
+            <option value="Firmado">Firmado</option>
+            <option value="Anticipo recibido">Anticipo recibido</option>
+            <option value="En produccion">En producción</option>
+            <option value="Entregado">Entregado</option>
+            <option value="Liquidado">Liquidado</option>
+          </select>
+          <span class="filtro-fecha-label">Fecha de creación:</span>
+          <input type="date" id="filtro-fecha-desde" onchange="filtrarContratos()" style="width:auto" title="Creado desde">
+          <input type="date" id="filtro-fecha-hasta" onchange="filtrarContratos()" style="width:auto" title="Creado hasta">
         </div>
-        <select id="filtro-estatus" onchange="filtrarContratos()" style="width:auto">
-          <option value="">Todos los estatus</option>
-          <option value="Pendiente firma">Pendiente firma</option>
-          <option value="Firmado">Firmado</option>
-          <option value="Anticipo recibido">Anticipo recibido</option>
-          <option value="En produccion">En producción</option>
-          <option value="Entregado">Entregado</option>
-          <option value="Liquidado">Liquidado</option>
-        </select>
-        <input type="date" id="filtro-fecha-desde" onchange="filtrarContratos()" style="width:auto" title="Sesión desde">
-        <input type="date" id="filtro-fecha-hasta" onchange="filtrarContratos()" style="width:auto" title="Sesión hasta">
-        <button class="btn-primario gold" onclick="irANuevo()">
-          <i class="ti ti-plus"></i> Nuevo
-        </button>
-        <button class="btn-secundario btn-sm" onclick="cargarContratos()" title="Actualizar">
-          <i class="ti ti-refresh"></i>
-        </button>
-        <button class="btn-secundario btn-sm" onclick="descargarCSV()" title="Exportar CSV">
-          <i class="ti ti-table-export"></i>
-        </button>
-        <!-- TEMPORAL: selección masiva para pruebas -->
-        <button class="btn-seleccion" id="btn-seleccion" onclick="toggleModoSeleccion()" title="Selección masiva">
-          <i class="ti ti-checkbox"></i>
-        </button>
       </div>
       <div class="tabla-card">
         <table>
@@ -806,6 +843,7 @@
 
 <!-- ═══ PANEL LATERAL ════════════════════════════════════════════════════════ -->
 <div id="panel-lateral" class="panel-lateral">
+  <div class="panel-handle" style="display:none;width:36px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 0;flex-shrink:0"></div>
   <div class="panel-header">
     <div class="panel-header-info">
       <div class="panel-folio" id="panel-folio">—</div>
@@ -888,10 +926,19 @@ async function eliminarSeleccionados() {
   for (const t of tokens) {
     try { await apiPost({ action: 'eliminarContrato', token: t }); } catch(e) {}
   }
+  // Cerrar panel si el contrato activo fue eliminado
+  if (tokenActivo && tokens.includes(tokenActivo)) cerrarPanel();
   salirModoSeleccion();
   await cargarContratos();
 }
 // ── Fin selección masiva ──
+
+function toggleFiltrosMobile() {
+  const div = document.getElementById('barra-filtros');
+  const btn = document.getElementById('btn-filtros-mobile');
+  const abierto = div.classList.toggle('visible');
+  btn.classList.toggle('activo', abierto);
+}
 
 // ── Bottom nav mobile ──
 function mostrarTabMobile(id, btn) {
@@ -1196,7 +1243,7 @@ function filtrarContratos() {
     if (st && c.estatus !== st) return false;
     if (q && !(((c.nombre||'') + (c.correo||'') + (c.folio||'')).toLowerCase().includes(q))) return false;
     if (desde || hasta) {
-      const fecha = String(c.fechaSesion || c.fechaCreacion || '').substring(0, 10);
+      const fecha = String(c.fechaCreacion || '').substring(0, 10);
       if (desde && fecha < desde) return false;
       if (hasta && fecha > hasta) return false;
     }
@@ -1304,11 +1351,11 @@ function renderPanel(data) {
           ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
           ${p.linkMaps    ? `<div class="prop-dato"><a href="${safeHref(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
           ${p.sobreLaPropiedad ? `<div class="prop-dato"><span class="lbl">Notas </span>${esc(p.sobreLaPropiedad)}</div>` : ''}
-          <div style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
-            <button class="btn-secundario btn-sm" onclick="toggleReagendar(${numProp})">
+          <div class="prop-card-acciones" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
+            <button class="btn-secundario btn-sm" style="flex:1" onclick="toggleReagendar(${numProp})">
               <i class="ti ti-calendar-event"></i> Reagendar
             </button>
-            <button class="btn-secundario btn-sm" onclick="toggleNotaInterna(${numProp})">
+            <button class="btn-secundario btn-sm" style="flex:1" onclick="toggleNotaInterna(${numProp})">
               <i class="ti ti-note"></i> Nota interna
             </button>
           </div>
