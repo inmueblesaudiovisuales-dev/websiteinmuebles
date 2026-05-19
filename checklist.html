@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <title>Checklist de rodaje</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --onyx:   #1C1C1E;
+      --gold:   #C9A84C;
+      --gold-d: #a8863b;
+      --page:   #F5F5F5;
+      --card:   #FFFFFF;
+      --ink-1:  #1C1C1E;
+      --ink-2:  #6B6B6B;
+      --ink-3:  #A8A8A8;
+      --border: #E5E5E5;
+      --success:#2A9D5C;
+      --r:      12px;
+    }
+
+    html, body { height: 100%; background: var(--page); }
+    body {
+      font-family: 'Montserrat', system-ui, sans-serif;
+      color: var(--ink-1);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh; min-height: 100dvh;
+    }
+
+    /* ── TOP BAR ── */
+    .topbar {
+      background: var(--onyx);
+      color: #fff;
+      padding: 14px 16px env(safe-area-inset-top, 0);
+      padding-top: max(14px, env(safe-area-inset-top));
+      position: sticky; top: 0; z-index: 50;
+    }
+    .topbar-inner { display: flex; align-items: center; gap: 10px; }
+    .topbar-info { flex: 1; min-width: 0; }
+    .topbar-folio {
+      font-size: 10px; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 2px;
+    }
+    .topbar-nombre {
+      font-size: 14px; font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sync-wrap { display: flex; align-items: center; gap: 5px; flex-shrink: 0; }
+    .sync-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #4ade80; transition: background 0.3s;
+    }
+    .sync-dot.syncing { background: #fbbf24; animation: pulse 1s infinite; }
+    .sync-dot.error   { background: #f87171; }
+    .sync-label { font-size: 10px; color: rgba(255,255,255,0.5); font-weight: 600; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
+
+    /* ── NOMBRE BAR ── */
+    .nombre-bar {
+      background: var(--onyx);
+      padding: 0 16px 12px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .nombre-label { font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.45); white-space: nowrap; }
+    .nombre-input {
+      flex: 1;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 13px; font-weight: 600;
+      padding: 7px 12px;
+      outline: none;
+    }
+    .nombre-input::placeholder { color: rgba(255,255,255,0.3); }
+    .nombre-input:focus { border-color: var(--gold); }
+
+    /* ── PROGRESS ── */
+    .progress-bar {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .progress-track {
+      flex: 1; height: 6px;
+      background: var(--border);
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; border-radius: 99px;
+      background: var(--gold);
+      transition: width 0.35s ease;
+    }
+    .progress-fill.completo { background: var(--success); }
+    .progress-text { font-size: 12px; font-weight: 700; color: var(--ink-2); white-space: nowrap; }
+
+    /* ── LISTA ── */
+    .lista { padding: 12px 16px 120px; max-width: 620px; margin: 0 auto; }
+
+    /* ── CUARTO CARD ── */
+    .cuarto-card {
+      background: var(--card);
+      border-radius: var(--r);
+      margin-bottom: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .cuarto-header {
+      display: flex; align-items: center;
+      padding: 12px 14px 10px;
+      gap: 10px;
+    }
+    .cuarto-nombre {
+      flex: 1; font-size: 15px; font-weight: 700;
+      border: none; background: transparent;
+      font-family: inherit; color: var(--ink-1);
+      padding: 0; outline: none;
+      min-width: 0;
+    }
+    .cuarto-nombre::placeholder { color: var(--ink-3); }
+    .btn-borrar-cuarto {
+      background: none; border: none;
+      color: var(--ink-3); cursor: pointer;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; flex-shrink: 0;
+      font-size: 16px; transition: color 0.15s, background 0.15s;
+    }
+    .btn-borrar-cuarto:hover { color: #dc2626; background: rgba(220,38,38,0.08); }
+
+    /* ── CHECKS ROW ── */
+    .checks-row {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px; padding: 0 14px 12px;
+    }
+    .check-btn {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 3px;
+      padding: 10px 6px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--page);
+      cursor: pointer; transition: all 0.18s;
+      font-family: inherit;
+      min-height: 64px;
+    }
+    .check-btn:active { transform: scale(0.96); }
+    .check-btn.marcado {
+      border-color: var(--gold);
+      background: rgba(201,168,76,0.1);
+    }
+    .check-icon { font-size: 20px; line-height: 1; }
+    .check-label { font-size: 11px; font-weight: 700; color: var(--ink-2); letter-spacing: 0.03em; }
+    .check-btn.marcado .check-label { color: var(--gold-d); }
+    .check-quien {
+      font-size: 9px; font-weight: 700;
+      color: var(--gold-d);
+      letter-spacing: 0.02em;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis; max-width: 90px;
+      text-align: center;
+    }
+
+    /* ── COMENTARIOS ── */
+    .comentarios-wrap { border-top: 1px solid var(--border); }
+    .comentarios-toggle {
+      width: 100%; background: none; border: none;
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 14px;
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      color: var(--ink-2); cursor: pointer;
+      text-align: left;
+    }
+    .comentarios-toggle .ico { font-size: 14px; }
+    .comentarios-toggle .badge {
+      background: var(--gold); color: #fff;
+      border-radius: 99px; padding: 1px 6px;
+      font-size: 9px; font-weight: 700;
+    }
+    .comentarios-toggle .chevron { margin-left: auto; font-size: 12px; transition: transform 0.2s; }
+    .comentarios-toggle.abierto .chevron { transform: rotate(180deg); }
+
+    .comentarios-body { padding: 0 14px 12px; }
+    .comentario-item {
+      background: var(--page);
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 7px;
+    }
+    .comentario-texto { font-size: 13px; line-height: 1.5; word-break: break-word; }
+    .comentario-meta {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-top: 4px;
+    }
+    .comentario-autor { font-size: 10px; font-weight: 700; color: var(--gold-d); }
+    .comentario-hora  { font-size: 10px; color: var(--ink-3); }
+    .btn-borrar-comentario {
+      background: none; border: none; cursor: pointer;
+      color: var(--ink-3); font-size: 11px; padding: 0;
+    }
+    .btn-borrar-comentario:hover { color: #dc2626; }
+    .comentarios-vacio { font-size: 12px; color: var(--ink-3); padding: 4px 0 8px; }
+
+    .comentario-form { display: flex; gap: 7px; margin-top: 4px; }
+    .comentario-input {
+      flex: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-family: inherit; font-size: 13px;
+      outline: none; resize: none;
+      background: var(--card);
+    }
+    .comentario-input:focus { border-color: var(--gold); }
+    .btn-enviar-comentario {
+      background: var(--onyx); color: #fff;
+      border: none; border-radius: 8px;
+      padding: 0 14px; cursor: pointer;
+      font-family: inherit; font-size: 12px; font-weight: 700;
+      flex-shrink: 0;
+    }
+    .btn-enviar-comentario:active { background: #333; }
+
+    /* ── AGREGAR CUARTO ── */
+    .agregar-wrap {
+      display: flex; gap: 8px; margin-top: 4px;
+    }
+    .agregar-input {
+      flex: 1;
+      border: 1.5px dashed var(--border);
+      border-radius: var(--r);
+      background: var(--card);
+      padding: 13px 14px;
+      font-family: inherit; font-size: 14px;
+      color: var(--ink-1); outline: none;
+    }
+    .agregar-input::placeholder { color: var(--ink-3); }
+    .agregar-input:focus { border-color: var(--gold); border-style: solid; }
+    .btn-agregar {
+      background: var(--onyx); color: #fff;
+      border: none; border-radius: var(--r);
+      padding: 0 18px; cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 700;
+      white-space: nowrap;
+    }
+    .btn-agregar:active { background: #333; }
+
+    /* ── ERROR / LOADING ── */
+    .estado-pantalla {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 60vh; padding: 32px;
+      text-align: center; gap: 14px;
+    }
+    .estado-pantalla .ico { font-size: 36px; }
+    .estado-pantalla h2 { font-size: 18px; font-weight: 700; }
+    .estado-pantalla p  { font-size: 14px; color: var(--ink-2); max-width: 300px; line-height: 1.6; }
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── TOAST ── */
+    .toast {
+      position: fixed; bottom: 24px; left: 50%;
+      transform: translateX(-50%);
+      background: var(--onyx); color: #fff;
+      padding: 11px 18px; border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      opacity: 0; transition: opacity 0.2s;
+      pointer-events: none; z-index: 200;
+      white-space: nowrap;
+    }
+    .toast.visible { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div id="topbar" class="topbar" style="display:none">
+  <div class="topbar-inner">
+    <div class="topbar-info">
+      <div class="topbar-folio" id="top-folio">—</div>
+      <div class="topbar-nombre" id="top-nombre">—</div>
+    </div>
+    <div class="sync-wrap">
+      <div class="sync-dot" id="sync-dot"></div>
+      <span class="sync-label" id="sync-label"></span>
+    </div>
+  </div>
+</div>
+
+<div id="nombre-bar" class="nombre-bar" style="display:none">
+  <span class="nombre-label">Tu nombre:</span>
+  <input class="nombre-input" id="mi-nombre" type="text" placeholder="Ej. Bruno" maxlength="30" autocomplete="off">
+</div>
+
+<div id="progress-wrap" class="progress-bar" style="display:none">
+  <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+  <span class="progress-text" id="progress-text">0 / 0</span>
+</div>
+
+<div id="main">
+  <div class="estado-pantalla"><div class="spinner"></div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbw-tG61mtTLT04uNRF448hfUv5UX56JdQVdpmqQZ_OJkeRndA6INREg4ekebpjj6_YH/exec';
+
+const params = new URLSearchParams(location.search);
+const TOKEN  = params.get('token') || '';
+
+let cuartos     = [];
+let pollingId   = null;
+let guardandoId = null;
+let pendiente   = false;
+
+// ── NOMBRE PERSISTIDO ──
+function miNombre() {
+  return document.getElementById('mi-nombre').value.trim() || 'Anónimo';
+}
+
+function iniciarNombreInput() {
+  const inp = document.getElementById('mi-nombre');
+  const guardado = localStorage.getItem('checklist_nombre') || '';
+  if (guardado) inp.value = guardado;
+  inp.addEventListener('input', () => {
+    localStorage.setItem('checklist_nombre', inp.value.trim());
+  });
+}
+
+// ── SYNC VISUAL ──
+function setSync(estado) {
+  const dot   = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  dot.className = 'sync-dot' + (estado === 'syncing' ? ' syncing' : estado === 'error' ? ' error' : '');
+  label.textContent = estado === 'syncing' ? 'Guardando...' : estado === 'error' ? 'Error' : '';
+}
+
+// ── TOAST ──
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('visible'), 2500);
+}
+
+// ── API ──
+async function apiGet(params) {
+  const qs = new URLSearchParams({ ...params, token: TOKEN }).toString();
+  const r  = await fetch(API + '?' + qs);
+  return r.json();
+}
+
+async function apiPost(body) {
+  const r = await fetch(API, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ ...body, token: TOKEN }),
+  });
+  return r.json();
+}
+
+// ── CARGAR ──
+async function cargar(silencioso) {
+  if (!silencioso) mostrarCargando();
+  try {
+    const data = await apiGet({ action: 'obtenerChecklist' });
+    if (data.error) { mostrarError(data.error); return; }
+    cuartos = data.cuartos || [];
+    if (!silencioso) {
+      document.getElementById('top-folio').textContent  = data.folio        || '—';
+      document.getElementById('top-nombre').textContent = data.nombreCliente || '—';
+      document.getElementById('topbar').style.display       = '';
+      document.getElementById('nombre-bar').style.display   = '';
+      document.getElementById('progress-wrap').style.display = '';
+    }
+    renderLista();
+  } catch (err) {
+    if (!silencioso) mostrarError('No se pudo cargar el checklist.');
+  }
+}
+
+// ── GUARDAR ──
+function guardarDebounce() {
+  pendiente = true;
+  clearTimeout(guardandoId);
+  guardandoId = setTimeout(guardarAhora, 600);
+}
+
+async function guardarAhora() {
+  if (!pendiente) return;
+  pendiente = false;
+  setSync('syncing');
+  try {
+    const data = await apiPost({ action: 'guardarChecklist', cuartos });
+    if (data.error) { setSync('error'); toast('Error al guardar: ' + data.error); return; }
+    setSync('ok');
+  } catch (err) {
+    setSync('error');
+    toast('Sin conexión. Reintentando...');
+    pendiente = true;
+  }
+}
+
+// ── POLLING ──
+async function poll() {
+  if (pendiente) return; // no pisar cambios locales sin guardar
+  try {
+    const data = await apiGet({ action: 'obtenerChecklist' });
+    if (data.error || !data.cuartos) return;
+    cuartos = data.cuartos;
+    renderLista();
+  } catch (_) {}
+}
+
+function iniciarPolling() {
+  if (pollingId) clearInterval(pollingId);
+  pollingId = setInterval(poll, 4000);
+}
+
+// ── PROGRESO ──
+function actualizarProgreso() {
+  const total    = cuartos.length;
+  const completos = cuartos.filter(c => c.foto && c.video && c.t360).length;
+  const pct = total > 0 ? Math.round(completos / total * 100) : 0;
+  const fill = document.getElementById('progress-fill');
+  fill.style.width = pct + '%';
+  fill.className = 'progress-fill' + (pct === 100 ? ' completo' : '');
+  document.getElementById('progress-text').textContent = completos + ' / ' + total + ' completos';
+}
+
+// ── RENDER ──
+function renderLista() {
+  actualizarProgreso();
+  const main = document.getElementById('main');
+  main.innerHTML = '';
+
+  const lista = document.createElement('div');
+  lista.className = 'lista';
+
+  cuartos.forEach((c, idx) => {
+    lista.appendChild(renderCuarto(c, idx));
+  });
+
+  // Agregar cuarto
+  const agrWrap = document.createElement('div');
+  agrWrap.className = 'agregar-wrap';
+  agrWrap.innerHTML = `
+    <input class="agregar-input" id="nuevo-cuarto" type="text" placeholder="Nombre del cuarto o espacio..." maxlength="60">
+    <button class="btn-agregar" onclick="agregarCuarto()">Agregar</button>
+  `;
+  const inp = agrWrap.querySelector('#nuevo-cuarto');
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') agregarCuarto(); });
+  lista.appendChild(agrWrap);
+
+  main.appendChild(lista);
+}
+
+function renderCuarto(c, idx) {
+  const card = document.createElement('div');
+  card.className = 'cuarto-card';
+  card.id = 'cuarto-' + idx;
+
+  // Header
+  const header = document.createElement('div');
+  header.className = 'cuarto-header';
+
+  const inp = document.createElement('input');
+  inp.className = 'cuarto-nombre';
+  inp.type = 'text';
+  inp.value = c.nombre;
+  inp.placeholder = 'Nombre del espacio';
+  inp.setAttribute('data-idx', idx);
+  inp.addEventListener('change', e => {
+    cuartos[idx].nombre = e.target.value.trim() || 'Sin nombre';
+    guardarDebounce();
+  });
+
+  const btnBorrar = document.createElement('button');
+  btnBorrar.className = 'btn-borrar-cuarto';
+  btnBorrar.title = 'Eliminar espacio';
+  btnBorrar.innerHTML = '&#10005;';
+  btnBorrar.addEventListener('click', () => borrarCuarto(idx));
+
+  header.appendChild(inp);
+  header.appendChild(btnBorrar);
+  card.appendChild(header);
+
+  // Checks
+  const checksRow = document.createElement('div');
+  checksRow.className = 'checks-row';
+
+  [
+    { campo: 'foto',  label: 'Foto',  ico: '&#128247;' },
+    { campo: 'video', label: 'Video', ico: '&#127916;' },
+    { campo: 't360',  label: '360°',  ico: '&#128260;' },
+  ].forEach(({ campo, label, ico }) => {
+    const btn = document.createElement('button');
+    const val = c[campo];
+    btn.className = 'check-btn' + (val ? ' marcado' : '');
+    btn.innerHTML = `
+      <span class="check-icon">${ico}</span>
+      <span class="check-label">${label}</span>
+      ${val ? `<span class="check-quien">${esc(val)}</span>` : ''}
+    `;
+    btn.addEventListener('click', () => toggleCheck(idx, campo));
+    checksRow.appendChild(btn);
+  });
+
+  card.appendChild(checksRow);
+
+  // Comentarios
+  const comentariosWrap = document.createElement('div');
+  comentariosWrap.className = 'comentarios-wrap';
+
+  const numComentarios = (c.comentarios || []).length;
+  const togBtn = document.createElement('button');
+  togBtn.className = 'comentarios-toggle';
+  togBtn.innerHTML = `
+    <span class="ico">&#128172;</span>
+    <span>${numComentarios > 0 ? 'Comentarios' : 'Agregar comentario'}</span>
+    ${numComentarios > 0 ? `<span class="badge">${numComentarios}</span>` : ''}
+    <span class="chevron">&#8964;</span>
+  `;
+  togBtn.addEventListener('click', () => toggleComentarios(togBtn, bodyDiv));
+
+  const bodyDiv = document.createElement('div');
+  bodyDiv.className = 'comentarios-body';
+  bodyDiv.style.display = 'none';
+
+  const comentariosHtml = (c.comentarios || []).map((cm, ci) => `
+    <div class="comentario-item">
+      <div class="comentario-texto">${esc(cm.texto)}</div>
+      <div class="comentario-meta">
+        <span>
+          <span class="comentario-autor">${esc(cm.autor)}</span>
+          <span class="comentario-hora"> · ${esc(cm.hora || '')}</span>
+        </span>
+        <button class="btn-borrar-comentario" data-cuarto="${idx}" data-comentario="${ci}" onclick="borrarComentario(${idx},${ci})">Borrar</button>
+      </div>
+    </div>
+  `).join('');
+
+  bodyDiv.innerHTML = comentariosHtml
+    + (numComentarios === 0 ? '<p class="comentarios-vacio">Sin comentarios aún.</p>' : '')
+    + `<div class="comentario-form">
+         <textarea class="comentario-input" rows="1" placeholder="Escribe un comentario..." maxlength="300"></textarea>
+         <button class="btn-enviar-comentario">Enviar</button>
+       </div>`;
+
+  const textarea = bodyDiv.querySelector('.comentario-input');
+  const btnEnviar = bodyDiv.querySelector('.btn-enviar-comentario');
+  btnEnviar.addEventListener('click', () => enviarComentario(idx, textarea));
+  textarea.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); enviarComentario(idx, textarea); }
+  });
+
+  comentariosWrap.appendChild(togBtn);
+  comentariosWrap.appendChild(bodyDiv);
+  card.appendChild(comentariosWrap);
+
+  return card;
+}
+
+function toggleComentarios(btn, body) {
+  const abierto = body.style.display !== 'none';
+  body.style.display = abierto ? 'none' : 'block';
+  btn.classList.toggle('abierto', !abierto);
+}
+
+// ── ACCIONES ──
+function toggleCheck(idx, campo) {
+  const actual = cuartos[idx][campo];
+  cuartos[idx][campo] = actual ? null : miNombre();
+  guardarDebounce();
+  renderLista();
+}
+
+function borrarCuarto(idx) {
+  if (!confirm('¿Eliminar "' + cuartos[idx].nombre + '"?')) return;
+  cuartos.splice(idx, 1);
+  guardarDebounce();
+  renderLista();
+}
+
+function agregarCuarto() {
+  const inp = document.getElementById('nuevo-cuarto');
+  const nombre = (inp.value || '').trim();
+  if (!nombre) { inp.focus(); return; }
+  cuartos.push({
+    id: 'cuarto-' + Date.now(),
+    nombre,
+    foto: null, video: null, t360: null,
+    comentarios: [],
+  });
+  inp.value = '';
+  guardarDebounce();
+  renderLista();
+  // Scroll al último cuarto
+  setTimeout(() => {
+    const cards = document.querySelectorAll('.cuarto-card');
+    if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 50);
+}
+
+function enviarComentario(idx, textarea) {
+  const texto = (textarea.value || '').trim();
+  if (!texto) { textarea.focus(); return; }
+  if (!cuartos[idx].comentarios) cuartos[idx].comentarios = [];
+  const ahora = new Date();
+  const hora  = ahora.getHours().toString().padStart(2,'0') + ':' + ahora.getMinutes().toString().padStart(2,'0');
+  cuartos[idx].comentarios.push({ texto, autor: miNombre(), hora });
+  textarea.value = '';
+  guardarDebounce();
+  renderLista();
+  // Abrir el hilo del cuarto que acaba de recibir un comentario
+  setTimeout(() => {
+    const card = document.getElementById('cuarto-' + idx);
+    if (!card) return;
+    const toggle = card.querySelector('.comentarios-toggle');
+    const body   = card.querySelector('.comentarios-body');
+    if (toggle && body && body.style.display === 'none') {
+      toggleComentarios(toggle, body);
+    }
+    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, 50);
+}
+
+function borrarComentario(idxCuarto, idxComentario) {
+  if (!confirm('¿Borrar este comentario?')) return;
+  cuartos[idxCuarto].comentarios.splice(idxComentario, 1);
+  guardarDebounce();
+  renderLista();
+}
+
+// ── UTILIDADES ──
+function esc(s) {
+  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function mostrarCargando() {
+  document.getElementById('main').innerHTML =
+    '<div class="estado-pantalla"><div class="spinner"></div></div>';
+}
+
+function mostrarError(msg) {
+  document.getElementById('main').innerHTML = `
+    <div class="estado-pantalla">
+      <div class="ico">&#9888;</div>
+      <h2>Algo salió mal</h2>
+      <p>${esc(msg)}</p>
+    </div>`;
+}
+
+// ── INIT ──
+if (!TOKEN) {
+  document.getElementById('main').innerHTML = `
+    <div class="estado-pantalla">
+      <div class="ico">&#128274;</div>
+      <h2>Enlace inválido</h2>
+      <p>Este enlace no tiene un token de contrato. Usa el botón "Checklist de rodaje" desde el panel de administración.</p>
+    </div>`;
+} else {
+  iniciarNombreInput();
+  cargar(false).then(() => iniciarPolling());
+}
+</script>
+</body>
+</html>
