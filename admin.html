@@ -1175,7 +1175,8 @@ function renderPanel(data) {
       <input type="url" id="entrega-drive" value="${esc(c.EntregaDriveLink || '')}" placeholder="https://drive.google.com/drive/folders/...">
     </div>
     <div class="campo"><label>Links adicionales (uno por línea)</label>
-      <textarea id="entrega-links-extra" rows="3" placeholder="Link extra 1&#10;Link extra 2">${esc(c.EntregaLinksExtra || '')}</textarea>
+      <textarea id="entrega-links-extra" rows="3" placeholder="Recorrido virtual|https://matterport.com/...&#10;Video YouTube|https://youtu.be/...">${esc(c.EntregaLinksExtra || '')}</textarea>
+      <p class="form-hint">Formato opcional: Etiqueta|URL. Sin etiqueta muestra "Link adicional".</p>
     </div>
     <button class="btn-primario gold" style="width:100%" id="btn-entrega" onclick="guardarEntrega()">
       <i class="ti ti-send"></i> Enviar al cliente
