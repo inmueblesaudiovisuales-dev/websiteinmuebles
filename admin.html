@@ -586,7 +586,7 @@
             </div>
             <div class="campo">
               <label>Anticipo (50% por defecto)</label>
-              <input type="number" id="est-anticipo" placeholder="0">
+              <input type="number" id="est-anticipo" placeholder="0" oninput="anticipoManual=true">
             </div>
           </div>
           <div class="form-msg" id="msg-estandar"></div>
@@ -759,6 +759,7 @@ let paquetes       = [];
 let todosContratos = [];
 let tokenActivo    = null;
 let precioManual   = false;
+let anticipoManual = false;
 var tiposPropPar   = {};  // { 1: 'Residencial', 2: 'Terreno', ... }
 var filtroCiclo    = 'abiertos';
 const ESTATUS_ABIERTOS = ['Pendiente firma', 'Firmado', 'Anticipo recibido', 'En produccion'];
@@ -875,7 +876,8 @@ function renderAdicionalesPar() {
 }
 
 function actualizarPaquetes() {
-  precioManual = false;
+  precioManual   = false;
+  anticipoManual = false;
   const tipo  = document.querySelector('input[name="tipo-paquete"]:checked')?.value || 'Residencial';
   const bases = paquetes.filter(p => !p.EsAdicional && (p.Tipo === tipo || p.Tipo === 'Ambos'));
   const adds  = paquetes.filter(p =>  p.EsAdicional && (p.Tipo === tipo || p.Tipo === 'Ambos'));
@@ -913,6 +915,7 @@ function actualizarPrecio() {
 }
 
 function actualizarAnticipo(p) {
+  if (p === 'est' && anticipoManual) return;
   const total = parseFloat(document.getElementById(p + '-precio-total').value) || 0;
   document.getElementById(p + '-anticipo').value = Math.round(total * 0.5);
 }
@@ -1436,7 +1439,8 @@ function limpiarFormCrear(tipo) {
     document.getElementById('est-fecha').value = '';
     document.getElementById('est-hora').value  = '10:00';
     document.getElementById('tipo-residencial').checked = true;
-    precioManual = false;
+    precioManual   = false;
+    anticipoManual = false;
     actualizarPaquetes();
   } else {
     ['par-nombre','par-correo','par-telefono','par-precio-total','par-anticipo','par-notas'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
