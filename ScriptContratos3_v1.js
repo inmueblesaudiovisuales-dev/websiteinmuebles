@@ -552,7 +552,7 @@ function accionCrearContrato3(body) {
   const precioBase  = parseFloat(body.precioBase)  || 0;
   const precioTotal = parseFloat(body.precioTotal) || precioBase;
   if (precioTotal <= 0) return jsonResponse3({ error: 'El precio total debe ser mayor a cero' });
-  const anticipo    = parseFloat(body.anticipo)    || Math.round(precioTotal * 0.5);
+  const anticipo    = body.anticipo !== undefined && body.anticipo !== '' ? parseFloat(body.anticipo) || 0 : Math.round(precioTotal * 0.5);
 
   const contratoToken = generarToken3();
   const fechaCreacion = new Date().toISOString();
@@ -1136,7 +1136,7 @@ function accionManejarFirmaCliente3(body) {
     // Preservar el anticipo personalizado de Bruno cuando no hay add-ons nuevos.
     anticipo = precioAdd > 0
       ? Math.round(precioTotal * 0.5)
-      : (parseFloat(contrato.Anticipo) || Math.round(precioTotal * 0.5));
+      : parseFloat(contrato.Anticipo) || 0;
 
     const cambios = {};
     if (body.nombreCliente)   cambios.NombreCliente   = body.nombreCliente.trim();
