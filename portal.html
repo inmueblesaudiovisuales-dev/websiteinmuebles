@@ -403,19 +403,28 @@ function formatMXN(val) {
 
 function formatFecha(str) {
   if (!str) return '';
-  var hasTime = typeof str === 'string' && str.indexOf('T') !== -1;
-  var s = hasTime ? str : str + 'T12:00:00';
-  var d = new Date(s);
-  if (isNaN(d)) return str;
+  var dateOnly = String(str).substring(0, 10);
+  var d = new Date(dateOnly + 'T12:00:00');
+  if (isNaN(d)) return String(str);
+  var dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+  var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  return dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
+}
+
+function formatFechaHora(fechaStr, horaStr) {
+  if (!fechaStr) return '';
+  var dateOnly = String(fechaStr).substring(0, 10);
+  var d = new Date(dateOnly + 'T12:00:00');
+  if (isNaN(d)) return String(fechaStr);
   var dias  = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
   var meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   var base = dias[d.getDay()] + ' ' + d.getDate() + ' de ' + meses[d.getMonth()];
-  // Solo mostrar hora si la fecha original tenía componente de tiempo.
-  if (!hasTime) return base;
-  var h = d.getHours(), m = String(d.getMinutes()).padStart(2, '0');
-  var ampm = h >= 12 ? 'p.m.' : 'a.m.';
-  h = h % 12 || 12;
-  return base + ' · ' + h + ':' + m + ' ' + ampm;
+  if (!horaStr) return base;
+  var partes = horaStr.split(':');
+  var hh = parseInt(partes[0], 10), mm = String(partes[1] || '00').padStart(2, '0');
+  var ampm = hh >= 12 ? 'p.m.' : 'a.m.';
+  hh = hh % 12 || 12;
+  return base + ' · ' + hh + ':' + mm + ' ' + ampm;
 }
 
 function esc(s) {
@@ -510,7 +519,7 @@ function renderEtapa1() {
     var p0 = props[0];
     html += '<div class="resumen-fila"><span class="resumen-label">Paquete</span><span class="resumen-valor">' + esc(p0.paquete || '') + '</span></div>';
     if (p0.fechaSesion) {
-      html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(p0.fechaSesion)) + '</span></div>';
+      html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFechaHora(p0.fechaSesion, p0.horaSesion)) + '</span></div>';
     }
     if (p0.entregables) {
       var entItems = p0.entregables.split('\n').map(function(s) { return s.trim(); }).filter(Boolean);
@@ -546,7 +555,7 @@ function renderEtapa1() {
   if (esParticular && props.length > 0) {
     props.forEach(function(p, i) {
       html += '<div class="prop-resumen"><div class="prop-resumen-header"><div class="prop-badge">' + (i + 1) + '</div><span class="prop-resumen-nombre">' + esc(p.paquete || 'Propiedad ' + (i + 1)) + '</span></div>';
-      if (p.fechaSesion) html += '<p class="prop-resumen-fecha">' + esc(formatFecha(p.fechaSesion)) + '</p>';
+      if (p.fechaSesion) html += '<p class="prop-resumen-fecha">' + esc(formatFechaHora(p.fechaSesion, p.horaSesion)) + '</p>';
       if (p.entregables) {
         var items = p.entregables.split('·').map(function(e) { return e.trim(); }).filter(Boolean);
         if (items.length) html += '<ul class="prop-entregables">' + items.map(function(e) { return '<li>' + esc(e) + '</li>'; }).join('') + '</ul>';
@@ -593,7 +602,7 @@ function renderEtapa1() {
       html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
       if (!esParticular) {
         html += '<div class="prop-badge">' + n + '</div><div><p style="font-size:13px;font-weight:700">' + esc(p.paquete || 'Propiedad ' + n) + '</p>';
-        if (p.fechaSesion) html += '<p style="font-size:11px;color:var(--concrete);margin-top:2px">' + esc(formatFecha(p.fechaSesion)) + '</p>';
+        if (p.fechaSesion) html += '<p style="font-size:11px;color:var(--concrete);margin-top:2px">' + esc(formatFechaHora(p.fechaSesion, p.horaSesion)) + '</p>';
         html += '</div>';
       } else {
         html += '<div class="prop-badge">' + n + '</div><div><p style="font-size:13px;font-weight:700">Propiedad ' + n + '</p></div>';
@@ -909,7 +918,7 @@ function _renderComprobante(d) {
     var label = props.length > 1
       ? 'Propiedad ' + (i + 1) + (p.paquete ? ': ' + p.paquete : '')
       : (p.paquete || 'Producción audiovisual');
-    var fecha = p.fechaSesion ? formatFecha(p.fechaSesion) : '—';
+    var fecha = p.fechaSesion ? formatFechaHora(p.fechaSesion, p.horaSesion) : '—';
     var monto = props.length === 1
       ? '<strong>' + formatMXN(total) + '</strong>'
       : '<span style="color:var(--concrete)">—</span>';
@@ -921,7 +930,7 @@ function _renderComprobante(d) {
           var nombre = item.split(' — ')[0];
           return '<li style="font-size:11px;color:var(--charcoal);line-height:1.5;margin-bottom:2px">' + esc(nombre) + '</li>';
         }).join('') + '</ul>';
-        row += '<tr><td colspan="3" style="padding-top:0;border-bottom:1px solid var(--border)">' + lista + '</td></tr>';
+        row += '<tr><td colspan="3" style="padding-top:0;border-bottom:1px solid var(--border);text-align:left">' + lista + '</td></tr>';
       }
     }
     return row;
@@ -1041,7 +1050,7 @@ function renderRevision() {
       var fp    = formData.propsPayload[i] || {};
       var label = props.length > 1 ? 'Propiedad ' + (i + 1) : 'Paquete';
       if (p.paquete) html += '<div class="resumen-fila"><span class="resumen-label">' + label + '</span><span class="resumen-valor">' + esc(p.paquete) + '</span></div>';
-      if (p.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(p.fechaSesion)) + '</span></div>';
+      if (p.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFechaHora(p.fechaSesion, p.horaSesion)) + '</span></div>';
       if (p.entregables) {
         var items = p.entregables.split('·').map(function(e) { return e.trim(); }).filter(Boolean);
         if (items.length) html += '<div class="resumen-fila"><span class="resumen-label">Entregables</span><span class="resumen-valor" style="text-align:right">' + items.map(function(e) { return esc(e.trim()); }).join('<br>') + '</span></div>';
@@ -1054,7 +1063,7 @@ function renderRevision() {
       var prop  = props[i] || {};
       var label = props.length > 1 ? 'Propiedad ' + (i + 1) : 'Paquete';
       if (prop.paquete) html += '<div class="resumen-fila"><span class="resumen-label">' + label + '</span><span class="resumen-valor">' + esc(prop.paquete) + '</span></div>';
-      if (prop.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(prop.fechaSesion)) + '</span></div>';
+      if (prop.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFechaHora(prop.fechaSesion, prop.horaSesion)) + '</span></div>';
       if (p.direccion) html += '<div class="resumen-fila"><span class="resumen-label">Dirección</span><span class="resumen-valor">' + esc(p.direccion) + '</span></div>';
       if (p.orientacion) html += '<div class="resumen-fila"><span class="resumen-label">Orientación del video</span><span class="resumen-valor">' + esc(p.orientacion.split(' — ')[0] || p.orientacion) + '</span></div>';
     });
