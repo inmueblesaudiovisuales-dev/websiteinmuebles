@@ -1123,10 +1123,16 @@ function renderPanel(data) {
     </div>
     <div style="margin-top:12px">
       <div class="link-portal-label" style="margin-bottom:6px">Herramientas de producción</div>
-      <a class="btn-secundario btn-sm" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none"
-         href="${'https://inmueblesaudiovisuales.com/checklist.html?token=' + esc(c.Token)}" target="_blank" rel="noopener">
-        <i class="ti ti-checkbox"></i> Checklist de rodaje
-      </a>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <a class="btn-secundario btn-sm" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none"
+           href="${'https://inmueblesaudiovisuales.com/checklist.html?token=' + esc(c.Token)}" target="_blank" rel="noopener">
+          <i class="ti ti-checkbox"></i> Checklist de rodaje
+        </a>
+        <a class="btn-wa btn-sm" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none"
+           href="${'https://wa.me/?' + new URLSearchParams({ text: 'Checklist de rodaje: https://inmueblesaudiovisuales.com/checklist.html?token=' + c.Token }).toString()}" target="_blank" rel="noopener">
+          <i class="ti ti-brand-whatsapp"></i> Compartir
+        </a>
+      </div>
     </div>
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:10px">Zona de riesgo</p>
