@@ -361,29 +361,79 @@
     .met-bottom-grid { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 14px; }
 
     /* ── RESPONSIVE ─────────────────────────────────── */
+    /* ── Bottom nav (mobile) ── */
+    .bottom-nav {
+      display: none;
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 200;
+      background: var(--card); border-top: 1px solid var(--border);
+      padding: 6px 0 env(safe-area-inset-bottom, 6px);
+    }
+    .bnav-inner { display: flex; }
+    .bnav-btn {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      gap: 2px; background: none; border: none; padding: 6px 2px;
+      font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+      text-transform: uppercase; color: var(--ink-3); cursor: pointer;
+      transition: color 120ms;
+    }
+    .bnav-btn i { font-size: 20px; }
+    .bnav-btn.activo { color: var(--gold); }
+
+    /* ── Modo selección masiva ── */
+    .btn-seleccion { background: none; border: 1.5px solid var(--border2); border-radius: var(--r); padding: 7px 12px; font-size: 12px; font-weight: 600; color: var(--ink-2); cursor: pointer; white-space: nowrap; }
+    .btn-seleccion.activo { border-color: var(--gold); color: var(--gold); }
+    .bulk-bar {
+      display: none; position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+      background: var(--onyx); color: #fff; border-radius: 50px;
+      padding: 10px 20px; gap: 14px; align-items: center;
+      font-size: 13px; font-weight: 600; z-index: 300; box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      white-space: nowrap;
+    }
+    .bulk-bar.visible { display: flex; }
+    .bulk-bar-count { color: var(--gold); }
+    .bulk-bar-btn { background: #e74c3c; color: #fff; border: none; border-radius: 20px; padding: 5px 14px; font-size: 12px; font-weight: 700; cursor: pointer; }
+    /* Checkbox en filas de tabla */
+    .td-check { width: 36px; padding: 0 0 0 12px !important; }
+    .row-check { width: 16px; height: 16px; cursor: pointer; accent-color: var(--gold); }
+
     @media (max-width: 640px) {
       /* Layout general */
-      .contenido { padding: 12px 12px 80px; }
+      .contenido { padding: 12px 12px 100px; }
       .fila-2 { grid-template-columns: 1fr; }
       .form-card { padding: 20px 14px; }
 
-      /* Topbar: quitar título para ahorrar espacio */
+      /* Topbar */
       .topbar-sep, .topbar-titulo { display: none; }
 
-      /* Tabs: scroll horizontal sin barra visible */
-      .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 1px; }
-      .tabs::-webkit-scrollbar { display: none; }
-      .tab-btn { white-space: nowrap; flex-shrink: 0; }
+      /* Tabs: ocultar en mobile — se usan los del bottom nav */
+      .tabs { display: none; }
+
+      /* Bottom nav visible en mobile */
+      .bottom-nav { display: block; }
+      .bulk-bar { bottom: 76px; }
 
       /* Barra de filtros */
       .barra .campo-busqueda { min-width: 100%; order: -1; }
       #filtro-estatus { flex: 1; min-width: 0; }
 
-      /* Tabla */
-      .tabla-card { overflow-x: auto; }
-      .tabla-card td:nth-child(4), .tabla-card th:nth-child(4),
-      .tabla-card td:nth-child(6), .tabla-card th:nth-child(6) { display: none; }
-      .td-sub { display: none; }
+      /* Tabla → cards en mobile */
+      .tabla-card table, .tabla-card thead { display: block; }
+      .tabla-card thead { display: none; }
+      .tabla-card tbody { display: flex; flex-direction: column; gap: 0; }
+      .tabla-card tr {
+        display: flex; flex-wrap: wrap; align-items: center;
+        padding: 12px 14px; gap: 6px;
+        border-bottom: 1px solid var(--border);
+      }
+      .tabla-card tr:last-child { border-bottom: none; }
+      .tabla-card td { display: block; padding: 0 !important; border: none !important; }
+      .td-folio { font-size: 10px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; color: var(--ink-3); width: 100%; }
+      .td-nombre { font-size: 14px; font-weight: 700; flex: 1; }
+      .td-sub { display: block !important; font-size: 11px; color: var(--ink-3); width: 100%; margin-top: 1px; }
+      .td-monto { display: none !important; }
+      .td-saldo { font-size: 12px; font-weight: 700; margin-left: auto; }
+      .td-fecha { font-size: 11px; color: var(--ink-3); width: 100%; margin-top: 4px; }
+      .td-check { padding-left: 0 !important; }
 
       /* Stats bar: 2 columnas */
       #stats-bar { grid-template-columns: repeat(2,1fr) !important; }
@@ -463,6 +513,24 @@
     <button class="btn-logout" onclick="cerrarSesion()">Salir</button>
   </div>
 
+  <!-- Bottom nav — solo visible en mobile -->
+  <nav class="bottom-nav">
+    <div class="bnav-inner">
+      <button class="bnav-btn activo" data-tab="contratos" onclick="mostrarTabMobile('contratos',this)"><i class="ti ti-file-text"></i>Contratos</button>
+      <button class="bnav-btn" data-tab="nuevo"      onclick="mostrarTabMobile('nuevo',this)"><i class="ti ti-plus"></i>Nuevo</button>
+      <button class="bnav-btn" data-tab="crm"        onclick="mostrarTabMobile('crm',this)"><i class="ti ti-users"></i>Clientes</button>
+      <button class="bnav-btn" data-tab="metricas"   onclick="mostrarTabMobile('metricas',this)"><i class="ti ti-chart-bar"></i>Métricas</button>
+      <button class="bnav-btn" data-tab="paquetes"   onclick="mostrarTabMobile('paquetes',this)"><i class="ti ti-package"></i>Paquetes</button>
+    </div>
+  </nav>
+
+  <!-- Barra flotante de selección masiva — TEMPORAL para pruebas -->
+  <div class="bulk-bar" id="bulk-bar">
+    <span><span class="bulk-bar-count" id="bulk-count">0</span> seleccionados</span>
+    <button class="bulk-bar-btn" onclick="eliminarSeleccionados()"><i class="ti ti-trash"></i> Eliminar</button>
+    <button style="background:none;border:none;color:#aaa;cursor:pointer;font-size:18px" onclick="salirModoSeleccion()"><i class="ti ti-x"></i></button>
+  </div>
+
   <div class="contenido">
     <div class="tabs">
       <button class="tab-btn activo" data-tab="contratos"  onclick="mostrarTab('contratos', this)">Contratos</button>
@@ -498,11 +566,16 @@
         <button class="btn-secundario btn-sm" onclick="cargarContratos()" title="Actualizar">
           <i class="ti ti-refresh"></i>
         </button>
+        <!-- TEMPORAL: selección masiva para pruebas -->
+        <button class="btn-seleccion" id="btn-seleccion" onclick="toggleModoSeleccion()" title="Selección masiva">
+          <i class="ti ti-checkbox"></i>
+        </button>
       </div>
       <div class="tabla-card">
         <table>
           <thead>
             <tr>
+              <th id="th-check" style="display:none;width:36px"></th>
               <th>Folio</th>
               <th>Cliente</th>
               <th>Estatus</th>
@@ -760,9 +833,68 @@ let todosContratos = [];
 let tokenActivo    = null;
 let precioManual   = false;
 let anticipoManual = false;
-var tiposPropPar   = {};  // { 1: 'Residencial', 2: 'Terreno', ... }
+var tiposPropPar   = {};
 var filtroCiclo    = 'abiertos';
 const ESTATUS_ABIERTOS = ['Pendiente firma', 'Firmado', 'Anticipo recibido', 'En produccion'];
+
+// ── Selección masiva (TEMPORAL — quitar cuando ya no se necesite) ──
+let modoSeleccion = false;
+let seleccionados = new Set();
+
+function toggleModoSeleccion() {
+  modoSeleccion = !modoSeleccion;
+  seleccionados.clear();
+  document.getElementById('btn-seleccion').classList.toggle('activo', modoSeleccion);
+  document.getElementById('th-check').style.display = modoSeleccion ? '' : 'none';
+  actualizarBulkBar();
+  filtrarContratos();
+}
+
+function salirModoSeleccion() {
+  modoSeleccion = false;
+  seleccionados.clear();
+  document.getElementById('btn-seleccion').classList.remove('activo');
+  document.getElementById('th-check').style.display = 'none';
+  actualizarBulkBar();
+  filtrarContratos();
+}
+
+function toggleSeleccion(token, cb) {
+  cb.checked ? seleccionados.add(token) : seleccionados.delete(token);
+  actualizarBulkBar();
+}
+
+function actualizarBulkBar() {
+  const bar = document.getElementById('bulk-bar');
+  const n   = seleccionados.size;
+  document.getElementById('bulk-count').textContent = n;
+  bar.classList.toggle('visible', modoSeleccion && n > 0);
+}
+
+async function eliminarSeleccionados() {
+  const tokens = [...seleccionados];
+  if (!tokens.length) return;
+  const nombres = tokens.map(t => {
+    const c = todosContratos.find(x => x.token === t);
+    return c ? c.nombre : t;
+  }).join('\n• ');
+  const ok = confirm(`Eliminar permanentemente ${tokens.length} contrato(s):\n\n• ${nombres}\n\nEsta acción no se puede deshacer.`);
+  if (!ok) return;
+  for (const t of tokens) {
+    try { await apiPost({ action: 'eliminarContrato', token: t }); } catch(e) {}
+  }
+  salirModoSeleccion();
+  await cargarContratos();
+}
+// ── Fin selección masiva ──
+
+// ── Bottom nav mobile ──
+function mostrarTabMobile(id, btn) {
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+  const topBtn = document.querySelector(`.tab-btn[data-tab="${id}"]`);
+  mostrarTab(id, topBtn || btn);
+}
 
 function normalizarTelWA(tel) {
   if (!tel) return '';
@@ -808,8 +940,11 @@ document.getElementById('input-pw').addEventListener('keydown', e => { if (e.key
 function mostrarTab(id, btn) {
   document.querySelectorAll('.seccion').forEach(s => s.classList.remove('activa'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('activo'));
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('activo'));
   document.getElementById('sec-' + id).classList.add('activa');
-  btn.classList.add('activo');
+  if (btn) btn.classList.add('activo');
+  const bnavBtn = document.querySelector(`.bnav-btn[data-tab="${id}"]`);
+  if (bnavBtn) bnavBtn.classList.add('activo');
   if (id === 'contratos') cargarContratos();
   if (id === 'crm') cargarCRM();
   if (id === 'paquetes') cargarPaquetesAdmin();
@@ -982,12 +1117,18 @@ function filtrarContratos() {
 function renderTabla(lista) {
   const tbody = document.getElementById('tabla-body');
   if (!lista.length) {
-    tbody.innerHTML = '<tr><td colspan="6" class="tabla-vacio">Sin contratos que mostrar.</td></tr>';
+    tbody.innerHTML = `<tr><td colspan="${modoSeleccion ? 7 : 6}" class="tabla-vacio">Sin contratos que mostrar.</td></tr>`;
     return;
   }
   tbody.innerHTML = lista.map(c => {
-    const activo = tokenActivo === c.token ? 'activo' : '';
-    return `<tr class="${activo}" onclick="abrirPanel('${c.token}')">
+    const activo    = tokenActivo === c.token ? 'activo' : '';
+    const checked   = seleccionados.has(c.token) ? 'checked' : '';
+    const checkCell = modoSeleccion
+      ? `<td class="td-check" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${checked} onchange="toggleSeleccion('${c.token}',this)"></td>`
+      : '';
+    const rowClick  = modoSeleccion ? '' : `onclick="abrirPanel('${c.token}')"`;
+    return `<tr class="${activo}" ${rowClick}>
+      ${checkCell}
       <td class="td-folio">${esc(c.folio) || '—'}</td>
       <td><div class="td-nombre">${esc(c.nombre)}</div><div class="td-sub">${esc(c.correo)}</div></td>
       <td>${badgeEstatus(c.estatus)}</td>
