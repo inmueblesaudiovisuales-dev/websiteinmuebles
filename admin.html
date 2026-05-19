@@ -356,14 +356,47 @@
     #overlay { display: none; position: fixed; inset: 0; background: rgba(28,28,30,0.4); z-index: 190; }
     #overlay.visible { display: block; }
 
+    /* ── GRIDS DE MÉTRICAS (con breakpoint propio) ───── */
+    .met-cards-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 20px; }
+    .met-bottom-grid { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 14px; }
+
     /* ── RESPONSIVE ─────────────────────────────────── */
     @media (max-width: 640px) {
-      .contenido { padding: 16px 16px 80px; }
-      .panel-lateral { width: 100%; }
+      /* Layout general */
+      .contenido { padding: 12px 12px 80px; }
       .fila-2 { grid-template-columns: 1fr; }
+      .form-card { padding: 20px 14px; }
+
+      /* Topbar: quitar título para ahorrar espacio */
+      .topbar-sep, .topbar-titulo { display: none; }
+
+      /* Tabs: scroll horizontal sin barra visible */
+      .tabs { overflow-x: auto; flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 1px; }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab-btn { white-space: nowrap; flex-shrink: 0; }
+
+      /* Barra de filtros */
       .barra .campo-busqueda { min-width: 100%; order: -1; }
+      #filtro-estatus { flex: 1; min-width: 0; }
+
+      /* Tabla */
+      .tabla-card { overflow-x: auto; }
       .tabla-card td:nth-child(4), .tabla-card th:nth-child(4),
       .tabla-card td:nth-child(6), .tabla-card th:nth-child(6) { display: none; }
+      .td-sub { display: none; }
+
+      /* Stats bar: 2 columnas */
+      #stats-bar { grid-template-columns: repeat(2,1fr) !important; }
+
+      /* Panel lateral: ancho completo */
+      .panel-lateral { width: 100%; border-left: none; border-top: 1px solid var(--border); }
+
+      /* Métricas grids */
+      .met-cards-grid { grid-template-columns: repeat(2,1fr); }
+      .met-bottom-grid { grid-template-columns: 1fr; }
+
+      /* CRM grid */
+      .crm-grid { grid-template-columns: 1fr; }
     }
   </style>
   <style>
@@ -1690,7 +1723,7 @@ function renderMetricas(s) {
   const labelPeriodo = { mes: 'este mes', trimestre: 'este trimestre', anio: 'este año', todo: 'acumulado' }[s.periodo] || '';
 
   // Tarjetas principales
-  let html = `<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">`;
+  let html = `<div class="met-cards-grid">`;
   const cards = [
     { label: 'Facturado',     valor: fmxn(s.facturado),      sub: s.numContratos + ' contratos', color: 'var(--gold)' },
     { label: 'Cobrado',       valor: fmxn(s.cobrado),         sub: labelPeriodo,                  color: 'var(--success)' },
@@ -1706,7 +1739,7 @@ function renderMetricas(s) {
   html += `</div>`;
 
   // Fila inferior: estatus + top clientes + gráfica
-  html += `<div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:14px">`;
+  html += `<div class="met-bottom-grid">`;
 
   // Por estatus
   const ORDEN_ESTATUS = ['Pendiente firma','Firmado','Anticipo recibido','En produccion','Entregado','Liquidado'];
