@@ -1346,6 +1346,7 @@ function renderEtapa4() {
   var d       = portalData;
   var estatus = d.estatus || '';
   var entrega = (d.entregaDriveLink || '').trim();
+  if (entrega && !/^https?:\/\//i.test(entrega)) entrega = 'https://' + entrega;
   var extras  = (d.entregaLinksExtra || '').trim();
   var pagado  = parseFloat(d.totalAbonado) || 0;
   var total   = parseFloat(d.precioTotal)  || 0;
@@ -1367,14 +1368,23 @@ function renderEtapa4() {
     html += '<div><div class="entrega-link-texto">Carpeta de entregables</div><div class="entrega-link-sub">Google Drive · Clic para abrir</div></div>';
     html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--concrete)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>';
 
-    // Links extra (one per line)
+    // Links extra (one per line; format: "Etiqueta|https://..." o solo URL)
     if (extras) {
       extras.split('\n').forEach(function(linea) {
         var l = linea.trim();
         if (!l) return;
-        html += '<a href="' + esc(l) + '" target="_blank" rel="noopener" class="entrega-link">';
+        var etiqueta = 'Link adicional';
+        var url = l;
+        var pipe = l.indexOf('|');
+        if (pipe !== -1) {
+          etiqueta = l.substring(0, pipe).trim() || etiqueta;
+          url      = l.substring(pipe + 1).trim();
+        }
+        if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
+        if (!url) return;
+        html += '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="entrega-link">';
         html += '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--concrete)" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
-        html += '<div><div class="entrega-link-texto">Link adicional</div><div class="entrega-link-sub">' + esc(l.substring(0, 60)) + (l.length > 60 ? '...' : '') + '</div></div>';
+        html += '<div><div class="entrega-link-texto">' + esc(etiqueta) + '</div><div class="entrega-link-sub">' + esc(url.substring(0, 60)) + (url.length > 60 ? '...' : '') + '</div></div>';
         html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--concrete)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>';
       });
     }
@@ -1390,7 +1400,7 @@ function renderEtapa4() {
   // Saldo pendiente si hay
   if (saldo > 0) {
     html += '<div class="banner warn"><div class="banner-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--warn)" stroke-width="2" stroke-linecap="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div>';
-    html += '<div><div class="banner-title">Saldo pendiente</div><div class="banner-desc">Queda un saldo de ' + formatMXN(saldo) + '. Puedes liquidarlo cuando gustes.</div></div></div>';
+    html += '<div><div class="banner-title">Saldo pendiente: ' + formatMXN(saldo) + '</div><div class="banner-desc">Para recibir los archivos finales necesitamos que liquides el saldo restante.</div></div></div>';
     if (d.clipLink) {
       html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:16px">PAGAR SALDO RESTANTE</a>';
     }
