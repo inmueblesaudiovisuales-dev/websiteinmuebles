@@ -594,12 +594,9 @@ function renderEtapa1() {
       html += '<input type="hidden" id="inp-orientacion-' + n + '"><span class="field-error" style="display:none;margin-top:6px" id="err-orientacion-' + n + '">Selecciona una orientación</span></div>';
 
       if (!esTerreno) {
-        html += '<div class="field"><label>¿Quién estará presente? (opcional)</label><input type="text" id="inp-presentes-' + n + '" placeholder="El agente, el dueño, nadie (tienen llave)..."></div>';
         html += '<div class="field"><label>Sobre la propiedad (opcional)</label><textarea id="inp-sobre-' + n + '" placeholder="Recámaras, baños, m², amenidades, lo que la hace especial, historia, vista..." style="min-height:100px"></textarea><p class="field-hint">Entre más nos cuentes, mejor enfocamos el video.</p></div>';
       } else {
         html += '<div class="field"><label>Sobre el terreno (opcional)</label><textarea id="inp-sobre-' + n + '" placeholder="Superficie en m², frente, fondo, zonificación, servicios disponibles, tipo de terreno..." style="min-height:100px"></textarea></div>';
-        html += '<div class="field"><label>Acceso al terreno (opcional)</label><textarea id="inp-acceso-' + n + '" placeholder="¿Hay candado o reja? ¿Quién abre?"></textarea></div>';
-        html += '<div class="field"><label>Orientación del frente (opcional)</label><textarea id="inp-frente-' + n + '" placeholder="¿Cuál es el frente oficial? ¿Hacia dónde da?"></textarea></div>';
         // Instrucciones y upload del perímetro
         html += '<div class="field"><label>Screenshot del perímetro o levantamiento</label>';
         html += '<p class="field-hint" style="margin-top:0;margin-bottom:12px">Sin esta referencia no podemos garantizar capturar los límites correctos del terreno.</p>';
@@ -844,12 +841,6 @@ function validarYRevisar() {
     }
     var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
     var datosEsp  = {};
-    if (!esTerreno) {
-      datosEsp.presentes = (document.getElementById('inp-presentes-' + n) || {value:''}).value.trim();
-    } else {
-      datosEsp.accesoTerreno     = (document.getElementById('inp-acceso-' + n) || {value:''}).value.trim();
-      datosEsp.orientacionFrente = (document.getElementById('inp-frente-' + n) || {value:''}).value.trim();
-    }
     var comsEl = document.getElementById('inp-comentarios');
     if (comsEl && n === 1) datosEsp.comentarios = comsEl.value.trim();
     propsPayload.push({
@@ -1082,9 +1073,6 @@ function renderRevision() {
           ['inp-mapas-'      + n, p.linkMaps],
           ['inp-sobre-'      + n, p.sobreLaPropiedad],
           ['inp-referencias-'+ n, p.referencias],
-          ['inp-presentes-'  + n, p.datosEspecificos && p.datosEspecificos.presentes],
-          ['inp-acceso-'     + n, p.datosEspecificos && p.datosEspecificos.accesoTerreno],
-          ['inp-frente-'     + n, p.datosEspecificos && p.datosEspecificos.orientacionFrente],
         ];
         pairs.forEach(function(pair) { var el = document.getElementById(pair[0]); if (el && pair[1]) el.value = pair[1]; });
         if (i === 0 && p.datosEspecificos && p.datosEspecificos.comentarios) {
