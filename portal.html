@@ -1410,8 +1410,12 @@ function renderEtapa4() {
   var html = '<div class="wrap">';
 
   if (estatus === 'Entregado' || estatus === 'Liquidado') {
-    html += '<div class="banner success"><div class="banner-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>';
-    html += '<div><div class="banner-title">Material entregado</div><div class="banner-desc">Tu producción está lista. Los links de descarga están disponibles abajo.</div></div></div>';
+    html += '<div class="banner success" style="background:linear-gradient(135deg,#0d2b1a 0%,#0a1f12 100%);border-color:#2ecc71;padding:20px 16px">';
+    html += '<div style="text-align:center;width:100%">';
+    html += '<div style="font-size:32px;margin-bottom:8px">&#127881;</div>';
+    html += '<div style="font-size:17px;font-weight:700;color:#2ecc71;margin-bottom:4px">¡Tu producción está lista!</div>';
+    html += '<div style="font-size:13px;color:var(--concrete);line-height:1.5">Encontrarás todos tus archivos en la carpeta de Google Drive. Si tienes cualquier duda, escríbenos por WhatsApp.</div>';
+    html += '</div></div>';
   }
 
   // Links de entrega
@@ -1446,11 +1450,22 @@ function renderEtapa4() {
     html += '</div>';
   }
 
-  html += _renderComprobante(d);
-
-  html += '<button class="btn-secondary" id="btn-imprimir" style="margin-bottom:16px">';
-  html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>';
+  html += '<details style="margin-bottom:16px;border:1px solid var(--border);border-radius:10px;overflow:hidden">';
+  html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:600;color:var(--gold);list-style:none;display:flex;align-items:center;justify-content:space-between;background:var(--surface)">';
+  html += '<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;vertical-align:-2px"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>Ver comprobante de pago</span>';
+  html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--concrete)" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>';
+  html += '</summary>';
+  html += '<div style="padding:0 4px 0">' + _renderComprobante(d) + '</div>';
+  html += '<div style="padding:0 16px 14px">';
+  html += '<button class="btn-secondary" id="btn-imprimir" style="width:100%">';
+  html += '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>';
   html += 'Imprimir / Guardar comprobante</button>';
+  html += '</div></details>';
+
+  // Guía de publicación e instrucciones
+  html += '<a href="/guia-publicacion.html" target="_blank" rel="noopener" class="btn-secondary" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:12px">';
+  html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+  html += 'Cómo publicar tus reels e imágenes en alta calidad</a>';
 
   // Saldo pendiente si hay
   if (saldo > 0) {
@@ -1460,6 +1475,11 @@ function renderEtapa4() {
       html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;margin-bottom:16px">PAGAR SALDO RESTANTE</a>';
     }
   }
+
+  // Soporte WhatsApp
+  html += '<a href="https://wa.me/528127174207?text=' + encodeURIComponent('Hola, tengo una pregunta sobre la entrega de mi sesión fotográfica.') + '" target="_blank" rel="noopener" class="btn-secondary" style="display:flex;align-items:center;gap:8px;text-decoration:none;margin-bottom:12px;color:#25d366;border-color:#25d366">';
+  html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+  html += '¿Necesitas ayuda? Escríbenos por WhatsApp</a>';
 
   // Google review
   html += '<div class="card" style="text-align:center"><p class="section-title" style="text-align:center">¿Quedaste satisfecho?</p>';
