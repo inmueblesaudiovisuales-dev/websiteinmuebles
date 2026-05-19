@@ -904,7 +904,7 @@ function actualizarPrecio() {
   const base    = parseFloat(baseOpt?.dataset?.precio) || 0;
   if (!precioManual) {
     let total = base;
-    document.querySelectorAll('#est-adicionales input[type="checkbox"]:checked').forEach(function(cb) {
+    document.querySelectorAll('#lista-adicionales input[type="checkbox"]:checked').forEach(function(cb) {
       total += parseFloat(cb.dataset.precio) || 0;
     });
     document.getElementById('est-precio-total').value = total;
@@ -1231,17 +1231,14 @@ async function registrarAbono() {
   try {
     const data = await apiPost({ action: 'registrarAbono', token: t, monto, metodo, notas });
     if (!data.ok) throw new Error(data.error || 'Error desconocido');
-    if (t && t === tokenActivo) {
-      await abrirPanel(t);
-      setMsg('msg-abono', 'Abono registrado correctamente.', 'ok');
-    }
+    setMsg('msg-abono', 'Abono registrado correctamente.', 'ok');
     cargarContratos();
+    if (t && t === tokenActivo) {
+      try { await abrirPanel(t); } catch(_) { /* panel reload failed, abono ya fue guardado */ }
+    }
   } catch (e) {
     setMsg('msg-abono', 'Error: ' + e.message, 'error');
-    const b = document.getElementById('btn-abono');
-    if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
   } finally {
-    // Re-habilitar siempre en caso de que abrirPanel falle y el DOM ya no tenga el botón.
     const b = document.getElementById('btn-abono');
     if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
   }
@@ -1283,16 +1280,16 @@ async function guardarEntrega() {
   try {
     const data = await apiPost({ action: 'guardarEntrega', token: t, driveLink, linksExtra });
     if (!data.ok) throw new Error(data.error || 'Error desconocido');
-    if (t && t === tokenActivo) {
-      await abrirPanel(t);
-      mostrarPanelTab('entrega', document.querySelectorAll('.panel-tab-btn')[2]);
-      setMsg('msg-entrega', 'Entrega guardada. Se envió correo al cliente.', 'ok');
-    }
+    setMsg('msg-entrega', 'Entrega guardada. Se envió correo al cliente.', 'ok');
     cargarContratos();
+    if (t && t === tokenActivo) {
+      try {
+        await abrirPanel(t);
+        mostrarPanelTab('entrega', document.querySelectorAll('.panel-tab-btn')[2]);
+      } catch(_) { /* panel reload failed, entrega ya fue guardada */ }
+    }
   } catch (e) {
     setMsg('msg-entrega', 'Error: ' + e.message, 'error');
-    const b = document.getElementById('btn-entrega');
-    if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-send"></i> Enviar al cliente'; }
   } finally {
     const b = document.getElementById('btn-entrega');
     if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-send"></i> Enviar al cliente'; }
@@ -1906,9 +1903,17 @@ async function eliminarContrato() {
     alert('Escribe el nombre del cliente para confirmar.');
     return;
   }
-  if (nombre && confirmacion.trim().toLowerCase() !== nombre.trim().toLowerCase()) {
-    alert('El nombre no coincide. No se eliminó nada.');
-    return;
+  // Si el nombre está en caché, verificar coincidencia. Si no está, avisar y requerir confirmación explícita "ELIMINAR".
+  if (nombre !== null) {
+    if (confirmacion.trim().toLowerCase() !== nombre.trim().toLowerCase()) {
+      alert('El nombre no coincide. No se eliminó nada.');
+      return;
+    }
+  } else {
+    if (confirmacion.trim().toUpperCase() !== 'ELIMINAR') {
+      alert('No se encontró el nombre del cliente en caché. Escribe ELIMINAR (en mayúsculas) para confirmar.');
+      return;
+    }
   }
 
   setMsg('msg-borrar', 'Eliminando...', '');
