@@ -844,8 +844,10 @@ function validarYRevisar() {
     }
     var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
     var datosEsp  = {};
-    var comsEl = document.getElementById('inp-comentarios');
-    if (comsEl) datosEsp.comentarios = comsEl.value.trim();
+    if (i === 0) {
+      var comsEl = document.getElementById('inp-comentarios');
+      if (comsEl) datosEsp.comentarios = comsEl.value.trim();
+    }
     propsPayload.push({
       direccion        : dir,
       linkMaps         : maps,
@@ -1107,6 +1109,11 @@ function enviarFirma() {
   var errEl = document.getElementById('error-firma');
   errEl.style.display = 'none';
 
+  if (!canvas) {
+    errEl.textContent = 'Error: área de firma no disponible. Recarga la página.';
+    errEl.style.display = 'block';
+    return;
+  }
   var firmaDataUrl = canvas.toDataURL('image/png');
   var btn = document.getElementById('btn-firmar');
   btn.disabled    = true;
