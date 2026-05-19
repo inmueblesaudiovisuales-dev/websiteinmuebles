@@ -838,7 +838,8 @@ function irANuevo() {
 // ── API ───────────────────────────────────────────────────────────────────────
 
 async function apiGet(params) {
-  const res = await fetch(API + '?' + new URLSearchParams(params).toString(), { redirect: 'follow' });
+  const merged = Object.assign({ adminKey: PASSWORD }, params);
+  const res = await fetch(API + '?' + new URLSearchParams(merged).toString(), { redirect: 'follow' });
   return res.json();
 }
 
