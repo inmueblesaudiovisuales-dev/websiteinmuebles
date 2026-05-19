@@ -846,7 +846,7 @@ async function apiPost(body) {
   const res = await fetch(API, {
     method  : 'POST',
     headers : { 'Content-Type': 'text/plain' },
-    body    : JSON.stringify(body),
+    body    : JSON.stringify(Object.assign({ adminKey: PASSWORD }, body)),
     redirect: 'follow',
   });
   return res.json();
@@ -1529,19 +1529,20 @@ async function copiarDesdeBtn(btn) {
 // ── CONTRATOS PARTICULARES — CARDS POR PROPIEDAD ─────────────────────────────
 
 function renderPropCardsPar(n) {
+  var tiposGuardados = Object.assign({}, tiposPropPar);
   tiposPropPar = {};
   var container = document.getElementById('par-props-container');
   if (!container) return;
   var html = '';
   for (var i = 1; i <= n; i++) {
-    tiposPropPar[i] = 'Residencial';
+    tiposPropPar[i] = tiposGuardados[i] || 'Residencial';
     html += '<div class="prop-card-par" id="par-prop-' + i + '" style="background:var(--page);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px">' +
       '<div style="font-size:12px;font-weight:700;color:var(--ink-2);margin-bottom:12px">PROPIEDAD ' + i + '</div>' +
       '<div class="campo">' +
         '<label>Tipo de propiedad</label>' +
         '<div style="display:flex;gap:8px">' +
-          '<button type="button" class="par-tipo-btn activo-par" id="par-btn-res-' + i + '" onclick="setTipoPar(' + i + ',\'Residencial\')">Residencial</button>' +
-          '<button type="button" class="par-tipo-btn" id="par-btn-ter-' + i + '" onclick="setTipoPar(' + i + ',\'Terreno\')">Terreno</button>' +
+          '<button type="button" class="par-tipo-btn' + (tiposPropPar[i] === 'Terreno' ? '' : ' activo-par') + '" id="par-btn-res-' + i + '" onclick="setTipoPar(' + i + ',\'Residencial\')">Residencial</button>' +
+          '<button type="button" class="par-tipo-btn' + (tiposPropPar[i] === 'Terreno' ? ' activo-par' : '') + '" id="par-btn-ter-' + i + '" onclick="setTipoPar(' + i + ',\'Terreno\')">Terreno</button>' +
         '</div>' +
       '</div>' +
       '<div class="campo">' +
