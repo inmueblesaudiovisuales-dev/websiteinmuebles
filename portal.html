@@ -422,6 +422,12 @@ function esc(s) {
   return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+function safeHref(url) {
+  if (!url) return '#';
+  var u = String(url).trim();
+  return /^https?:\/\//i.test(u) ? esc(u) : '#';
+}
+
 /* ── STEPPER ────────────────────────────────────────────────────────────────── */
 
 function actualizarStepper(paso) {
@@ -465,6 +471,7 @@ function init() {
         return;
       }
       portalData = data;
+      if (history.replaceState) history.replaceState({}, '', location.pathname);
       var estatus = data.estatus || '';
       if      (estatus === 'Pendiente firma')   { actualizarStepper(1); renderEtapa1(); }
       else if (estatus === 'Firmado')            { actualizarStepper(2); renderEtapa2(); }
@@ -1012,7 +1019,7 @@ function renderRevision() {
       if (p.fechaSesion) html += '<div class="resumen-fila"><span class="resumen-label">Fecha de sesión</span><span class="resumen-valor">' + esc(formatFecha(p.fechaSesion)) + '</span></div>';
       if (p.entregables) {
         var items = p.entregables.split('·').map(function(e) { return e.trim(); }).filter(Boolean);
-        if (items.length) html += '<div class="resumen-fila"><span class="resumen-label">Entregables</span><span class="resumen-valor" style="text-align:right">' + items.join('<br>') + '</span></div>';
+        if (items.length) html += '<div class="resumen-fila"><span class="resumen-label">Entregables</span><span class="resumen-valor" style="text-align:right">' + items.map(function(e) { return esc(e.trim()); }).join('<br>') + '</span></div>';
       }
       if (fp.direccion) html += '<div class="resumen-fila"><span class="resumen-label">Dirección</span><span class="resumen-valor">' + esc(fp.direccion) + '</span></div>';
       if (fp.orientacion) html += '<div class="resumen-fila"><span class="resumen-label">Orientación del video</span><span class="resumen-valor">' + esc(fp.orientacion.split(' — ')[0] || fp.orientacion) + '</span></div>';
