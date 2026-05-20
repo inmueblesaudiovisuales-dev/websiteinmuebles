@@ -663,14 +663,18 @@ function accionListarContratos3(e) {
   const datos = hoja.getDataRange().getValues();
   const enc   = datos[0];
 
-  // Construir mapa token → fechaSesion (primera propiedad)
+  // Construir mapas token → datos de primera propiedad
   const fechaSesionMap = {};
+  const horaSesionMap  = {};
+  const direccionMap   = {};
   try {
     const hojaProp  = getPropiedadesSheet3();
     const datosProp = hojaProp.getDataRange().getValues();
     const encProp   = datosProp[0];
     const iColTok   = encProp.indexOf('ContratoToken');
     const iColFecha = encProp.indexOf('FechaSesion');
+    const iColHora  = encProp.indexOf('HoraSesion');
+    const iColDir   = encProp.indexOf('Direccion');
     const iColNum   = encProp.indexOf('NumPropiedad');
     if (iColTok !== -1 && iColFecha !== -1) {
       for (let i = 1; i < datosProp.length; i++) {
@@ -679,6 +683,8 @@ function accionListarContratos3(e) {
         const fecha = datosProp[i][iColFecha];
         if (tok && fecha && (!fechaSesionMap[tok] || num === 1)) {
           fechaSesionMap[tok] = fecha;
+          if (iColHora !== -1) horaSesionMap[tok] = datosProp[i][iColHora] || '';
+          if (iColDir  !== -1) direccionMap[tok]  = datosProp[i][iColDir]  || '';
         }
       }
     }
@@ -696,18 +702,23 @@ function accionListarContratos3(e) {
       if (!texto.includes(filtroBuscar)) continue;
     }
     contratos.push({
-      token          : fila.Token,
-      folio          : fila.Folio,
-      nombre         : fila.NombreCliente,
-      correo         : fila.CorreoCliente,
-      telefono       : fila.TelefonoCliente,
-      estatus        : fila.Estatus,
-      precioTotal    : fila.PrecioTotal,
-      saldoPendiente : fila.SaldoPendiente,
-      fechaCreacion  : fila.FechaCreacion,
-      fechaSesion    : fechaSesionMap[fila.Token] || '',
-      tipoContrato   : fila.TipoContrato,
-      tipoPaquete    : fila.TipoPaquete,
+      token           : fila.Token,
+      folio           : fila.Folio,
+      nombre          : fila.NombreCliente,
+      correo          : fila.CorreoCliente,
+      telefono        : fila.TelefonoCliente,
+      estatus         : fila.Estatus,
+      precioTotal     : fila.PrecioTotal,
+      saldoPendiente  : fila.SaldoPendiente,
+      fechaCreacion   : fila.FechaCreacion,
+      fechaFirma      : fila.FechaFirma        || '',
+      fechaUltimoAbono: fila.FechaUltimoAbono  || '',
+      fechaEntrega    : fila.FechaEntrega       || '',
+      fechaSesion     : fechaSesionMap[fila.Token] || '',
+      horaSesion      : horaSesionMap[fila.Token]  || '',
+      direccion       : direccionMap[fila.Token]    || '',
+      tipoContrato    : fila.TipoContrato,
+      tipoPaquete     : fila.TipoPaquete,
     });
   }
   contratos.sort((a, b) => new Date(b.fechaCreacion) - new Date(a.fechaCreacion));
@@ -1209,13 +1220,6 @@ function accionManejarFirmaCliente3(body) {
   }
 
   enviarCorreo3(
-    contratoActualizado.CorreoCliente,
-    'Tu contrato con Inmuebles Audiovisuales',
-    correoContratoCliente3(contratoActualizado, propsMerge, token, false),
-    []
-  );
-
-  enviarCorreo3(
     CONFIG3.BRUNO_EMAIL,
     'Contrato firmado — ' + contratoActualizado.NombreCliente,
     correoContratoFirmadoBruno3(contratoActualizado),
@@ -1691,60 +1695,6 @@ function correoReagendamiento3(contrato, prop, nuevaFechaStr, nuevaHora) {
   enviarCorreo3(para, asunto, html, []);
 }
 
-function correoContratoCliente3(contrato, props, token, tienePdf) {
-  const urlPortal = CONFIG3.BASE_URL_PORTAL + '?token=' + token;
-  const pctAnticipo = contrato.PrecioTotal > 0
-    ? Math.round((parseFloat(contrato.Anticipo) / parseFloat(contrato.PrecioTotal)) * 100)
-    : 50;
-  const entregablesHtml3 = (texto) => {
-    const items = (texto || '').split('\n').map(s => s.trim()).filter(Boolean);
-    if (!items.length) return '';
-    return '<ul style="margin:6px 0 12px;padding-left:18px">' +
-      items.map(item => {
-        return '<li style="font-size:12px;color:#444;line-height:1.5;margin-bottom:3px">' + htmlEsc3(item.split(' — ')[0]) + '</li>';
-      }).join('') +
-    '</ul>';
-  };
-
-  const resumen   = props.map((p, i) => {
-    const etiqueta = props.length > 1 ? 'Propiedad ' + (i + 1) : htmlEsc3(contrato.TipoPaquete || p.Paquete || '');
-    const detalle  = (p.Direccion ? htmlEsc3(p.Direccion) + ' · ' : '') + htmlEsc3(formatFechaEspanol3(p.FechaSesion));
-    return '<tr>' +
-      '<td style="padding:6px 0 2px;border-bottom:none;font-size:12px;color:#9B9B9F;width:130px;vertical-align:top">' + etiqueta + '</td>' +
-      '<td style="padding:6px 0 2px;border-bottom:none;font-size:12px;font-weight:600;color:#1C1C1E;vertical-align:top">' + detalle + '</td>' +
-    '</tr>' +
-    (p.Entregables
-      ? '<tr><td></td><td style="padding-bottom:10px;border-bottom:1px solid #E8E8EA">' + entregablesHtml3(p.Entregables) + '</td></tr>'
-      : '<tr><td colspan="2" style="border-bottom:1px solid #E8E8EA;padding:0 0 4px"></td></tr>');
-  }).join('');
-
-  return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
-    _encabezadoCorreo3() +
-    '<div style="padding:28px 24px;background:#FAFAFA">' +
-      '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Hola, ' + htmlEsc3(contrato.NombreCliente) + '.</h2>' +
-      '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">' +
-        'Recibimos tu información.' +
-        (tienePdf
-          ? ' Adjunto encontrarás tu contrato firmado.'
-          : ' Tu contrato firmado llegará a este correo en los próximos 2 minutos. Si no lo ves, revisa tu carpeta de spam.') +
-        ' Para confirmar tu fecha, realiza el anticipo a la brevedad. ' +
-        'Trabajamos por orden de confirmación.' +
-      '</p>' +
-      '<table style="width:100%;border-collapse:collapse;margin-bottom:20px">' +
-        resumen +
-        '<tr>' +
-          '<td style="padding:8px 0;font-size:13px;color:#9B9B9F">Anticipo (' + pctAnticipo + '%)</td>' +
-          '<td style="padding:8px 0;font-size:16px;font-weight:700;color:#C9A84C">' + formatMXN3(contrato.Anticipo) + '</td>' +
-        '</tr>' +
-      '</table>' +
-      '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:12px">VER OPCIONES DE PAGO</a>' +
-      '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
-        'Cualquier duda escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
-      '</p>' +
-    '</div>' +
-    _pieCorreo3() +
-  '</div>';
-}
 
 function correoContratoFirmadoBruno3(contrato) {
   return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
@@ -2544,46 +2494,10 @@ function accionMarcarSesionCompletada3(body) {
     Estatus          : 'En produccion',
   });
 
-  try {
-    enviarCorreo3(
-      contrato.CorreoCliente,
-      'Tu sesión fue un éxito — Inmuebles Audiovisuales',
-      correoSesionCompletada3(contrato, token),
-      []
-    );
-  } catch (err) {
-    Logger.log('accionMarcarSesionCompletada3: error enviando correo: ' + err.message);
-  }
-
   Logger.log('Sesión completada: ' + contrato.NombreCliente + ' (' + contrato.Folio + ')');
   return jsonResponse3({ ok: true });
 }
 
-function correoSesionCompletada3(contrato, token) {
-  const urlPortal = CONFIG3.BASE_URL_PORTAL + '?token=' + token;
-  const nombre1   = (contrato.NombreCliente || '').split(' ')[0];
-  return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
-    _encabezadoCorreo3() +
-    '<div style="padding:28px 24px;background:#FAFAFA">' +
-      '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Todo listo, ' + htmlEsc3(nombre1) + '.</h2>' +
-      '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">' +
-        'Tu sesión fue un éxito. Ahora estamos trabajando en la edición de tu material. ' +
-        'En un plazo de 5 días hábiles recibirás un correo con el enlace de descarga.' +
-      '</p>' +
-      '<div style="background:#F5F5F7;border-radius:8px;padding:14px 16px;margin-bottom:20px">' +
-        '<p style="font-size:12px;font-weight:700;color:#1C1C1E;margin:0 0 4px">Mientras tanto</p>' +
-        '<p style="font-size:12px;color:#9B9B9F;margin:0;line-height:1.6">' +
-          'Puedes consultar el estado de tu proyecto en tu portal en cualquier momento.' +
-        '</p>' +
-      '</div>' +
-      '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:16px">VER MI PORTAL</a>' +
-      '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
-        'Cualquier duda escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
-      '</p>' +
-    '</div>' +
-    _pieCorreo3() +
-  '</div>';
-}
 
 // ─── ENDPOINT: guardarNotasInternas ──────────────────────────────────────────
 
