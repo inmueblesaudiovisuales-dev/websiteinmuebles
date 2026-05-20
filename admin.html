@@ -854,11 +854,10 @@
   </div>
   <div class="panel-tabs">
     <button class="panel-tab-btn activo" onclick="mostrarPanelTab('general', this)">General</button>
-    <button class="panel-tab-btn" onclick="mostrarPanelTab('pagos', this)">Pagos</button>
     <button class="panel-tab-btn" onclick="mostrarPanelTab('entrega', this)">Entrega</button>
   </div>
   <div id="pane-general" class="panel-tab-pane activo"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Selecciona un contrato.</p></div>
-  <div id="pane-pagos"   class="panel-tab-pane"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Selecciona un contrato.</p></div>
+
   <div id="pane-entrega" class="panel-tab-pane"><p style="color:var(--ink-3);font-style:italic;font-size:13px">Selecciona un contrato.</p></div>
 </div>
 <div id="overlay" onclick="cerrarPanel()"></div>
@@ -1288,7 +1287,7 @@ async function abrirPanel(token) {
   document.getElementById('panel-folio').textContent  = '...';
   document.getElementById('panel-nombre').textContent = 'Cargando...';
   document.getElementById('panel-badge').innerHTML    = '';
-  ['general','pagos','entrega'].forEach(id =>
+  ['general','entrega'].forEach(id =>
     document.getElementById('pane-' + id).innerHTML =
       '<p style="color:var(--ink-3);font-style:italic;font-size:13px;padding:4px 0">Cargando...</p>'
   );
@@ -1391,6 +1390,22 @@ function renderPanel(data) {
   const waTelPortal = normalizarTelWA(c.TelefonoCliente);
   const waUrl = 'https://wa.me/' + waTelPortal + '?text=' + encodeURIComponent('Aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + urlPortal);
 
+  const precioTotal  = parseFloat(c.PrecioTotal)  || 0;
+  const totalAbonado = parseFloat(data.totalAbonado) || 0;
+  const saldo        = parseFloat(c.SaldoPendiente) || 0;
+  const pct          = precioTotal > 0 ? Math.min(100, Math.round(totalAbonado / precioTotal * 100)) : 0;
+
+  const abonosHtml = data.abonos.length
+    ? data.abonos.map(a => `
+        <div class="abono-fila">
+          <div>
+            <div class="abono-metodo">${esc(a.metodo || 'Transferencia')}</div>
+            <div class="abono-fecha">${fmxnFecha(a.fecha)}${a.notas ? ' · ' + esc(a.notas) : ''}</div>
+          </div>
+          <div class="abono-monto">+${fmxn(a.monto)}</div>
+        </div>`).join('')
+    : '<p style="font-size:12px;color:var(--ink-3);padding:6px 0">Sin abonos registrados.</p>';
+
   document.getElementById('pane-general').innerHTML = `
     <div class="info-fila"><span class="etiq">Cliente</span><span class="val">${esc(c.NombreCliente)}</span></div>
     <div class="info-fila"><span class="etiq">Correo</span><span class="val"><a href="mailto:${esc(c.CorreoCliente)}" style="color:var(--gold);text-decoration:none">${esc(c.CorreoCliente)}</a></span></div>
@@ -1434,6 +1449,48 @@ function renderPanel(data) {
       </button>
     </div>
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
+      <p class="sec-label" style="margin-bottom:6px">Pagos</p>
+      <div class="pago-resumen">
+        <div class="pago-fila"><span>Total del contrato</span><span>${fmxn(precioTotal)}</span></div>
+        <div class="pago-fila"><span>Total abonado</span><span style="color:var(--success)">${fmxn(totalAbonado)}</span></div>
+        <div class="pago-fila total"><span>Saldo pendiente</span><span style="color:${saldo > 0 ? 'var(--warn)' : 'var(--success)'}">${fmxn(saldo)}</span></div>
+      </div>
+      <div class="pago-barra-track"><div class="pago-barra-fill" style="width:${pct}%"></div></div>
+
+      <div class="sec-label">Historial de abonos</div>
+      <div id="historial-abonos">${abonosHtml}</div>
+
+      <div class="sec-label">Registrar abono</div>
+      <div class="fila-2">
+        <div class="campo campo-sm"><label>Monto</label><input type="number" id="abono-monto" placeholder="0"></div>
+        <div class="campo campo-sm">
+          <label>Método</label>
+          <select id="abono-metodo">
+            <option value="Transferencia">Transferencia</option>
+            <option value="Efectivo">Efectivo</option>
+            <option value="Clip">Clip</option>
+            <option value="OXXO">OXXO / 7-Eleven</option>
+          </select>
+        </div>
+      </div>
+      <div class="campo campo-sm"><label>Notas (opcional)</label><input type="text" id="abono-notas" placeholder="Referencia, aclaración..."></div>
+      <button class="btn-primario gold" style="width:100%" id="btn-abono" onclick="registrarAbono()">
+        <i class="ti ti-check"></i> Registrar abono
+      </button>
+      <div class="form-msg" id="msg-abono"></div>
+
+      <div class="sec-label" style="margin-top:22px">Cambiar estatus</div>
+      <div class="estatus-fila">
+        <select id="panel-estatus">
+          ${['Pendiente firma','Firmado','Anticipo recibido','En produccion','Entregado','Liquidado'].map(s =>
+            `<option value="${s}" ${c.Estatus === s ? 'selected' : ''}>${s === 'En produccion' ? 'En producción' : esc(s)}</option>`
+          ).join('')}
+        </select>
+        <button class="btn-secundario btn-sm" onclick="cambiarEstatus()">Guardar</button>
+      </div>
+      <div class="form-msg" id="msg-estatus"></div>
+    </div>
+    <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:10px">Zona de riesgo</p>
       <div style="display:flex;gap:8px">
         <button class="btn-secundario btn-sm" style="flex:1;color:var(--warn);border-color:var(--warn)" onclick="archivarContrato()">
@@ -1445,64 +1502,6 @@ function renderPanel(data) {
       </div>
       <div class="form-msg" id="msg-borrar"></div>
     </div>`;
-
-  // ── PANE PAGOS ──
-  const precioTotal  = parseFloat(c.PrecioTotal)  || 0;
-  const totalAbonado = parseFloat(data.totalAbonado) || 0;
-  const saldo        = parseFloat(c.SaldoPendiente) || 0;
-  const pct          = precioTotal > 0 ? Math.min(100, Math.round(totalAbonado / precioTotal * 100)) : 0;
-
-  const abonosHtml = data.abonos.length
-    ? data.abonos.map(a => `
-        <div class="abono-fila">
-          <div>
-            <div class="abono-metodo">${esc(a.metodo || 'Transferencia')}</div>
-            <div class="abono-fecha">${fmxnFecha(a.fecha)}${a.notas ? ' · ' + esc(a.notas) : ''}</div>
-          </div>
-          <div class="abono-monto">+${fmxn(a.monto)}</div>
-        </div>`).join('')
-    : '<p style="font-size:12px;color:var(--ink-3);padding:6px 0">Sin abonos registrados.</p>';
-
-  document.getElementById('pane-pagos').innerHTML = `
-    <div class="pago-resumen">
-      <div class="pago-fila"><span>Total del contrato</span><span>${fmxn(precioTotal)}</span></div>
-      <div class="pago-fila"><span>Total abonado</span><span style="color:var(--success)">${fmxn(totalAbonado)}</span></div>
-      <div class="pago-fila total"><span>Saldo pendiente</span><span style="color:${saldo > 0 ? 'var(--warn)' : 'var(--success)'}">${fmxn(saldo)}</span></div>
-    </div>
-    <div class="pago-barra-track"><div class="pago-barra-fill" style="width:${pct}%"></div></div>
-
-    <div class="sec-label">Historial de abonos</div>
-    <div id="historial-abonos">${abonosHtml}</div>
-
-    <div class="sec-label">Registrar abono</div>
-    <div class="fila-2">
-      <div class="campo campo-sm"><label>Monto</label><input type="number" id="abono-monto" placeholder="0"></div>
-      <div class="campo campo-sm">
-        <label>Método</label>
-        <select id="abono-metodo">
-          <option value="Transferencia">Transferencia</option>
-          <option value="Efectivo">Efectivo</option>
-          <option value="Clip">Clip</option>
-          <option value="OXXO">OXXO / 7-Eleven</option>
-        </select>
-      </div>
-    </div>
-    <div class="campo campo-sm"><label>Notas (opcional)</label><input type="text" id="abono-notas" placeholder="Referencia, aclaración..."></div>
-    <button class="btn-primario gold" style="width:100%" id="btn-abono" onclick="registrarAbono()">
-      <i class="ti ti-check"></i> Registrar abono
-    </button>
-    <div class="form-msg" id="msg-abono"></div>
-
-    <div class="sec-label" style="margin-top:22px">Cambiar estatus</div>
-    <div class="estatus-fila">
-      <select id="panel-estatus">
-        ${['Pendiente firma','Firmado','Anticipo recibido','En produccion','Entregado','Liquidado'].map(s =>
-          `<option value="${s}" ${c.Estatus === s ? 'selected' : ''}>${s === 'En produccion' ? 'En producción' : esc(s)}</option>`
-        ).join('')}
-      </select>
-      <button class="btn-secundario btn-sm" onclick="cambiarEstatus()">Guardar</button>
-    </div>
-    <div class="form-msg" id="msg-estatus"></div>`;
 
   // ── PANE ENTREGA ──
   document.getElementById('pane-entrega').innerHTML = `
@@ -1564,7 +1563,7 @@ async function cambiarEstatus() {
     if (!data.ok) throw new Error(data.error || 'Error desconocido');
     if (t && t === tokenActivo) {
       await abrirPanel(t);
-      mostrarPanelTab('pagos', document.querySelectorAll('.panel-tab-btn')[1]);
+      mostrarPanelTab('general', document.querySelectorAll('.panel-tab-btn')[0]);
       setMsg('msg-estatus', 'Estatus actualizado.', 'ok');
     }
     cargarContratos();
@@ -1594,7 +1593,7 @@ async function guardarEntrega() {
     if (t && t === tokenActivo) {
       try {
         await abrirPanel(t);
-        mostrarPanelTab('entrega', document.querySelectorAll('.panel-tab-btn')[2]);
+        mostrarPanelTab('entrega', document.querySelectorAll('.panel-tab-btn')[1]);
       } catch(_) { /* panel reload failed, entrega ya fue guardada */ }
     }
   } catch (e) {
