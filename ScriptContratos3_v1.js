@@ -271,6 +271,7 @@ const COLS_CONTRATOS3 = [
   'FechaCreacion','FechaFirma','FechaUltimoAbono','FechaEntrega',
   'FirmaBase64URL','EntregaDriveLink','EntregaLinksExtra','NumPropiedades',
   'PdfContratoUrl','NotasContrato','Oculto',
+  'NotasInternas','SesionCompletada','RecordatorioEnviado','Calificacion','ResenaTexto',
 ];
 
 function crearFilaContrato3(datos) {
@@ -503,6 +504,7 @@ const ACCIONES_ADMIN3 = new Set([
   'crearPaquete','editarPaquete','togglePaquete',
   'ocultarContrato','eliminarContrato','reagendarPropiedad',
   'enviarRecordatorio','guardarNotaPropiedad',
+  'marcarSesionCompletada','guardarNotasInternas',
 ]);
 
 function doPost(e) {
@@ -527,9 +529,12 @@ function doPost(e) {
     if (accion === 'ocultarContrato')      return accionOcultarContrato3(body);
     if (accion === 'eliminarContrato')     return accionEliminarContrato3(body);
     if (accion === 'reagendarPropiedad')   return accionReagendarPropiedad3(body);
-    if (accion === 'guardarChecklist')     return accionGuardarChecklist3(body);
-    if (accion === 'enviarRecordatorio')   return accionEnviarRecordatorio3(body);
-    if (accion === 'guardarNotaPropiedad') return accionGuardarNotaPropiedad3(body);
+    if (accion === 'guardarChecklist')       return accionGuardarChecklist3(body);
+    if (accion === 'enviarRecordatorio')     return accionEnviarRecordatorio3(body);
+    if (accion === 'guardarNotaPropiedad')   return accionGuardarNotaPropiedad3(body);
+    if (accion === 'marcarSesionCompletada') return accionMarcarSesionCompletada3(body);
+    if (accion === 'guardarNotasInternas')   return accionGuardarNotasInternas3(body);
+    if (accion === 'guardarResena')          return accionGuardarResena3(body);
     return jsonResponse3({ error: 'Acción POST no reconocida: ' + accion });
   } catch (err) {
     Logger.log('ERROR doPost: ' + err.message);
@@ -985,6 +990,8 @@ function accionObtenerPortal3(e) {
     entregaLinksExtra  : contrato.EntregaLinksExtra || '',
     pdfContratoUrl     : contrato.PdfContratoUrl    || '',
     notasContrato      : contrato.NotasContrato     || '',
+    calificacion       : parseFloat(contrato.Calificacion) || 0,
+    resenaTexto        : contrato.ResenaTexto       || '',
     paquetesDisponibles: paquetesDisponibles,
     waLink             : CONFIG3.WA_LINK,
     clipLink           : CONFIG3.CLIP_LINK,
@@ -2078,7 +2085,12 @@ function procesarPDFsPendientes3() {
 
 function instalarTriggers3() {
   // Ejecutar UNA vez desde el editor de Apps Script.
-  const FUNCIONES = ['limpiarTokensViejos3', 'procesarPDFsPendientes3'];
+  const FUNCIONES = [
+    'limpiarTokensViejos3',
+    'procesarPDFsPendientes3',
+    'recordatorio24h3',
+    'detectarPDFsAtascados3',
+  ];
 
   ScriptApp.getProjectTriggers().forEach(t => {
     if (FUNCIONES.includes(t.getHandlerFunction())) {
@@ -2098,7 +2110,18 @@ function instalarTriggers3() {
     .everyMinutes(1)
     .create();
 
-  Logger.log('instalarTriggers3: triggers instalados (lunes 01:00 + cada minuto para PDFs)');
+  ScriptApp.newTrigger('recordatorio24h3')
+    .timeBased()
+    .everyHours(1)
+    .create();
+
+  ScriptApp.newTrigger('detectarPDFsAtascados3')
+    .timeBased()
+    .everyDays(1)
+    .atHour(9)
+    .create();
+
+  Logger.log('instalarTriggers3: 4 triggers instalados');
 }
 
 // ─── ENDPOINT: subirArchivo ──────────────────────────────────────────────────
@@ -2500,6 +2523,232 @@ function accionGuardarChecklist3(body) {
   }
 
   return jsonResponse3({ ok: true });
+}
+
+// ─── ENDPOINT: marcarSesionCompletada ────────────────────────────────────────
+
+function accionMarcarSesionCompletada3(body) {
+  const token = body.token || '';
+  if (!token) return jsonResponse3({ error: 'Token requerido' });
+
+  const contrato = obtenerContrato3(token);
+  if (!contrato) return jsonResponse3({ error: 'Contrato no encontrado' });
+
+  const estatusActual = contrato.Estatus || '';
+  if (!['Anticipo recibido', 'Firmado'].includes(estatusActual)) {
+    return jsonResponse3({ error: 'El contrato no está en un estatus válido para marcar sesión completada' });
+  }
+
+  actualizarContrato3(token, {
+    SesionCompletada : new Date().toISOString(),
+    Estatus          : 'En produccion',
+  });
+
+  try {
+    enviarCorreo3(
+      contrato.CorreoCliente,
+      'Tu sesión fue un éxito — Inmuebles Audiovisuales',
+      correoSesionCompletada3(contrato, token),
+      []
+    );
+  } catch (err) {
+    Logger.log('accionMarcarSesionCompletada3: error enviando correo: ' + err.message);
+  }
+
+  Logger.log('Sesión completada: ' + contrato.NombreCliente + ' (' + contrato.Folio + ')');
+  return jsonResponse3({ ok: true });
+}
+
+function correoSesionCompletada3(contrato, token) {
+  const urlPortal = CONFIG3.BASE_URL_PORTAL + '?token=' + token;
+  const nombre1   = (contrato.NombreCliente || '').split(' ')[0];
+  return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
+    _encabezadoCorreo3() +
+    '<div style="padding:28px 24px;background:#FAFAFA">' +
+      '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Todo listo, ' + htmlEsc3(nombre1) + '.</h2>' +
+      '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">' +
+        'Tu sesión fue un éxito. Ahora estamos trabajando en la edición de tu material. ' +
+        'En un plazo de 5 días hábiles recibirás un correo con el enlace de descarga.' +
+      '</p>' +
+      '<div style="background:#F5F5F7;border-radius:8px;padding:14px 16px;margin-bottom:20px">' +
+        '<p style="font-size:12px;font-weight:700;color:#1C1C1E;margin:0 0 4px">Mientras tanto</p>' +
+        '<p style="font-size:12px;color:#9B9B9F;margin:0;line-height:1.6">' +
+          'Puedes consultar el estado de tu proyecto en tu portal en cualquier momento.' +
+        '</p>' +
+      '</div>' +
+      '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:16px">VER MI PORTAL</a>' +
+      '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
+        'Cualquier duda escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
+      '</p>' +
+    '</div>' +
+    _pieCorreo3() +
+  '</div>';
+}
+
+// ─── ENDPOINT: guardarNotasInternas ──────────────────────────────────────────
+
+function accionGuardarNotasInternas3(body) {
+  const token = body.token || '';
+  const notas = body.notas !== undefined ? String(body.notas) : '';
+  if (!token) return jsonResponse3({ error: 'Token requerido' });
+
+  const contrato = obtenerContrato3(token);
+  if (!contrato) return jsonResponse3({ error: 'Contrato no encontrado' });
+
+  actualizarContrato3(token, { NotasInternas: notas });
+  return jsonResponse3({ ok: true });
+}
+
+// ─── ENDPOINT: guardarResena (público) ───────────────────────────────────────
+
+function accionGuardarResena3(body) {
+  const token        = body.token        || '';
+  const calificacion = parseInt(body.calificacion) || 0;
+  const resenaTexto  = String(body.resenaTexto || '').substring(0, 500);
+
+  if (!token)                          return jsonResponse3({ error: 'Token requerido' });
+  if (calificacion < 1 || calificacion > 5) return jsonResponse3({ error: 'Calificación debe ser entre 1 y 5' });
+
+  const contrato = obtenerContrato3(token);
+  if (!contrato) return jsonResponse3({ error: 'Contrato no encontrado' });
+
+  if (parseFloat(contrato.Calificacion) > 0) {
+    return jsonResponse3({ ok: true, yaRegistrada: true });
+  }
+
+  actualizarContrato3(token, { Calificacion: calificacion, ResenaTexto: resenaTexto });
+
+  try {
+    const msg = 'Nueva reseña de ' + contrato.NombreCliente + ' (Folio ' + contrato.Folio + '): ' +
+      calificacion + '/5 estrellas' + (resenaTexto ? ' — "' + resenaTexto + '"' : '');
+    enviarCorreo3(CONFIG3.BRUNO_EMAIL, 'Nueva reseña — ' + contrato.NombreCliente, '<p style="font-family:Arial,sans-serif;font-size:14px;color:#1C1C1E">' + htmlEsc3(msg) + '</p>', []);
+  } catch (err) {
+    Logger.log('accionGuardarResena3: error notificando a Bruno: ' + err.message);
+  }
+
+  return jsonResponse3({ ok: true });
+}
+
+// ─── TRIGGER: recordatorio24h3 ───────────────────────────────────────────────
+
+function recordatorio24h3() {
+  const ahora   = new Date();
+  const manana  = new Date(ahora.getTime() + 24 * 60 * 60 * 1000);
+  const fechaOk = manana.toISOString().substring(0, 10); // YYYY-MM-DD
+
+  const hojaProp = getPropiedadesSheet3();
+  const datosProp = hojaProp.getDataRange().getValues();
+  const encProp   = datosProp[0];
+  const colToken  = encProp.indexOf('ContratoToken');
+  const colFecha  = encProp.indexOf('FechaSesion');
+  const colHora   = encProp.indexOf('HoraSesion');
+  if (colToken === -1 || colFecha === -1) return;
+
+  const tokensMañana = {};
+  for (let i = 1; i < datosProp.length; i++) {
+    const fila = datosProp[i];
+    const fechaSesion = String(fila[colFecha] || '').substring(0, 10);
+    if (fechaSesion === fechaOk) {
+      const t = fila[colToken];
+      if (!t) continue;
+      if (!tokensMañana[t]) tokensMañana[t] = [];
+      tokensMañana[t].push({
+        fechaSesion : fechaSesion,
+        horaSesion  : fila[colHora] || '',
+      });
+    }
+  }
+
+  if (!Object.keys(tokensMañana).length) return;
+
+  for (const token of Object.keys(tokensMañana)) {
+    const contrato = obtenerContrato3(token);
+    if (!contrato) continue;
+    if (!['Anticipo recibido', 'En produccion', 'Firmado'].includes(contrato.Estatus)) continue;
+
+    const yaEnviado = String(contrato.RecordatorioEnviado || '').substring(0, 10);
+    if (yaEnviado === fechaOk) continue;
+
+    try {
+      enviarCorreo3(
+        contrato.CorreoCliente,
+        'Recordatorio: tu sesión es mañana — Inmuebles Audiovisuales',
+        correoRecordatorio3(contrato, tokensMañana[token], token),
+        []
+      );
+      actualizarContrato3(token, { RecordatorioEnviado: fechaOk });
+      Logger.log('recordatorio24h3: enviado a ' + contrato.NombreCliente);
+    } catch (err) {
+      Logger.log('recordatorio24h3: error para ' + token + ': ' + err.message);
+    }
+  }
+}
+
+function correoRecordatorio3(contrato, propiedades, token) {
+  const urlPortal = CONFIG3.BASE_URL_PORTAL + '?token=' + token;
+  const nombre1   = (contrato.NombreCliente || '').split(' ')[0];
+  const sesionesHtml = propiedades.map(function(p) {
+    return '<div style="background:#F5F5F7;border-radius:8px;padding:12px 14px;margin-bottom:8px">' +
+      '<p style="font-size:13px;font-weight:700;color:#1C1C1E;margin:0 0 2px">Mañana</p>' +
+      (p.horaSesion
+        ? '<p style="font-size:13px;color:#444;margin:0">' + htmlEsc3(p.horaSesion) + ' hrs</p>'
+        : '') +
+    '</div>';
+  }).join('');
+  return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
+    _encabezadoCorreo3() +
+    '<div style="padding:28px 24px;background:#FAFAFA">' +
+      '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Tu sesión es mañana, ' + htmlEsc3(nombre1) + '.</h2>' +
+      '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">Aquí tienes los detalles de tu sesión programada:</p>' +
+      sesionesHtml +
+      '<div style="background:#F5F5F7;border-radius:8px;padding:14px 16px;margin-bottom:20px">' +
+        '<p style="font-size:12px;font-weight:700;color:#1C1C1E;margin:0 0 4px">Antes de tu sesión</p>' +
+        '<p style="font-size:12px;color:#9B9B9F;margin:0 0 8px;line-height:1.6">Preparamos una guía con todo lo que debes saber para aprovechar al máximo tu sesión.</p>' +
+        '<a href="https://inmueblesaudiovisuales.com/guia_sesion.html" style="color:#C9A84C;font-weight:700;font-size:12px;text-decoration:none">Ver guía de preparación</a>' +
+      '</div>' +
+      '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:16px">VER MI PORTAL</a>' +
+      '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
+        '¿Necesitas reagendar? Escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
+      '</p>' +
+    '</div>' +
+    _pieCorreo3() +
+  '</div>';
+}
+
+// ─── TRIGGER: detectarPDFsAtascados3 ─────────────────────────────────────────
+
+function detectarPDFsAtascados3() {
+  const hoja  = getContratosSheet3();
+  const datos = hoja.getDataRange().getValues();
+  const enc   = datos[0];
+  const ahora = Date.now();
+  const LIMITE_MS = 15 * 60 * 1000; // 15 minutos
+
+  const atascados = [];
+  for (let i = 1; i < datos.length; i++) {
+    const fila = {};
+    enc.forEach((col, j) => { fila[col] = datos[i][j]; });
+    if (!fila.FechaFirma)    continue;
+    if (fila.PdfContratoUrl) continue;
+
+    const msFirma = new Date(fila.FechaFirma).getTime();
+    if (isNaN(msFirma) || ahora - msFirma < LIMITE_MS) continue;
+
+    atascados.push(fila.NombreCliente + ' (' + fila.Folio + ') — firmado ' + fila.FechaFirma);
+  }
+
+  if (!atascados.length) return;
+
+  const cuerpo = '<div style="font-family:Arial,sans-serif;font-size:14px;color:#1C1C1E;max-width:520px">' +
+    '<p style="font-weight:700;margin:0 0 12px">Se detectaron ' + atascados.length + ' contrato(s) sin PDF después de 15 minutos:</p>' +
+    '<ul style="margin:0;padding-left:20px">' +
+      atascados.map(function(a) { return '<li style="margin-bottom:6px">' + htmlEsc3(a) + '</li>'; }).join('') +
+    '</ul>' +
+    '<p style="margin-top:16px;color:#9B9B9F;font-size:12px">Verifica el trigger procesarPDFsPendientes3 en Apps Script.</p>' +
+  '</div>';
+
+  enviarCorreo3(CONFIG3.BRUNO_EMAIL, 'Alerta: PDFs atascados — Inmuebles Audiovisuales', cuerpo, []);
+  Logger.log('detectarPDFsAtascados3: alerta enviada por ' + atascados.length + ' contrato(s)');
 }
 
 // ─── FUNCIONES DE PRUEBA ── ejecutar desde el editor para verificar cada sección
