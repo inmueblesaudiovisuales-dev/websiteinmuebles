@@ -1185,48 +1185,27 @@ function accionManejarFirmaCliente3(body) {
     lock.releaseLock();
   }
 
-  // Operaciones lentas fuera del lock: PDF, Drive, correos.
-  let pdfBlob = null;
-  try {
-    pdfBlob = generarPDFContrato3(contratoActualizado, propsMerge, firmaBase64);
-  } catch (err) {
-    Logger.log('Error generando PDF del contrato: ' + err.message);
-    enviarCorreo3(
-      CONFIG3.BRUNO_EMAIL,
-      'Error generando PDF — ' + contratoActualizado.NombreCliente,
-      '<p style="font-family:sans-serif">No se pudo generar el PDF del contrato firmado por <strong>' +
-        contratoActualizado.NombreCliente + '</strong>.</p>' +
-        '<p>Folio: ' + (contratoActualizado.Folio || '—') + '</p>' +
-        '<p>Error: ' + err.message + '</p>',
-      []
-    );
-  }
-
-  // Guardar PDF en Drive para que el cliente pueda descargarlo desde el portal
-  if (pdfBlob) {
+  // Guardar firma como imagen temporal en Drive para generacion diferida del PDF.
+  if (firmaBase64) {
     try {
-      const carpetaRaiz       = DriveApp.getFolderById(CONFIG3.CARPETA_PROYECTOS_ID);
-      const carpetaContratos  = buscarOCrearCarpeta3('Contratos Firmados', carpetaRaiz);
-      const nombreArchivo     = (contratoActualizado.Folio || contratoActualizado.NombreCliente) + ' - Contrato.pdf';
-      const archivo           = carpetaContratos.createFile(pdfBlob.setName(nombreArchivo));
-      archivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-      actualizarContrato3(tokenID, { PdfContratoUrl: archivo.getDownloadUrl() });
-    } catch(err) {
-      Logger.log('Error guardando PDF en Drive: ' + err.message);
-      enviarCorreo3(
-        CONFIG3.BRUNO_EMAIL,
-        'Error al guardar PDF en Drive — ' + contratoActualizado.NombreCliente,
-        '<p>El contrato de <strong>' + contratoActualizado.NombreCliente + '</strong> (' + (contratoActualizado.Folio || token) + ') se firmó correctamente, pero el PDF no pudo guardarse en Drive.</p><p>El cliente recibió el PDF adjunto por correo. Para activar el botón de descarga en el portal, sube el PDF manualmente a Drive y pega la URL en la columna <code>PdfContratoUrl</code> de la hoja Contratos3.</p><p>Error: ' + err.message + '</p>',
-        []
+      const base64Data     = firmaBase64.replace(/^data:image\/\w+;base64,/, '');
+      const firmaBlob      = Utilities.newBlob(
+        Utilities.base64Decode(base64Data), 'image/png', tokenID + '_firma.png'
       );
+      const carpetaSistema = DriveApp.getFolderById(CONFIG3.CARPETA_SISTEMA_ID);
+      const carpetaFirmas  = buscarOCrearCarpeta3('Firmas Pendientes', carpetaSistema);
+      const firmaFile      = carpetaFirmas.createFile(firmaBlob);
+      actualizarContrato3(tokenID, { FirmaBase64URL: firmaFile.getId() });
+    } catch (err) {
+      Logger.log('Error guardando firma temporal: ' + err.message);
     }
   }
 
   enviarCorreo3(
     contratoActualizado.CorreoCliente,
     'Tu contrato con Inmuebles Audiovisuales',
-    correoContratoCliente3(contratoActualizado, propsMerge, token, !!pdfBlob),
-    pdfBlob ? [pdfBlob] : []
+    correoContratoCliente3(contratoActualizado, propsMerge, token, false),
+    []
   );
 
   enviarCorreo3(
@@ -1715,11 +1694,7 @@ function correoContratoCliente3(contrato, props, token, tienePdf) {
     if (!items.length) return '';
     return '<ul style="margin:6px 0 12px;padding-left:18px">' +
       items.map(item => {
-        const partes = item.split(' — ');
-        if (partes.length > 1) {
-          return '<li style="font-size:12px;color:#444;line-height:1.5;margin-bottom:3px"><strong style="color:#1C1C1E">' + htmlEsc3(partes[0]) + '</strong> — ' + htmlEsc3(partes.slice(1).join(' — ')) + '</li>';
-        }
-        return '<li style="font-size:12px;color:#444;line-height:1.5;margin-bottom:3px">' + htmlEsc3(item) + '</li>';
+        return '<li style="font-size:12px;color:#444;line-height:1.5;margin-bottom:3px">' + htmlEsc3(item.split(' — ')[0]) + '</li>';
       }).join('') +
     '</ul>';
   };
@@ -1742,7 +1717,9 @@ function correoContratoCliente3(contrato, props, token, tienePdf) {
       '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Hola, ' + htmlEsc3(contrato.NombreCliente) + '.</h2>' +
       '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">' +
         'Recibimos tu información.' +
-        (tienePdf ? ' Adjunto encontrarás tu contrato firmado.' : '') +
+        (tienePdf
+          ? ' Adjunto encontrarás tu contrato firmado.'
+          : ' Tu contrato firmado llegará a este correo en los próximos 2 minutos. Si no lo ves, revisa tu carpeta de spam.') +
         ' Para confirmar tu fecha, realiza el anticipo a la brevedad. ' +
         'Trabajamos por orden de confirmación.' +
       '</p>' +
@@ -1754,11 +1731,6 @@ function correoContratoCliente3(contrato, props, token, tienePdf) {
         '</tr>' +
       '</table>' +
       '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:12px">VER OPCIONES DE PAGO</a>' +
-      '<div style="background:#F5F5F7;border-radius:8px;padding:14px 16px;margin-bottom:16px">' +
-        '<p style="font-size:12px;font-weight:700;color:#1C1C1E;margin:0 0 4px">Antes de tu sesión</p>' +
-        '<p style="font-size:12px;color:#9B9B9F;margin:0 0 8px;line-height:1.6">Preparamos una guía con todo lo que debes saber para aprovechar al máximo tu sesión.</p>' +
-        '<a href="https://inmueblesaudiovisuales.com/guia_sesion.html" style="color:#C9A84C;font-weight:700;font-size:12px;text-decoration:none">Ver guía de preparación</a>' +
-      '</div>' +
       '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
         'Cualquier duda escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
       '</p>' +
@@ -1806,7 +1778,12 @@ function correoConfirmacionAbono3(contrato, abonos, totalAbonado, token) {
         '<tr><td style="padding:8px 0;font-size:13px;color:#9B9B9F">Saldo pendiente</td><td style="padding:8px 0;font-size:14px;font-weight:700;color:#C9A84C;text-align:right">' + formatMXN3(saldo) + '</td></tr>' +
       '</table>' +
       '<p style="font-size:13px;color:#444;margin:0 0 16px">El saldo restante se liquida al momento de la entrega del material. Cualquier duda, <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none;font-weight:600">contáctanos por WhatsApp</a>.</p>' +
-      (urlPortal ? '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:4px">VER MI COMPROBANTE</a>' : '') +
+      (urlPortal ? '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:16px">VER MI COMPROBANTE</a>' : '') +
+      '<div style="background:#F5F5F7;border-radius:8px;padding:14px 16px;margin-bottom:4px">' +
+        '<p style="font-size:12px;font-weight:700;color:#1C1C1E;margin:0 0 4px">Antes de tu sesión</p>' +
+        '<p style="font-size:12px;color:#9B9B9F;margin:0 0 8px;line-height:1.6">Preparamos una guía con todo lo que debes saber para aprovechar al máximo tu sesión.</p>' +
+        '<a href="https://inmueblesaudiovisuales.com/guia_sesion.html" style="color:#C9A84C;font-weight:700;font-size:12px;text-decoration:none">Ver guía de preparación</a>' +
+      '</div>' +
     '</div>' +
     _pieCorreo3() +
   '</div>';
@@ -1875,6 +1852,16 @@ function accionRegistrarAbono3(body) {
     lock.releaseLock();
   }
 
+  const contratoFinal = obtenerContrato3(token);
+  const abonosFinal   = obtenerAbonos3(token);
+
+  enviarCorreo3(
+    contratoFinal.CorreoCliente,
+    'Confirmación de pago — Inmuebles Audiovisuales',
+    correoConfirmacionAbono3(contratoFinal, abonosFinal, totalAbonado, token),
+    []
+  );
+
   if (esPrimerAbono) {
     try {
       const contratoActual = obtenerContrato3(token);
@@ -1912,16 +1899,6 @@ function accionRegistrarAbono3(body) {
       Logger.log('Error en automatizaciones del primer abono: ' + err.message);
     }
   }
-
-  const contratoFinal = obtenerContrato3(token);
-  const abonosFinal   = obtenerAbonos3(token);
-
-  enviarCorreo3(
-    contratoFinal.CorreoCliente,
-    'Confirmación de pago — Inmuebles Audiovisuales',
-    correoConfirmacionAbono3(contratoFinal, abonosFinal, totalAbonado, token),
-    []
-  );
 
   Logger.log('Abono registrado: ' + nombreCliente + ' | monto: ' + monto + ' | saldo: ' + saldoNuevo);
   return jsonResponse3({
@@ -1989,11 +1966,119 @@ function accionGuardarEntrega3(body) {
   return jsonResponse3({ ok: true });
 }
 
+// ─── CORREO: PDF DEL CONTRATO (enviado por trigger) ──────────────────────────
+
+function correoContratoPDF3(contrato, token) {
+  const urlPortal = CONFIG3.BASE_URL_PORTAL + '?token=' + token;
+  const nombre1   = (contrato.NombreCliente || '').split(' ')[0];
+  return '<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto">' +
+    _encabezadoCorreo3() +
+    '<div style="padding:28px 24px;background:#FAFAFA">' +
+      '<h2 style="margin:0 0 8px;font-size:18px;color:#1C1C1E">Hola, ' + htmlEsc3(nombre1) + '.</h2>' +
+      '<p style="font-size:14px;color:#444;line-height:1.7;margin:0 0 20px">' +
+        'Adjunto encontrarás tu contrato firmado. También puedes descargarlo desde tu portal en cualquier momento.' +
+      '</p>' +
+      '<a href="' + urlPortal + '" style="display:block;background:#C9A84C;color:#1C1C1E;text-decoration:none;text-align:center;padding:14px;font-weight:700;font-size:13px;border-radius:6px;margin-bottom:16px">VER MI PORTAL</a>' +
+      '<p style="font-size:12px;color:#9B9B9F;text-align:center;margin:0">' +
+        'Cualquier duda escríbenos por <a href="' + CONFIG3.WA_LINK + '" style="color:#C9A84C;text-decoration:none">WhatsApp</a>.' +
+      '</p>' +
+    '</div>' +
+    _pieCorreo3() +
+  '</div>';
+}
+
+// ─── TRIGGER: procesarPDFsPendientes ─────────────────────────────────────────
+
+function procesarPDFsPendientes3() {
+  const hoja  = getContratosSheet3();
+  const datos = hoja.getDataRange().getValues();
+  const enc   = datos[0];
+
+  const pendientes = [];
+  for (let i = 1; i < datos.length; i++) {
+    const fila = {};
+    enc.forEach((col, j) => { fila[col] = datos[i][j]; });
+    if (!fila.Token)      continue;
+    if (!fila.FechaFirma) continue;    // no firmado
+    if (fila.PdfContratoUrl) continue; // PDF ya generado
+    pendientes.push(fila);
+  }
+
+  if (!pendientes.length) return;
+
+  const inicio = Date.now();
+  const MAX_MS = 4 * 60 * 1000; // 4 minutos, deja margen antes del limite de 6
+
+  for (const contrato of pendientes) {
+    if (Date.now() - inicio > MAX_MS) {
+      Logger.log('procesarPDFsPendientes3: tiempo limite alcanzado, quedan pendientes');
+      break;
+    }
+
+    try {
+      const props = obtenerPropiedades3(contrato.Token);
+
+      // Recuperar firma desde Drive usando el ID guardado en FirmaBase64URL.
+      let firmaBase64 = '';
+      const firmaFileId = String(contrato.FirmaBase64URL || '').trim();
+      if (firmaFileId) {
+        try {
+          const firmaFile = DriveApp.getFileById(firmaFileId);
+          firmaBase64     = 'data:image/png;base64,' +
+            Utilities.base64Encode(firmaFile.getBlob().getBytes());
+        } catch (e) {
+          Logger.log('procesarPDFsPendientes3: firma no disponible para ' + contrato.Token + ': ' + e.message);
+        }
+      }
+
+      let pdfBlob = null;
+      try {
+        pdfBlob = generarPDFContrato3(contrato, props, firmaBase64);
+      } catch (err) {
+        Logger.log('procesarPDFsPendientes3: error generando PDF para ' + contrato.Token + ': ' + err.message);
+        continue; // reintenta en la siguiente ejecucion
+      }
+
+      const carpetaRaiz      = DriveApp.getFolderById(CONFIG3.CARPETA_PROYECTOS_ID);
+      const carpetaContratos = buscarOCrearCarpeta3('Contratos Firmados', carpetaRaiz);
+      const nombreArchivo    = (contrato.Folio || contrato.NombreCliente) + ' - Contrato.pdf';
+      const archivo          = carpetaContratos.createFile(pdfBlob.setName(nombreArchivo));
+      archivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+      // Registrar la URL antes de enviar el correo: si el correo falla,
+      // el PDF ya esta disponible en el portal y no se regenera en el siguiente ciclo.
+      actualizarContrato3(contrato.Token, { PdfContratoUrl: archivo.getDownloadUrl() });
+
+      enviarCorreo3(
+        contrato.CorreoCliente,
+        'Tu contrato firmado — Inmuebles Audiovisuales',
+        correoContratoPDF3(contrato, contrato.Token),
+        [pdfBlob]
+      );
+
+      // Eliminar firma temporal de Drive.
+      if (firmaFileId) {
+        try {
+          DriveApp.getFileById(firmaFileId).setTrashed(true);
+          actualizarContrato3(contrato.Token, { FirmaBase64URL: '' });
+        } catch (e) {
+          Logger.log('procesarPDFsPendientes3: error limpiando firma temporal: ' + e.message);
+        }
+      }
+
+      Logger.log('procesarPDFsPendientes3: PDF generado para ' + contrato.NombreCliente + ' (' + contrato.Folio + ')');
+
+    } catch (err) {
+      Logger.log('procesarPDFsPendientes3: error inesperado para ' + contrato.Token + ': ' + err.message);
+    }
+  }
+}
+
 // ─── TRIGGERS ─────────────────────────────────────────────────────────────────
 
 function instalarTriggers3() {
   // Ejecutar UNA vez desde el editor de Apps Script.
-  const FUNCIONES = ['limpiarTokensViejos3'];
+  const FUNCIONES = ['limpiarTokensViejos3', 'procesarPDFsPendientes3'];
 
   ScriptApp.getProjectTriggers().forEach(t => {
     if (FUNCIONES.includes(t.getHandlerFunction())) {
@@ -2008,7 +2093,12 @@ function instalarTriggers3() {
     .atHour(1)
     .create();
 
-  Logger.log('instalarTriggers3: trigger semanal creado para lunes 01:00');
+  ScriptApp.newTrigger('procesarPDFsPendientes3')
+    .timeBased()
+    .everyMinutes(1)
+    .create();
+
+  Logger.log('instalarTriggers3: triggers instalados (lunes 01:00 + cada minuto para PDFs)');
 }
 
 // ─── ENDPOINT: subirArchivo ──────────────────────────────────────────────────
