@@ -327,7 +327,12 @@
   <div class="step-line" id="line2"></div>
   <div class="step">
     <div class="step-circle" id="step3-circle">3</div>
-    <div class="step-label"  id="step3-label">Entrega</div>
+    <div class="step-label"  id="step3-label">Sesión</div>
+  </div>
+  <div class="step-line" id="line3"></div>
+  <div class="step">
+    <div class="step-circle" id="step4-circle">4</div>
+    <div class="step-label"  id="step4-label">Entrega</div>
   </div>
 </div>
 
@@ -449,7 +454,8 @@ function actualizarStepper(paso) {
   var config = [
     { circle: 'step1-circle', label: 'step1-label', line: 'line1' },
     { circle: 'step2-circle', label: 'step2-label', line: 'line2' },
-    { circle: 'step3-circle', label: 'step3-label', line: null   },
+    { circle: 'step3-circle', label: 'step3-label', line: 'line3' },
+    { circle: 'step4-circle', label: 'step4-label', line: null    },
   ];
   config.forEach(function(s, i) {
     var n = i + 1;
@@ -493,9 +499,9 @@ function init() {
       if      (estatus === 'Pendiente firma')   { actualizarStepper(1); renderEtapa1(); }
       else if (estatus === 'Firmado')            { actualizarStepper(2); renderEtapa2(); }
       else if (estatus === 'Anticipo recibido')  { actualizarStepper(3); renderEtapa3(); }
-      else if (estatus === 'En produccion')      { actualizarStepper(3); renderEtapa3(); }
-      else if (estatus === 'Entregado')          { actualizarStepper(3); renderEtapa4(); }
-      else if (estatus === 'Liquidado')          { actualizarStepper(3); renderEtapa4(); }
+      else if (estatus === 'En produccion')      { actualizarStepper(4); renderEtapa3(); }
+      else if (estatus === 'Entregado')          { actualizarStepper(5); renderEtapa4(); }
+      else if (estatus === 'Liquidado')          { actualizarStepper(5); renderEtapa4(); }
       else { mostrarError('Estado del contrato no reconocido.'); }
     })
     .catch(function() { mostrarError('Error de conexión. Verifica tu internet e intenta de nuevo.'); });
@@ -1506,6 +1512,32 @@ function renderEtapa4() {
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
   html += '¿Necesitas ayuda? Escríbenos por WhatsApp</a>';
 
+  // Reseña interna
+  if (d.calificacion > 0) {
+    html += '<div class="card" style="text-align:center">';
+    html += '<p class="section-title" style="text-align:center">Gracias por tu reseña</p>';
+    var estrellasFilled = '';
+    for (var si = 1; si <= 5; si++) {
+      estrellasFilled += '<svg width="22" height="22" viewBox="0 0 24 24" fill="' + (si <= d.calificacion ? 'var(--gold)' : 'none') + '" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" style="margin:0 2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+    }
+    html += '<div style="margin-bottom:8px">' + estrellasFilled + '</div>';
+    if (d.resenaTexto) html += '<p style="font-size:12px;color:var(--concrete);font-style:italic;margin:0 0 12px">"' + esc(d.resenaTexto) + '"</p>';
+    html += '</div>';
+  } else {
+    html += '<div class="card" id="card-resena">';
+    html += '<p class="section-title">¿Cómo fue tu experiencia?</p>';
+    html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Tu opinión nos ayuda a mejorar.</p>';
+    html += '<div id="estrellas-rating" style="display:flex;justify-content:center;gap:6px;margin-bottom:16px">';
+    for (var ri = 1; ri <= 5; ri++) {
+      html += '<svg data-val="' + ri + '" class="estrella-rating" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--border-strong)" stroke-width="2" stroke-linecap="round" style="cursor:pointer;transition:fill .15s,stroke .15s"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+    }
+    html += '</div>';
+    html += '<textarea id="resena-texto" rows="3" placeholder="Cuéntanos tu experiencia (opcional)..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--bg);color:var(--charcoal);box-sizing:border-box;margin-bottom:10px"></textarea>';
+    html += '<button class="btn-primary" id="btn-enviar-resena" disabled onclick="enviarResena()">Enviar reseña</button>';
+    html += '<div id="msg-resena" style="font-size:12px;margin-top:6px;text-align:center;min-height:16px"></div>';
+    html += '</div>';
+  }
+
   // Google review
   html += '<div class="card" style="text-align:center"><p class="section-title" style="text-align:center">¿Quedaste satisfecho?</p>';
   html += '<p style="font-size:13px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Tu reseña nos ayuda a llegar a más clientes como tú. ¡Gracias!</p>';
@@ -1517,6 +1549,68 @@ function renderEtapa4() {
   document.getElementById('main-content').innerHTML = html;
 
   document.getElementById('btn-imprimir').addEventListener('click', function() { window.print(); });
+
+  var estrellas = document.querySelectorAll('.estrella-rating');
+  var calActual = 0;
+  if (estrellas.length) {
+    estrellas.forEach(function(el) {
+      el.addEventListener('click', function() {
+        calActual = parseInt(el.getAttribute('data-val'));
+        estrellas.forEach(function(e) {
+          var v = parseInt(e.getAttribute('data-val'));
+          e.setAttribute('fill', v <= calActual ? 'var(--gold)' : 'none');
+          e.setAttribute('stroke', 'var(--gold)');
+        });
+        var btn = document.getElementById('btn-enviar-resena');
+        if (btn) btn.disabled = false;
+      });
+      el.addEventListener('mouseenter', function() {
+        var v = parseInt(el.getAttribute('data-val'));
+        estrellas.forEach(function(e) {
+          var ev = parseInt(e.getAttribute('data-val'));
+          e.setAttribute('fill', ev <= v ? 'var(--gold)' : 'none');
+          e.setAttribute('stroke', ev <= v ? 'var(--gold)' : 'var(--border-strong)');
+        });
+      });
+      el.addEventListener('mouseleave', function() {
+        estrellas.forEach(function(e) {
+          var ev = parseInt(e.getAttribute('data-val'));
+          e.setAttribute('fill', ev <= calActual ? 'var(--gold)' : 'none');
+          e.setAttribute('stroke', ev <= calActual ? 'var(--gold)' : 'var(--border-strong)');
+        });
+      });
+    });
+  }
+}
+
+var _calificacionSeleccionada = 0;
+function enviarResena() {
+  var cal  = parseInt((document.querySelector('.estrella-rating[fill="var(--gold)"]') || {}).getAttribute && document.querySelectorAll('.estrella-rating[fill="var(--gold)"]').length) || 0;
+  var estrellas = document.querySelectorAll('.estrella-rating');
+  var calVal = 0;
+  estrellas.forEach(function(e) { if (e.getAttribute('fill') === 'var(--gold)') calVal = parseInt(e.getAttribute('data-val')); });
+  if (!calVal) return;
+  var texto = (document.getElementById('resena-texto') || {value:''}).value.trim();
+  var btn   = document.getElementById('btn-enviar-resena');
+  var msg   = document.getElementById('msg-resena');
+  if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+  apiPost({ action: 'guardarResena', token: token, calificacion: calVal, resenaTexto: texto })
+    .then(function(data) {
+      if (!data.ok && !data.yaRegistrada) throw new Error(data.error || 'Error');
+      if (msg) { msg.style.color = 'var(--success)'; msg.textContent = 'Gracias por tu reseña.'; }
+      var card = document.getElementById('card-resena');
+      if (card) {
+        var estrellasFilled = '';
+        for (var i = 1; i <= 5; i++) {
+          estrellasFilled += '<svg width="22" height="22" viewBox="0 0 24 24" fill="' + (i <= calVal ? 'var(--gold)' : 'none') + '" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" style="margin:0 2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
+        }
+        card.innerHTML = '<p class="section-title" style="text-align:center">Gracias por tu reseña</p><div style="text-align:center;margin-bottom:8px">' + estrellasFilled + '</div>' + (texto ? '<p style="font-size:12px;color:var(--concrete);font-style:italic;text-align:center;margin:0">"' + esc(texto) + '"</p>' : '');
+      }
+    })
+    .catch(function(e) {
+      if (msg) { msg.style.color = 'var(--error,#e74c3c)'; msg.textContent = 'Error al enviar. Intenta de nuevo.'; }
+      if (btn) { btn.disabled = false; btn.textContent = 'Enviar reseña'; }
+    });
 }
 
 /* ── SUBIDA DE ARCHIVOS ──────────────────────────────────────────────────────── */
