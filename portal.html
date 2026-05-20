@@ -1093,8 +1093,14 @@ function renderRevision() {
   html += '</div>';
 
   // --- Términos y condiciones ---
-  html += '<div class="card"><p class="section-title">Términos y condiciones</p>';
+  html += '<div class="card">';
+  html += '<details style="margin:0">';
+  html += '<summary style="list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0 16px">' +
+    '<p class="section-title" style="margin:0">Términos y condiciones</p>' +
+    '<span style="font-size:11px;color:var(--concrete);white-space:nowrap;margin-left:12px">Ver / ocultar</span>' +
+  '</summary>';
   html += _terminosPortal();
+  html += '</details>';
   html += '</div>';
 
   // --- Firma ---
