@@ -1388,7 +1388,20 @@ function renderPanel(data) {
     : '<p style="font-size:12px;color:var(--ink-3)">Sin propiedades configuradas aún.</p>';
 
   const waTelPortal = normalizarTelWA(c.TelefonoCliente);
-  const waUrl = 'https://wa.me/' + waTelPortal + '?text=' + encodeURIComponent('Aquí está tu link para revisar y firmar tu contrato con Inmuebles Audiovisuales: ' + urlPortal);
+  const nombre1wa   = (c.NombreCliente || '').split(' ')[0];
+  const waTexto = (() => {
+    const st = c.Estatus || '';
+    if (st === 'Pendiente firma')
+      return 'Hola ' + nombre1wa + ', aquí está tu link para revisar y firmar tu contrato: ' + urlPortal;
+    if (st === 'Firmado')
+      return 'Hola ' + nombre1wa + ', te recuerdo que tienes pendiente el anticipo de ' + fmxn(parseFloat(c.Anticipo) || 0) + '. Puedes realizar el pago aquí: ' + urlPortal;
+    if (st === 'Anticipo recibido' || st === 'En produccion')
+      return 'Hola ' + nombre1wa + ', estamos trabajando en la edición de tu material. Cualquier duda con gusto te ayudo.';
+    if (st === 'Entregado' || st === 'Liquidado')
+      return 'Hola ' + nombre1wa + ', tu material ya está listo para descargar. Aquí encuentras tu link: ' + urlPortal;
+    return 'Hola ' + nombre1wa + ', te comparto el link de tu portal: ' + urlPortal;
+  })();
+  const waUrl = 'https://wa.me/' + waTelPortal + '?text=' + encodeURIComponent(waTexto);
 
   const precioTotal  = parseFloat(c.PrecioTotal)  || 0;
   const totalAbonado = parseFloat(data.totalAbonado) || 0;
@@ -1489,6 +1502,22 @@ function renderPanel(data) {
         <button class="btn-secundario btn-sm" onclick="cambiarEstatus()">Guardar</button>
       </div>
       <div class="form-msg" id="msg-estatus"></div>
+    </div>
+    ${['Anticipo recibido','Firmado'].includes(c.Estatus) ? `
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <p class="sec-label" style="margin-bottom:6px">Producción</p>
+      <button class="btn-primario gold" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" id="btn-sesion-completada" onclick="marcarSesionCompletada()">
+        <i class="ti ti-camera-check"></i> Sesión completada — iniciar edición
+      </button>
+      <div class="form-msg" id="msg-sesion-completada"></div>
+    </div>` : ''}
+    <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+      <p class="sec-label" style="margin-bottom:6px">Notas internas</p>
+      <textarea id="notas-internas-txt" rows="3" placeholder="Notas visibles solo para ti..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--page);color:var(--ink-1);box-sizing:border-box">${esc(c.NotasInternas || '')}</textarea>
+      <div style="display:flex;gap:6px;margin-top:6px">
+        <button class="btn-primario gold btn-sm" onclick="guardarNotasInternas()">Guardar notas</button>
+      </div>
+      <div class="form-msg" id="msg-notas-internas"></div>
     </div>
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:10px">Zona de riesgo</p>
@@ -1601,6 +1630,43 @@ async function guardarEntrega() {
   } finally {
     const b = document.getElementById('btn-entrega');
     if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-send"></i> Enviar al cliente'; }
+  }
+}
+
+// ── SESIÓN COMPLETADA ─────────────────────────────────────────────────────────
+
+async function marcarSesionCompletada() {
+  const t   = tokenActivo;
+  const btn = document.getElementById('btn-sesion-completada');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Procesando...'; }
+  setMsg('msg-sesion-completada', '', '');
+  try {
+    const data = await apiPost({ action: 'marcarSesionCompletada', token: t });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    setMsg('msg-sesion-completada', 'Sesión marcada. Se envió correo al cliente.', 'ok');
+    cargarContratos();
+    if (t && t === tokenActivo) {
+      try { await abrirPanel(t); } catch(_) {}
+    }
+  } catch (e) {
+    setMsg('msg-sesion-completada', 'Error: ' + e.message, 'error');
+    const b = document.getElementById('btn-sesion-completada');
+    if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-camera-check"></i> Sesión completada — iniciar edición'; }
+  }
+}
+
+// ── NOTAS INTERNAS ────────────────────────────────────────────────────────────
+
+async function guardarNotasInternas() {
+  const t     = tokenActivo;
+  const notas = (document.getElementById('notas-internas-txt') || {}).value || '';
+  setMsg('msg-notas-internas', '', '');
+  try {
+    const data = await apiPost({ action: 'guardarNotasInternas', token: t, notas });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    setMsg('msg-notas-internas', 'Notas guardadas.', 'ok');
+  } catch (e) {
+    setMsg('msg-notas-internas', 'Error: ' + e.message, 'error');
   }
 }
 
