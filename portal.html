@@ -1434,13 +1434,14 @@ function renderEtapa4() {
   var entrega = (d.entregaDriveLink || '').trim();
   if (entrega && !/^https?:\/\//i.test(entrega)) entrega = 'https://' + entrega;
   var extras  = (d.entregaLinksExtra || '').trim();
+  var revocada = !!(d.entregaRevocada && String(d.entregaRevocada).trim());
   var pagado  = parseFloat(d.totalAbonado) || 0;
   var total   = parseFloat(d.precioTotal)  || 0;
   var saldo   = Math.max(0, total - pagado);
 
   var html = '<div class="wrap">';
 
-  if (estatus === 'Entregado' || estatus === 'Liquidado') {
+  if ((estatus === 'Entregado' || estatus === 'Liquidado') && !revocada) {
     html += '<div class="banner success" style="background:linear-gradient(135deg,#0d2b1a 0%,#0a1f12 100%);border-color:#2ecc71;padding:20px 16px">';
     html += '<div style="text-align:center;width:100%">';
     html += '<div style="font-size:32px;margin-bottom:8px">&#127881;</div>';
@@ -1449,8 +1450,14 @@ function renderEtapa4() {
     html += '</div></div>';
   }
 
-  // Links de entrega
-  if (entrega) {
+  // Links de entrega — ocultos si el acceso fue revocado desde el admin
+  if (entrega && revocada) {
+    html += '<div class="card"><p class="section-title">Material no disponible</p>';
+    html += '<p style="font-size:13px;color:var(--concrete);margin-bottom:16px;line-height:1.6">El acceso a tu material está suspendido temporalmente. Escríbenos por WhatsApp y con gusto lo resolvemos.</p>';
+    html += '<a href="https://wa.me/528127174207?text=' + encodeURIComponent('Hola, no puedo acceder a la descarga de mi material.') + '" target="_blank" rel="noopener" class="btn-secondary" style="display:flex;align-items:center;gap:8px;text-decoration:none;color:#25d366;border-color:#25d366">';
+    html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+    html += 'Escríbenos por WhatsApp</a></div>';
+  } else if (entrega) {
     html += '<div class="card"><p class="section-title">Descarga tu material</p>';
     html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Los archivos están disponibles en Google Drive. El acceso está disponible por 30 días.</p>';
     html += '<a href="' + esc(entrega) + '" target="_blank" rel="noopener" class="entrega-link">';
