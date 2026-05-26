@@ -368,6 +368,7 @@ var adicionalesOn     = {};
 var orientaciones     = {};
 var hasStroke         = false;
 var isDrawing         = false;
+var _guiaFirma        = null;
 var _pctAnticipo      = 0.5; // porcentaje fijado por Bruno; se deriva al cargar datos
 
 function calcAnticipo(total) {
@@ -673,8 +674,25 @@ function renderEtapa1() {
   });
   html += '</div>';
 
-  html += '<button class="btn-primary" id="btn-revisar">REVISAR Y FIRMAR CONTRATO</button>';
+  // --- Términos y condiciones (cerrados por defecto) ---
+  html += '<div class="card"><details style="margin:0">';
+  html += '<summary style="list-style:none;display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:4px 0 16px">';
+  html += '<p class="section-title" style="margin:0">Términos y condiciones</p>';
+  html += '<span style="font-size:11px;color:var(--concrete);white-space:nowrap;margin-left:12px">Ver / ocultar</span>';
+  html += '</summary>';
+  html += _terminosPortal();
+  html += '</details></div>';
+
+  // --- Firma ---
+  html += '<div class="card"><p class="section-title">Firma digital</p>';
+  html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Dibuja tu firma con el dedo o el cursor para formalizar el contrato.</p>';
+  html += '<div class="firma-wrap"><canvas id="firma-canvas"></canvas></div>';
+  html += '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><p class="firma-hint">Dibuja tu firma en el recuadro</p><button class="btn-limpiar" id="btn-limpiar">Limpiar</button></div>';
+  html += '</div>';
+  html += '<button class="btn-primary" id="btn-firmar" disabled>FIRMAR CONTRATO</button>';
+  html += '<div class="progress-bar-wrap" id="firma-progress-wrap"><div class="progress-bar-fill" id="firma-progress-fill"></div></div>';
   html += '<div class="error-inline" id="error-form"></div>';
+  html += '<div class="error-inline" id="error-firma"></div>';
 
   html += '</div>'; // end wrap
   document.getElementById('main-content').innerHTML = html;
@@ -685,7 +703,10 @@ function renderEtapa1() {
   document.querySelectorAll('.orientacion-btn').forEach(function(el) {
     el.addEventListener('click', function() { seleccionarOrientacion(parseInt(el.dataset.prop, 10), el.dataset.valor); });
   });
-  document.getElementById('btn-revisar').addEventListener('click', validarYRevisar);
+  hasStroke = false;
+  initCanvas();
+  document.getElementById('btn-limpiar').addEventListener('click', limpiarFirma);
+  document.getElementById('btn-firmar').addEventListener('click', validarYFirmar);
 }
 
 /* ── ADD-ONS ────────────────────────────────────────────────────────────────── */
@@ -753,21 +774,41 @@ function initCanvas() {
   if (!canvas) return;
   ctx = canvas.getContext('2d');
 
+  function dibujarGuia() {
+    var rect = canvas.getBoundingClientRect();
+    ctx.save();
+    ctx.setLineDash([4, 4]);
+    ctx.strokeStyle = 'rgba(28,28,30,0.15)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(16, rect.height - 38);
+    ctx.lineTo(rect.width - 16, rect.height - 38);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '500 11px Montserrat, sans-serif';
+    ctx.fillStyle = 'rgba(155,155,159,0.8)';
+    ctx.textAlign = 'center';
+    ctx.fillText('Firma aquí', rect.width / 2, rect.height - 16);
+    ctx.restore();
+    ctx.strokeStyle = '#1C1C1E';
+    ctx.lineWidth   = 2.2;
+    ctx.lineCap     = 'round';
+    ctx.lineJoin    = 'round';
+  }
+  _guiaFirma = dibujarGuia;
+
   function resize() {
     var rect = canvas.getBoundingClientRect();
     var dpr  = window.devicePixelRatio || 1;
     canvas.width  = rect.width  * dpr;
     canvas.height = rect.height * dpr;
     ctx.scale(dpr, dpr);
-    ctx.strokeStyle = '#1C1C1E';
-    ctx.lineWidth   = 2.2;
-    ctx.lineCap     = 'round';
-    ctx.lineJoin    = 'round';
     if (hasStroke) {
       hasStroke = false;
       canvas.classList.remove('activo');
       actualizarBtnFirmar();
     }
+    dibujarGuia();
   }
 
   resize();
@@ -810,12 +851,12 @@ function limpiarFirma() {
   hasStroke = false;
   canvas.classList.remove('activo');
   actualizarBtnFirmar();
+  if (_guiaFirma) _guiaFirma();
 }
 
 function actualizarBtnFirmar() {
-  var chk = document.getElementById('chk-terminos');
   var btn = document.getElementById('btn-firmar');
-  if (btn) btn.disabled = !(chk && chk.checked && hasStroke);
+  if (btn) btn.disabled = !hasStroke;
 }
 
 /* ── ENVIAR FIRMA ───────────────────────────────────────────────────────────── */
@@ -911,6 +952,108 @@ function validarYRevisar() {
     propsPayload           : propsPayload,
   };
   renderRevision();
+}
+
+function validarYFirmar() {
+  var errEl    = document.getElementById('error-form');
+  var errFirma = document.getElementById('error-firma');
+  if (errEl)    errEl.style.display    = 'none';
+  if (errFirma) errFirma.style.display = 'none';
+
+  if (uploadsEnProgreso > 0) {
+    if (errEl) {
+      errEl.textContent   = 'Espera a que terminen de subirse los archivos antes de continuar.';
+      errEl.style.display = 'block';
+      errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+
+  if (!hasStroke) {
+    if (errFirma) {
+      errFirma.textContent   = 'Dibuja tu firma para continuar.';
+      errFirma.style.display = 'block';
+      errFirma.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+
+  var correo   = (document.getElementById('inp-correo')   || {value:''}).value.trim();
+  var telefono = (document.getElementById('inp-telefono') || {value:''}).value.trim();
+  var valido   = true;
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
+    var fc = document.getElementById('field-correo');
+    if (fc) fc.classList.add('has-error');
+    valido = false;
+  } else {
+    var fc2 = document.getElementById('field-correo');
+    if (fc2) fc2.classList.remove('has-error');
+  }
+  if (!telefono || telefono.replace(/\D/g,'').length < 8) {
+    var ft = document.getElementById('field-telefono');
+    if (ft) ft.classList.add('has-error');
+    valido = false;
+  } else {
+    var ft2 = document.getElementById('field-telefono');
+    if (ft2) ft2.classList.remove('has-error');
+  }
+
+  var props        = (portalData && portalData.propiedades) || [];
+  var propsPayload = [];
+
+  props.forEach(function(p, i) {
+    var n    = i + 1;
+    var dir  = (document.getElementById('inp-direccion-' + n) || {value:''}).value.trim();
+    var maps = (document.getElementById('inp-mapas-'     + n) || {value:''}).value.trim();
+    var ori  = orientaciones[n] || '';
+    if (!dir || dir.length < 5) {
+      var el = document.getElementById('field-direccion-' + n);
+      if (el) el.classList.add('has-error');
+      valido = false;
+    }
+    if (!maps || maps.length < 5) {
+      var el2 = document.getElementById('field-mapas-' + n);
+      if (el2) el2.classList.add('has-error');
+      valido = false;
+    }
+    if (!ori) {
+      var el3 = document.getElementById('field-orientacion-' + n);
+      if (el3) el3.classList.add('has-error');
+      var e3  = document.getElementById('err-orientacion-' + n);
+      if (e3) e3.style.display = 'block';
+      valido = false;
+    }
+    var datosEsp = {};
+    if (i === 0) {
+      var comsEl = document.getElementById('inp-comentarios');
+      if (comsEl) datosEsp.comentarios = comsEl.value.trim();
+    }
+    propsPayload.push({
+      direccion        : dir,
+      linkMaps         : maps,
+      referencias      : (document.getElementById('inp-referencias-' + n) || {value:''}).value.trim(),
+      orientacion      : ori,
+      sobreLaPropiedad : (document.getElementById('inp-sobre-' + n) || {value:''}).value.trim(),
+      datosEspecificos : datosEsp,
+      logoUrl          : archivosSubidos['logo-0'] || '',
+    });
+  });
+
+  if (!valido) {
+    var primer = document.querySelector('.has-error');
+    if (primer) primer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  formData = {
+    correo                 : correo,
+    telefono               : telefono,
+    adicionalesSeleccionados: Object.keys(adicionalesOn).filter(function(c) { return adicionalesOn[c]; }),
+    adicionalesSnapshot    : Object.assign({}, adicionalesOn),
+    propsPayload           : propsPayload,
+  };
+  enviarFirma();
 }
 
 function _renderComprobante(d) {
@@ -1311,6 +1454,23 @@ function renderEtapa2() {
     html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
     html += '</div></details>';
 
+    // OXXO / 7-Eleven (tarjeta Banamex)
+    html += '<details style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
+    html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Depósito en OXXO o 7-Eleven<span style="font-size:11px;color:var(--concrete);font-weight:500">Tarjeta Banamex</span></summary>';
+    html += '<div style="padding:0 16px 16px">';
+    html += '<div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">Banamex</span></div>';
+    html += '<div class="dato-fila"><span class="dato-label">Núm. de tarjeta</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="tarjeta-oxxo-e2">5544 9206 0686 5310</span><button class="btn-copy" id="btn-copy-oxxo-e2">Copiar</button></span></div>';
+    html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">Bruno Gutierrez Salazar</span></div>';
+    html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(anticipo) + '</span></div>';
+    html += '</div>';
+    html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.8"><ol style="padding-left:16px;margin:0">';
+    html += '<li>Ve a cualquier tienda OXXO o 7-Eleven.</li>';
+    html += '<li>Dile al cajero que quieres hacer un depósito con número de tarjeta Banamex.</li>';
+    html += '<li>Proporciona el número de tarjeta: <strong style="color:var(--charcoal)">5544 9206 0686 5310</strong></li>';
+    html += '<li>Indica el monto: <strong style="color:var(--charcoal)">' + formatMXN(anticipo) + '</strong></li>';
+    html += '<li>Guarda el ticket y envíanoslo por WhatsApp para confirmar tu pago.</li>';
+    html += '</ol></div></details>';
+
     if (d.clipLink) {
       html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:6px">';
       html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>';
@@ -1354,6 +1514,16 @@ function renderEtapa2() {
       setTimeout(function() { btnCopy.textContent = 'Copiar'; btnCopy.classList.remove('copiado'); }, 2500);
     });
   }
+  var btnOxxoE2 = document.getElementById('btn-copy-oxxo-e2');
+  if (btnOxxoE2) {
+    btnOxxoE2.addEventListener('click', function() {
+      var txt = (document.getElementById('tarjeta-oxxo-e2') || {textContent:''}).textContent.trim();
+      navigator.clipboard.writeText(txt).catch(function() {});
+      btnOxxoE2.textContent = 'Copiado';
+      btnOxxoE2.classList.add('copiado');
+      setTimeout(function() { btnOxxoE2.textContent = 'Copiar'; btnOxxoE2.classList.remove('copiado'); }, 2500);
+    });
+  }
 }
 
 /* ── ETAPA 3 — COMPROBANTE ──────────────────────────────────────────────────── */
@@ -1391,6 +1561,24 @@ function renderEtapa3() {
     html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">' + esc(d.titular || '') + '</span></div>';
     html += '<div class="dato-fila"><span class="dato-label">CLABE</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="clabe-saldo">' + esc(d.clabe || '') + '</span><button class="btn-copy" id="btn-copy-clabe2">Copiar</button></span></div>';
     html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(saldo) + '</span></div></div></details>';
+
+    // OXXO / 7-Eleven (tarjeta Banamex)
+    html += '<details style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
+    html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Depósito en OXXO o 7-Eleven<span style="font-size:11px;color:var(--concrete);font-weight:500">Tarjeta Banamex</span></summary>';
+    html += '<div style="padding:0 16px 16px">';
+    html += '<div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">Banamex</span></div>';
+    html += '<div class="dato-fila"><span class="dato-label">Núm. de tarjeta</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="tarjeta-oxxo-e3">5544 9206 0686 5310</span><button class="btn-copy" id="btn-copy-oxxo-e3">Copiar</button></span></div>';
+    html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">Bruno Gutierrez Salazar</span></div>';
+    html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(saldo) + '</span></div>';
+    html += '</div>';
+    html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.8"><ol style="padding-left:16px;margin:0">';
+    html += '<li>Ve a cualquier tienda OXXO o 7-Eleven.</li>';
+    html += '<li>Dile al cajero que quieres hacer un depósito con número de tarjeta Banamex.</li>';
+    html += '<li>Proporciona el número de tarjeta: <strong style="color:var(--charcoal)">5544 9206 0686 5310</strong></li>';
+    html += '<li>Indica el monto: <strong style="color:var(--charcoal)">' + formatMXN(saldo) + '</strong></li>';
+    html += '<li>Guarda el ticket y envíanoslo por WhatsApp para confirmar tu pago.</li>';
+    html += '</ol></div></details>';
+
     if (d.clipLink) {
       html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;margin-bottom:6px">Pagar saldo restante con tarjeta</a>';
       html += '<details style="border:1px solid var(--border);border-radius:8px;margin-bottom:10px;overflow:hidden">';
@@ -1421,6 +1609,16 @@ function renderEtapa3() {
       btnCopy2.textContent = 'Copiada';
       btnCopy2.classList.add('copiado');
       setTimeout(function() { btnCopy2.textContent = 'Copiar'; btnCopy2.classList.remove('copiado'); }, 2500);
+    });
+  }
+  var btnOxxoE3 = document.getElementById('btn-copy-oxxo-e3');
+  if (btnOxxoE3) {
+    btnOxxoE3.addEventListener('click', function() {
+      var txt = (document.getElementById('tarjeta-oxxo-e3') || {textContent:''}).textContent.trim();
+      navigator.clipboard.writeText(txt).catch(function() {});
+      btnOxxoE3.textContent = 'Copiado';
+      btnOxxoE3.classList.add('copiado');
+      setTimeout(function() { btnOxxoE3.textContent = 'Copiar'; btnOxxoE3.classList.remove('copiado'); }, 2500);
     });
   }
 }
@@ -1479,7 +1677,7 @@ function renderEtapa4() {
         }
         if (url && !/^https?:\/\//i.test(url)) url = 'https://' + url;
         if (!url) return;
-        html += '<a href="' + esc(url) + '" target="_blank" rel="noopener" class="entrega-link">';
+        html += '<a href="' + safeHref(url) + '" target="_blank" rel="noopener" class="entrega-link">';
         html += '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--concrete)" stroke-width="2" stroke-linecap="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
         html += '<div><div class="entrega-link-texto">' + esc(etiqueta) + '</div><div class="entrega-link-sub">' + esc(url.substring(0, 60)) + (url.length > 60 ? '...' : '') + '</div></div>';
         html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--concrete)" stroke-width="2" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg></a>';
