@@ -990,22 +990,54 @@ function actualizarBulkBar() {
   bar.classList.toggle('visible', modoSeleccion && n > 0);
 }
 
+let eliminandoMasivo = false;
+
 async function eliminarSeleccionados() {
+  if (eliminandoMasivo) return;
   const tokens = [...seleccionados];
   if (!tokens.length) return;
+
   const nombres = tokens.map(t => {
     const c = todosContratos.find(x => x.token === t);
     return c ? c.nombre : t;
   }).join('\n• ');
   const ok = confirm(`Eliminar permanentemente ${tokens.length} contrato(s):\n\n• ${nombres}\n\nEsta acción no se puede deshacer.`);
   if (!ok) return;
-  for (const t of tokens) {
-    try { await apiPost({ action: 'eliminarContrato', token: t }); } catch(e) {}
+
+  eliminandoMasivo = true;
+  const btn = document.querySelector('.bulk-bar-btn');
+  const total = tokens.length;
+  if (btn) { btn.disabled = true; btn.style.opacity = '0.7'; btn.style.cursor = 'wait'; }
+  const countEl = document.getElementById('bulk-count');
+  let hechos = 0;
+  const fallos = [];
+  try {
+    for (const t of tokens) {
+      try {
+        const r = await apiPost({ action: 'eliminarContrato', token: t });
+        if (!r.ok && r.error) fallos.push({ t, err: r.error });
+      } catch (e) {
+        fallos.push({ t, err: e.message });
+      }
+      hechos++;
+      if (btn) btn.innerHTML = `<i class="ti ti-trash"></i> Eliminando ${hechos}/${total}...`;
+    }
+    if (tokenActivo && tokens.includes(tokenActivo)) cerrarPanel();
+    salirModoSeleccion();
+    await cargarContratos();
+    if (fallos.length) {
+      alert(`Se eliminaron ${total - fallos.length} de ${total}.\nFallaron ${fallos.length} (revisar consola).`);
+      console.warn('Fallos al eliminar:', fallos);
+    }
+  } finally {
+    eliminandoMasivo = false;
+    if (btn) {
+      btn.disabled = false;
+      btn.style.opacity = '';
+      btn.style.cursor = '';
+      btn.innerHTML = '<i class="ti ti-trash"></i> Eliminar';
+    }
   }
-  // Cerrar panel si el contrato activo fue eliminado
-  if (tokenActivo && tokens.includes(tokenActivo)) cerrarPanel();
-  salirModoSeleccion();
-  await cargarContratos();
 }
 // ── Fin selección masiva ──
 
