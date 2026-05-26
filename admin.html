@@ -976,11 +976,13 @@ function normalizarTelWA(tel) {
 
 function intentarLogin() {
   if (document.getElementById('input-pw').value === PASSWORD) {
+    // Leer el token de la URL antes de borrarla
+    const tokenInicial = new URLSearchParams(location.search).get('token') || null;
     document.getElementById('pantalla-login').style.display = 'none';
     document.getElementById('pantalla-admin').style.display = 'block';
     if (history.replaceState) history.replaceState({}, '', location.pathname);
     cargarPaquetes();
-    cargarContratos();
+    cargarContratos(tokenInicial);
   } else {
     document.getElementById('error-login').textContent = 'Contraseña incorrecta.';
   }
@@ -1094,6 +1096,80 @@ async function guardarNotaInterna(numProp) {
   }
 }
 
+function toggleCaracteristicas(numProp) {
+  const div = document.getElementById('form-caract-' + numProp);
+  if (div) div.style.display = div.style.display === 'none' ? 'block' : 'none';
+}
+
+async function guardarCaracteristicas(numProp) {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const texto = (document.getElementById('caract-texto-' + numProp) || {}).value || '';
+  const msg   = document.getElementById('msg-caract-' + numProp);
+  if (msg) msg.textContent = 'Guardando...';
+  try {
+    const data = await apiPost({ action: 'guardarCaracteristicas', token: ctx.c.Token, numPropiedad: numProp, caracteristicas: texto });
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    if (msg) { msg.textContent = 'Guardado.'; setTimeout(() => { if (msg) msg.textContent = ''; toggleCaracteristicas(numProp); }, 1200); }
+    const spanSobre = document.getElementById('sobre-prop-' + numProp);
+    if (spanSobre) spanSobre.textContent = texto || '—';
+  } catch(e) {
+    if (msg) msg.textContent = 'Error: ' + e.message;
+  }
+}
+
+async function subirArchivosAdmin() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const input = document.getElementById('admin-file-input');
+  const msg   = document.getElementById('msg-archivos-admin');
+  const lista = document.getElementById('lista-archivos-admin');
+  if (!input || !input.files.length) { if (msg) { msg.textContent = 'Selecciona al menos un archivo.'; msg.style.color = 'var(--warn)'; } return; }
+
+  // Tomar numPropiedad del selector si hay múltiples propiedades
+  const sel     = document.getElementById('admin-file-prop');
+  const numProp = sel ? parseInt(sel.value) || 1 : 1;
+  const archivos = Array.from(input.files);
+  const btn      = document.getElementById('btn-subir-archivos');
+
+  if (btn) btn.disabled = true;
+  if (msg) { msg.textContent = ''; msg.style.color = ''; }
+
+  let hayError = false;
+
+  for (let i = 0; i < archivos.length; i++) {
+    const archivo = archivos[i];
+    if (msg) { msg.textContent = 'Subiendo ' + (i + 1) + ' de ' + archivos.length + ': ' + archivo.name + '...'; msg.style.color = ''; }
+    try {
+      const base64 = await new Promise(function(resolve, reject) {
+        const reader = new FileReader();
+        reader.onload  = function(e) {
+          const result = e.target.result;
+          resolve(result.substring(result.indexOf(',') + 1));
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(archivo);
+      });
+      const data = await apiPost({ action: 'subirArchivoAdmin', token: ctx.c.Token, numPropiedad: numProp, nombre: archivo.name, mimeType: archivo.type || 'application/octet-stream', base64 });
+      if (!data.ok) throw new Error(data.error || 'Error desconocido');
+      if (lista) {
+        const item = document.createElement('div');
+        item.style.cssText = 'font-size:12px;padding:6px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:8px';
+        item.innerHTML = '<span style="color:var(--ink-1);word-break:break-all">' + esc(data.nombre) + '</span>' +
+          '<a href="' + esc(data.url) + '" target="_blank" rel="noopener" style="color:var(--gold);white-space:nowrap;font-weight:600;flex-shrink:0">Ver</a>';
+        lista.appendChild(item);
+      }
+    } catch(e) {
+      hayError = true;
+      if (msg) { msg.textContent = 'Error en ' + archivo.name + ': ' + e.message; msg.style.color = 'var(--danger)'; }
+    }
+  }
+
+  input.value = '';
+  if (btn) btn.disabled = false;
+  if (!hayError && msg) { msg.textContent = 'Listo.'; msg.style.color = 'var(--success)'; setTimeout(() => { if (msg) msg.textContent = ''; }, 2000); }
+}
+
 function duplicarContrato() {
   const ctx = window._contratoActivo;
   if (!ctx) return;
@@ -1181,7 +1257,7 @@ function actualizarPaquetes() {
     campoAdd.style.display = 'block';
     lista.innerHTML = adds.map(p => `
       <label class="add-item">
-        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}" checked>
+        <input type="checkbox" value="${esc(p.Clave)}" data-precio="${p.Precio}">
         <span class="add-item-nombre">${esc(p.Nombre)}</span>
         <span class="add-item-precio">+${fmxn(p.Precio)}</span>
       </label>`).join('');
@@ -1207,13 +1283,16 @@ function actualizarAnticipo(p) {
 
 // ── CONTRATOS ─────────────────────────────────────────────────────────────────
 
-async function cargarContratos() {
+async function cargarContratos(tokenInicial) {
   document.getElementById('tabla-body').innerHTML = '<tr><td colspan="6" class="tabla-vacio">Cargando...</td></tr>';
   try {
     const dataC = await apiGet({ action: 'listarContratos' });
     if (!dataC.ok) throw new Error(dataC.error || 'Error desconocido');
     todosContratos = dataC.contratos || [];
     filtrarContratos();
+    // Abrir ficha si se pasó un token (desde login) o si hay ?token= en la URL (refresh en sesión activa)
+    const tok = tokenInicial || new URLSearchParams(location.search).get('token');
+    if (tok) abrirPanel(tok);
   } catch (e) {
     document.getElementById('tabla-body').innerHTML =
       `<tr><td colspan="6" style="color:var(--danger);padding:24px;text-align:center">Error: ${esc(e.message)}</td></tr>`;
@@ -1351,6 +1430,7 @@ function renderTabla(lista) {
 
 async function abrirPanel(token) {
   tokenActivo = token;
+  if (history.replaceState) history.replaceState({}, '', '?token=' + encodeURIComponent(token));
   filtrarContratos();
 
   document.getElementById('panel-folio').textContent  = '...';
@@ -1377,6 +1457,7 @@ async function abrirPanel(token) {
 
 function cerrarPanel() {
   tokenActivo = null;
+  if (history.replaceState) history.replaceState({}, '', location.pathname);
   document.getElementById('panel-lateral').classList.remove('visible');
   document.getElementById('overlay').classList.remove('visible');
   document.querySelectorAll('#tabla-body tr').forEach(tr => tr.classList.remove('activo'));
@@ -1418,14 +1499,25 @@ function renderPanel(data) {
           ${fechatxt      ? `<div class="prop-dato"><span class="lbl">Fecha </span>${esc(fechatxt)}</div>` : ''}
           ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
           ${p.linkMaps    ? `<div class="prop-dato"><a href="${safeHref(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
-          ${p.sobreLaPropiedad ? `<div class="prop-dato"><span class="lbl">Notas </span>${esc(p.sobreLaPropiedad)}</div>` : ''}
+          <div class="prop-dato"><span class="lbl">Características </span><span id="sobre-prop-${numProp}">${esc(p.sobreLaPropiedad || '—')}</span></div>
           <div class="prop-card-acciones" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn-secundario btn-sm" style="flex:1" onclick="toggleReagendar(${numProp})">
               <i class="ti ti-calendar-event"></i> Reagendar
             </button>
+            <button class="btn-secundario btn-sm" style="flex:1" onclick="toggleCaracteristicas(${numProp})">
+              <i class="ti ti-pencil"></i> Características
+            </button>
             <button class="btn-secundario btn-sm" style="flex:1" onclick="toggleNotaInterna(${numProp})">
               <i class="ti ti-note"></i> Nota interna
             </button>
+          </div>
+          <div id="form-caract-${numProp}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
+            <textarea id="caract-texto-${numProp}" rows="4" placeholder="Características de la propiedad..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--page);color:var(--ink-1);box-sizing:border-box">${esc(p.sobreLaPropiedad || '')}</textarea>
+            <div class="form-msg" id="msg-caract-${numProp}" style="margin-top:4px"></div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="btn-primario gold btn-sm" onclick="guardarCaracteristicas(${numProp})">Guardar</button>
+              <button class="btn-secundario btn-sm" onclick="toggleCaracteristicas(${numProp})">Cancelar</button>
+            </div>
           </div>
           <div id="form-nota-${numProp}" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)">
             <textarea id="nota-texto-${numProp}" rows="3" placeholder="Nota interna (solo visible para ti)..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--page);color:var(--ink-1);box-sizing:border-box">${esc(p.notaInterna || '')}</textarea>
@@ -1572,7 +1664,7 @@ function renderPanel(data) {
       </div>
       <div class="form-msg" id="msg-estatus"></div>
     </div>
-    ${['Anticipo recibido','Firmado'].includes(c.Estatus) ? `
+    ${['Anticipo recibido','Firmado','En produccion'].includes(c.Estatus) ? `
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:6px">Producción</p>
       <button class="btn-primario gold" style="width:100%;display:flex;align-items:center;justify-content:center;gap:8px" id="btn-sesion-completada" onclick="marcarSesionCompletada()">
@@ -1588,6 +1680,28 @@ function renderPanel(data) {
       </div>
       <div class="form-msg" id="msg-notas-internas"></div>
     </div>
+    ${(() => {
+      const propsConCarpeta = data.propiedades.filter(p => p.carpetaControlId);
+      const tieneCarpeta    = propsConCarpeta.length > 0;
+      const selectorHtml    = data.propiedades.length > 1
+        ? '<select id="admin-file-prop" style="font-size:12px;border:1px solid var(--border);border-radius:6px;padding:6px 8px;background:var(--page);color:var(--ink-1);margin-bottom:8px;width:100%">' +
+          data.propiedades.map(p => `<option value="${p.numPropiedad}"${p.carpetaControlId ? '' : ' disabled'}>${esc('Propiedad ' + p.numPropiedad + (p.paquete ? ' — ' + p.paquete : '') + (p.carpetaControlId ? '' : ' (sin carpeta)'))}</option>`).join('') +
+          '</select>'
+        : '';
+      return `<div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
+        <p class="sec-label" style="margin-bottom:6px">Archivos del cliente</p>
+        <p style="font-size:12px;color:var(--ink-3);margin-bottom:10px;line-height:1.5">Sube documentos o imágenes que el cliente mande por WhatsApp. Se guardan en la carpeta del proyecto en Drive.</p>
+        ${tieneCarpeta ? `
+          ${selectorHtml}
+          <input type="file" id="admin-file-input" multiple accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt" style="display:block;font-size:12px;margin-bottom:8px;width:100%;box-sizing:border-box">
+          <button class="btn-primario gold btn-sm" id="btn-subir-archivos" onclick="subirArchivosAdmin()" style="width:100%;justify-content:center">
+            <i class="ti ti-upload"></i> Subir a Drive
+          </button>
+        ` : `<p style="font-size:12px;color:var(--warn);padding:8px 10px;background:var(--warn-bg,#fef9e7);border-radius:6px;border:1px solid var(--warn-border,#f0c040)">La carpeta del proyecto se crea al confirmar la reservación.</p>`}
+        <div id="lista-archivos-admin" style="margin-top:10px"></div>
+        <div class="form-msg" id="msg-archivos-admin" style="margin-top:6px"></div>
+      </div>`;
+    })()}
     <div style="margin-top:24px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:10px">Zona de riesgo</p>
       <div style="display:flex;gap:8px">
