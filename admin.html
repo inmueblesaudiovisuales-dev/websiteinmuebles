@@ -850,6 +850,67 @@
           <div id="modal-paq-error" style="color:var(--danger);font-size:12px;margin-top:10px;display:none"></div>
         </div>
       </div>
+
+      <!-- Modal: añadir servicio extra / subir precio -->
+      <div id="modal-upsell" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center">
+        <div style="background:var(--card);border-radius:var(--r);padding:28px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:0 8px 40px rgba(0,0,0,.25)">
+          <p class="section-title">Añadir servicio extra / subir precio</p>
+          <p style="font-size:12px;color:var(--ink-3);margin-top:-4px;margin-bottom:14px">Útil cuando durante o después de la sesión el cliente pide algo adicional. El portal del cliente refleja el nuevo total al instante.</p>
+
+          <div class="campo">
+            <label>Adicionales del catálogo (no aplicados aún)</label>
+            <div id="upsell-adicionales" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto">
+              <p style="font-size:12px;color:var(--ink-3);font-style:italic">Cargando...</p>
+            </div>
+          </div>
+
+          <div class="campo">
+            <label>Servicio fuera de catálogo (opcional)</label>
+            <input type="text" id="upsell-libre-nombre" placeholder="Ej. Toma extra con drone">
+            <input type="number" id="upsell-libre-precio" placeholder="Precio MXN" min="0" step="100" style="margin-top:6px">
+          </div>
+
+          <div class="campo">
+            <label>O establecer precio total manualmente</label>
+            <input type="number" id="upsell-precio-manual" placeholder="(opcional, reemplaza todo el cálculo)" min="0" step="100">
+            <p style="font-size:11px;color:var(--ink-3);margin-top:4px">Si llenas este campo, ignora las selecciones de arriba y fija ese precio total.</p>
+          </div>
+
+          <div class="campo">
+            <label>Nota interna (opcional)</label>
+            <input type="text" id="upsell-nota" placeholder="Acordado durante la sesión, etc.">
+          </div>
+
+          <div class="campo" style="display:flex;align-items:center;gap:10px">
+            <input type="checkbox" id="upsell-notificar" style="width:auto;margin:0" checked>
+            <label for="upsell-notificar" style="margin:0;font-weight:400">Notificar al cliente por correo</label>
+          </div>
+
+          <div id="upsell-resumen" style="background:var(--page);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:13px;margin:14px 0;display:none">
+            <div style="display:flex;justify-content:space-between"><span style="color:var(--ink-3)">Precio actual</span><span id="upsell-precio-actual">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-weight:700"><span>Nuevo total</span><span id="upsell-precio-nuevo" style="color:var(--gold)">—</span></div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <button class="btn-primario gold" style="flex:1" onclick="guardarUpsell()" id="btn-upsell-guardar">Guardar</button>
+            <button class="btn-secundario" style="flex:1" onclick="cerrarModalUpsell()">Cancelar</button>
+          </div>
+          <div id="modal-upsell-error" style="color:var(--danger);font-size:12px;margin-top:10px;display:none"></div>
+        </div>
+      </div>
+
+      <!-- Modal: abono excede saldo -->
+      <div id="modal-exceso" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:999;align-items:center;justify-content:center">
+        <div style="background:var(--card);border-radius:var(--r);padding:28px;width:100%;max-width:460px;box-shadow:0 8px 40px rgba(0,0,0,.25)">
+          <p class="section-title">El abono excede el saldo</p>
+          <div id="modal-exceso-detalle" style="font-size:13px;color:var(--ink-2);line-height:1.55;margin-bottom:18px"></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button class="btn-primario gold" onclick="confirmarAbonoConExceso()">Subir precio del contrato y registrar abono completo</button>
+            <button class="btn-secundario" onclick="ajustarAbonoAlSaldo()">Registrar solo el saldo pendiente</button>
+            <button class="btn-secundario" onclick="cerrarModalExceso()">Cancelar</button>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1602,6 +1663,9 @@ function renderPanel(data) {
         <button class="btn-secundario btn-sm" onclick="enviarRecordatorio()" title="Recordatorio de anticipo al cliente">
           <i class="ti ti-bell"></i> Recordatorio
         </button>
+        <button class="btn-secundario btn-sm" onclick="abrirModalUpsell()" title="Añadir servicio extra o subir precio">
+          <i class="ti ti-plus"></i> Servicio extra
+        </button>
       </div>
     </div>
     <div style="margin-top:12px">
@@ -1817,8 +1881,9 @@ function renderPanel(data) {
 
 // ── REGISTRAR ABONO ──────────────────────────────────────────────────────────
 
-async function registrarAbono() {
-  const monto = parseFloat(document.getElementById('abono-monto').value);
+async function registrarAbono(opts) {
+  opts = opts || {};
+  const monto = parseFloat(opts.monto !== undefined ? opts.monto : document.getElementById('abono-monto').value);
   if (!monto || monto <= 0) { setMsg('msg-abono', 'Ingresa un monto válido.', 'error'); return; }
 
   const btn = document.getElementById('btn-abono');
@@ -1828,10 +1893,18 @@ async function registrarAbono() {
   const metodo = document.getElementById('abono-metodo').value;
   const notas  = document.getElementById('abono-notas').value;
   const t      = tokenActivo;
+  const payload = { action: 'registrarAbono', token: t, monto, metodo, notas };
+  if (opts.permitirExceso) payload.permitirExceso = true;
 
   try {
-    const data = await apiPost({ action: 'registrarAbono', token: t, monto, metodo, notas });
-    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    const data = await apiPost(payload);
+    if (!data.ok) {
+      if (data.codigoError === 'EXCEDE_SALDO') {
+        mostrarModalExceso(data, monto);
+        return;
+      }
+      throw new Error(data.error || 'Error desconocido');
+    }
     setMsg('msg-abono', 'Abono registrado correctamente.', 'ok');
     cargarContratos();
     if (t && t === tokenActivo) {
@@ -1842,6 +1915,184 @@ async function registrarAbono() {
   } finally {
     const b = document.getElementById('btn-abono');
     if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
+  }
+}
+
+// ── MODAL: ABONO EXCEDE SALDO ────────────────────────────────────────────────
+
+let _excesoInfo = null;
+
+function mostrarModalExceso(data, montoIntentado) {
+  _excesoInfo = {
+    montoIntentado,
+    saldoActual         : data.saldoActual || 0,
+    precioActual        : data.precioActual || 0,
+    nuevoPrecioPropuesto: data.nuevoPrecioPropuesto || 0,
+  };
+  const detalle = document.getElementById('modal-exceso-detalle');
+  detalle.innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Saldo pendiente</span><b>${fmxn(_excesoInfo.saldoActual)}</b></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:4px"><span>Abono que intentas registrar</span><b>${fmxn(_excesoInfo.montoIntentado)}</b></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:8px"><span>Excede el saldo por</span><b style="color:var(--danger)">${fmxn(_excesoInfo.montoIntentado - _excesoInfo.saldoActual)}</b></div>
+    <div style="display:flex;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border)"><span>Si subes el precio del contrato a</span><b style="color:var(--gold)">${fmxn(_excesoInfo.nuevoPrecioPropuesto)}</b></div>
+    <p style="margin-top:10px;font-size:12px;color:var(--ink-3)">El portal del cliente reflejará el nuevo total.</p>
+  `;
+  document.getElementById('modal-exceso').style.display = 'flex';
+  // Reactivar el botón principal
+  const b = document.getElementById('btn-abono');
+  if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
+}
+
+function cerrarModalExceso() {
+  document.getElementById('modal-exceso').style.display = 'none';
+  _excesoInfo = null;
+}
+
+function confirmarAbonoConExceso() {
+  cerrarModalExceso();
+  registrarAbono({ permitirExceso: true });
+}
+
+function ajustarAbonoAlSaldo() {
+  if (!_excesoInfo) return;
+  const saldo = _excesoInfo.saldoActual;
+  cerrarModalExceso();
+  document.getElementById('abono-monto').value = saldo;
+  registrarAbono({ monto: saldo });
+}
+
+// ── MODAL: AÑADIR SERVICIO EXTRA / SUBIR PRECIO (UPSELL) ─────────────────────
+
+function abrirModalUpsell() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const { c, adicionales } = ctx;
+
+  // Limpiar campos
+  document.getElementById('upsell-libre-nombre').value = '';
+  document.getElementById('upsell-libre-precio').value = '';
+  document.getElementById('upsell-precio-manual').value = '';
+  document.getElementById('upsell-nota').value = '';
+  document.getElementById('upsell-notificar').checked = true;
+  document.getElementById('modal-upsell-error').style.display = 'none';
+
+  // Renderizar lista de adicionales del catálogo aún no aplicados
+  const cont = document.getElementById('upsell-adicionales');
+  const yaTiene = new Set(adicionales || []);
+  const esAd = v => v === true || String(v || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'') === 'si';
+  const esActivo = v => v === true || (v !== false && String(v || '').trim().toLowerCase() !== 'no');
+  const disponibles = (paquetes || []).filter(p => esAd(p.EsAdicional) && esActivo(p.Activo) && !yaTiene.has(p.Clave));
+  if (!disponibles.length) {
+    cont.innerHTML = '<p style="font-size:12px;color:var(--ink-3);font-style:italic">No hay adicionales del catálogo pendientes.</p>';
+  } else {
+    cont.innerHTML = disponibles.map(p => `
+      <label style="display:flex;align-items:center;gap:10px;padding:8px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px">
+        <input type="checkbox" class="upsell-ad-cb" value="${esc(p.Clave)}" data-precio="${parseFloat(p.Precio) || 0}" onchange="actualizarUpsellResumen()" style="width:auto;margin:0">
+        <span style="flex:1">${esc(p.Nombre || p.Clave)}</span>
+        <span style="color:var(--gold);font-weight:600">+${fmxn(parseFloat(p.Precio) || 0)}</span>
+      </label>
+    `).join('');
+  }
+
+  // Listeners para resumen
+  ['upsell-libre-precio','upsell-precio-manual'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.oninput = actualizarUpsellResumen;
+  });
+
+  actualizarUpsellResumen();
+  document.getElementById('modal-upsell').style.display = 'flex';
+}
+
+function cerrarModalUpsell() {
+  document.getElementById('modal-upsell').style.display = 'none';
+}
+
+function calcularUpsellNuevoTotal() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return 0;
+  const precioActual = parseFloat(ctx.c.PrecioTotal) || 0;
+  const manual = parseFloat(document.getElementById('upsell-precio-manual').value);
+  if (!isNaN(manual) && manual > 0) return manual;
+  let suma = precioActual;
+  document.querySelectorAll('.upsell-ad-cb:checked').forEach(cb => {
+    suma += parseFloat(cb.dataset.precio) || 0;
+  });
+  const libre = parseFloat(document.getElementById('upsell-libre-precio').value) || 0;
+  if (libre) suma += libre;
+  return suma;
+}
+
+function actualizarUpsellResumen() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const precioActual = parseFloat(ctx.c.PrecioTotal) || 0;
+  const nuevo = calcularUpsellNuevoTotal();
+  const resumen = document.getElementById('upsell-resumen');
+  if (nuevo !== precioActual) {
+    document.getElementById('upsell-precio-actual').textContent = fmxn(precioActual);
+    document.getElementById('upsell-precio-nuevo').textContent  = fmxn(nuevo);
+    resumen.style.display = 'block';
+  } else {
+    resumen.style.display = 'none';
+  }
+}
+
+async function guardarUpsell() {
+  const ctx = window._contratoActivo;
+  if (!ctx) return;
+  const errBox = document.getElementById('modal-upsell-error');
+  errBox.style.display = 'none';
+
+  const seleccionados = Array.from(document.querySelectorAll('.upsell-ad-cb:checked')).map(cb => cb.value);
+  const libreNombre   = document.getElementById('upsell-libre-nombre').value.trim();
+  const librePrecio   = parseFloat(document.getElementById('upsell-libre-precio').value) || 0;
+  const precioManual  = parseFloat(document.getElementById('upsell-precio-manual').value);
+  const nota          = document.getElementById('upsell-nota').value.trim();
+  const notificar     = document.getElementById('upsell-notificar').checked;
+
+  if (!seleccionados.length && !librePrecio && (isNaN(precioManual) || precioManual <= 0)) {
+    errBox.textContent = 'Selecciona al menos un adicional, un servicio fuera de catálogo, o ingresa un precio total manual.';
+    errBox.style.display = 'block';
+    return;
+  }
+  if (libreNombre && !librePrecio) {
+    errBox.textContent = 'Falta el precio del servicio fuera de catálogo.';
+    errBox.style.display = 'block';
+    return;
+  }
+
+  const notaFinal = [
+    libreNombre && librePrecio ? ('servicio fuera de catálogo: ' + libreNombre + ' (+' + librePrecio + ')') : '',
+    nota,
+  ].filter(Boolean).join(' · ');
+
+  const payload = {
+    action: 'actualizarContratoUpsell',
+    token : ctx.c.Token,
+  };
+  if (seleccionados.length) {
+    payload.agregarAdicionales = seleccionados;
+    payload.sumarPrecioAdicionales = true;
+  }
+  if (librePrecio) payload.ajustePrecioManual = librePrecio;
+  if (!isNaN(precioManual) && precioManual > 0) payload.nuevoPrecioTotal = precioManual;
+  if (notaFinal) payload.nota = notaFinal;
+  if (notificar) payload.notificarCliente = true;
+
+  const btn = document.getElementById('btn-upsell-guardar');
+  if (btn) { btn.disabled = true; btn.textContent = 'Guardando...'; }
+  try {
+    const data = await apiPost(payload);
+    if (!data.ok) throw new Error(data.error || 'Error desconocido');
+    cerrarModalUpsell();
+    await abrirPanel(ctx.c.Token);
+    cargarContratos();
+  } catch (e) {
+    errBox.textContent = 'Error: ' + e.message;
+    errBox.style.display = 'block';
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = 'Guardar'; }
   }
 }
 
