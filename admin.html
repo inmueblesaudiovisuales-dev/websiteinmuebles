@@ -1376,7 +1376,11 @@ function actualizarAnticipo(p) {
 
 // ── CONTRATOS ─────────────────────────────────────────────────────────────────
 
+let _cargandoContratos = false;
+
 async function cargarContratos(tokenInicial) {
+  if (_cargandoContratos) return;
+  _cargandoContratos = true;
   document.getElementById('tabla-body').innerHTML = '<tr><td colspan="6" class="tabla-vacio">Cargando...</td></tr>';
   try {
     const dataC = await apiGet({ action: 'listarContratos' });
@@ -1389,6 +1393,7 @@ async function cargarContratos(tokenInicial) {
   } catch (e) {
     document.getElementById('tabla-body').innerHTML =
       `<tr><td colspan="6" style="color:var(--danger);padding:24px;text-align:center">Error: ${esc(e.message)}</td></tr>`;
+    _cargandoContratos = false;
     return;
   }
   // Stats se cargan de forma independiente — un error aquí no afecta la tabla.
@@ -1397,6 +1402,8 @@ async function cargarContratos(tokenInicial) {
     if (dataS.ok) renderStatsBar(dataS);
   } catch (e) {
     console.warn('Stats no disponibles:', e.message);
+  } finally {
+    _cargandoContratos = false;
   }
 }
 
@@ -1493,9 +1500,9 @@ function renderTabla(lista) {
     const activo    = tokenActivo === c.token ? 'activo' : '';
     const checked   = seleccionados.has(c.token) ? 'checked' : '';
     const checkCell = modoSeleccion
-      ? `<td class="td-check" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${checked} onchange="toggleSeleccion('${c.token}',this)"></td>`
+      ? `<td class="td-check" onclick="event.stopPropagation()"><input type="checkbox" class="row-check" ${checked} onchange="toggleSeleccion('${esc(c.token)}',this)"></td>`
       : '';
-    const rowClick  = modoSeleccion ? '' : `onclick="abrirPanel('${c.token}')"`;
+    const rowClick  = modoSeleccion ? '' : `onclick="abrirPanel('${esc(c.token)}')"`;
     const dias      = diasEnEstatus(c);
     const horasDesdeCreacion = c.fechaCreacion ? (ahora - new Date(c.fechaCreacion).getTime()) / (1000 * 60 * 60) : 0;
     const alertaExpiry = c.estatus === 'Pendiente firma' && horasDesdeCreacion > 60;
@@ -1540,9 +1547,11 @@ async function abrirPanel(token) {
 
   try {
     const data = await apiGet({ action: 'obtenerContrato', token });
+    if (tokenActivo !== token) return; // el usuario navegó a otro contrato mientras cargaba
     if (!data.ok) throw new Error(data.error || 'Error desconocido');
     renderPanel(data);
   } catch (e) {
+    if (tokenActivo !== token) return;
     document.getElementById('pane-general').innerHTML =
       `<p style="color:var(--danger);font-size:13px">Error: ${esc(e.message)}</p>`;
   }
@@ -1914,10 +1923,12 @@ function renderPanel(data) {
 // ── REGISTRAR ABONO ──────────────────────────────────────────────────────────
 
 async function registrarAbono(opts) {
+  if (_enviandoAbono) return;
   opts = opts || {};
   const monto = parseFloat(opts.monto !== undefined ? opts.monto : document.getElementById('abono-monto').value);
   if (!monto || monto <= 0) { setMsg('msg-abono', 'Ingresa un monto válido.', 'error'); return; }
 
+  _enviandoAbono = true;
   const btn = document.getElementById('btn-abono');
   if (btn) { btn.disabled = true; btn.textContent = 'Registrando...'; }
   setMsg('msg-abono', '', '');
@@ -1945,6 +1956,7 @@ async function registrarAbono(opts) {
   } catch (e) {
     setMsg('msg-abono', 'Error: ' + e.message, 'error');
   } finally {
+    _enviandoAbono = false;
     const b = document.getElementById('btn-abono');
     if (b && b.disabled) { b.disabled = false; b.innerHTML = '<i class="ti ti-check"></i> Registrar abono'; }
   }
@@ -1952,7 +1964,8 @@ async function registrarAbono(opts) {
 
 // ── MODAL: ABONO EXCEDE SALDO ────────────────────────────────────────────────
 
-let _excesoInfo = null;
+let _excesoInfo     = null;
+let _enviandoAbono  = false;
 
 function mostrarModalExceso(data, montoIntentado) {
   _excesoInfo = {
@@ -1981,8 +1994,9 @@ function cerrarModalExceso() {
 }
 
 function confirmarAbonoConExceso() {
+  const monto = _excesoInfo ? _excesoInfo.montoIntentado : undefined;
   cerrarModalExceso();
-  registrarAbono({ permitirExceso: true });
+  registrarAbono({ permitirExceso: true, monto });
 }
 
 function ajustarAbonoAlSaldo() {
@@ -2076,14 +2090,14 @@ async function guardarUpsell() {
   const errBox = document.getElementById('modal-upsell-error');
   errBox.style.display = 'none';
 
-  const seleccionados = Array.from(document.querySelectorAll('.upsell-ad-cb:checked')).map(cb => cb.value);
+  const adicionalesSeleccionados = Array.from(document.querySelectorAll('.upsell-ad-cb:checked')).map(cb => cb.value);
   const libreNombre   = document.getElementById('upsell-libre-nombre').value.trim();
   const librePrecio   = parseFloat(document.getElementById('upsell-libre-precio').value) || 0;
-  const precioManual  = parseFloat(document.getElementById('upsell-precio-manual').value);
+  const precioTotalManual = parseFloat(document.getElementById('upsell-precio-manual').value);
   const nota          = document.getElementById('upsell-nota').value.trim();
   const notificar     = document.getElementById('upsell-notificar').checked;
 
-  if (!seleccionados.length && !librePrecio && (isNaN(precioManual) || precioManual <= 0)) {
+  if (!adicionalesSeleccionados.length && !librePrecio && (isNaN(precioTotalManual) || precioTotalManual <= 0)) {
     errBox.textContent = 'Selecciona al menos un adicional, un servicio fuera de catálogo, o ingresa un precio total manual.';
     errBox.style.display = 'block';
     return;
@@ -2103,12 +2117,12 @@ async function guardarUpsell() {
     action: 'actualizarContratoUpsell',
     token : ctx.c.Token,
   };
-  if (seleccionados.length) {
-    payload.agregarAdicionales = seleccionados;
+  if (adicionalesSeleccionados.length) {
+    payload.agregarAdicionales = adicionalesSeleccionados;
     payload.sumarPrecioAdicionales = true;
   }
   if (librePrecio) payload.ajustePrecioManual = librePrecio;
-  if (!isNaN(precioManual) && precioManual > 0) payload.nuevoPrecioTotal = precioManual;
+  if (!isNaN(precioTotalManual) && precioTotalManual > 0) payload.nuevoPrecioTotal = precioTotalManual;
   if (notaFinal) payload.nota = notaFinal;
   if (notificar) payload.notificarCliente = true;
 
@@ -2244,18 +2258,22 @@ async function marcarSesionCompletada() {
   const btn = document.getElementById('btn-sesion-completada');
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader"></i> Procesando...'; }
   setMsg('msg-sesion-completada', '', '');
+  let panelRecargado = false;
   try {
     const data = await apiPost({ action: 'marcarSesionCompletada', token: t });
     if (!data.ok) throw new Error(data.error || 'Error desconocido');
     setMsg('msg-sesion-completada', 'Sesión marcada. Se envió correo al cliente.', 'ok');
     cargarContratos();
     if (t && t === tokenActivo) {
-      try { await abrirPanel(t); } catch(_) {}
+      try { await abrirPanel(t); panelRecargado = true; } catch(_) {}
     }
   } catch (e) {
     setMsg('msg-sesion-completada', 'Error: ' + e.message, 'error');
-    const b = document.getElementById('btn-sesion-completada');
-    if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-camera-check"></i> Sesión completada — iniciar edición'; }
+  } finally {
+    if (!panelRecargado) {
+      const b = document.getElementById('btn-sesion-completada');
+      if (b) { b.disabled = false; b.innerHTML = '<i class="ti ti-camera-check"></i> Sesión completada — iniciar edición'; }
+    }
   }
 }
 
@@ -2935,8 +2953,7 @@ async function archivarContrato() {
   try {
     const data = await apiPost({ action: 'ocultarContrato', token: tokenActivo });
     if (!data.ok) throw new Error(data.error || 'Error');
-    document.getElementById('panel-lateral').classList.remove('visible');
-    tokenActivo = null;
+    cerrarPanel();
     await cargarContratos();
   } catch (e) {
     setMsg('msg-borrar', 'Error: ' + e.message, 'error');
@@ -2971,8 +2988,7 @@ async function eliminarContrato() {
   try {
     const data = await apiPost({ action: 'eliminarContrato', token: tokenActivo });
     if (!data.ok) throw new Error(data.error || 'Error');
-    document.getElementById('panel-lateral').classList.remove('visible');
-    tokenActivo = null;
+    cerrarPanel();
     await cargarContratos();
   } catch (e) {
     setMsg('msg-borrar', 'Error: ' + e.message, 'error');
