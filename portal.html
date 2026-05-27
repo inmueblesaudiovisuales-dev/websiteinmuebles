@@ -28,6 +28,7 @@
     --blue-bg     : #EFF6FF;
     --blue-border : rgba(37,99,235,0.20);
     --blue        : #1D4ED8;
+    --r           : 8px;
   }
   html { scroll-behavior: smooth; }
   body { font-family: 'Montserrat', sans-serif; background: var(--surface); color: var(--charcoal); -webkit-font-smoothing: antialiased; min-height: 100vh; }
@@ -409,11 +410,21 @@ function apiGet(params) {
   return fetch(API + qs, { redirect: 'follow' }).then(function(r) { return r.json(); });
 }
 
-function apiPost(body) {
-  return fetch(API, {
+function apiPost(body, opts) {
+  var timeoutMs = opts && opts.timeoutMs;
+  var init = {
     method: 'POST', headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify(body), redirect: 'follow',
-  }).then(function(r) { return r.json(); });
+  };
+  if (timeoutMs && typeof AbortController === 'function') {
+    var ctrl = new AbortController();
+    var timer = setTimeout(function() { ctrl.abort(); }, timeoutMs);
+    init.signal = ctrl.signal;
+    return fetch(API, init)
+      .then(function(r) { clearTimeout(timer); return r.json(); })
+      .catch(function(err) { clearTimeout(timer); throw err; });
+  }
+  return fetch(API, init).then(function(r) { return r.json(); });
 }
 
 function formatMXN(val) {
@@ -1889,7 +1900,7 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
       fileName  : file.name,
       mimeType  : file.type || 'image/jpeg',
       fileBase64: e.target.result,
-    })
+    }, { timeoutMs: 60000 })
     .then(function(data) {
       uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
       if (data.ok) {
@@ -1904,9 +1915,12 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
         setUploadStatus(tipo, propIndex, 'error', msg);
       }
     })
-    .catch(function() {
+    .catch(function(err) {
       uploadsEnProgreso = Math.max(0, uploadsEnProgreso - 1);
-      setUploadStatus(tipo, propIndex, 'error', 'Error de conexión');
+      var msg = (err && err.name === 'AbortError')
+        ? 'La subida tardó demasiado. Verifica tu conexión e intenta de nuevo.'
+        : 'Error de conexión';
+      setUploadStatus(tipo, propIndex, 'error', msg);
     });
   };
   reader.onerror = function() {
