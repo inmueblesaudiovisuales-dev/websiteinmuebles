@@ -733,7 +733,7 @@
           </div>
           <div class="campo">
             <label>Descripción visible para el cliente <span style="font-weight:400;color:var(--ink-3)">(opcional · aparece en el portal)</span></label>
-            <textarea id="par-notas" placeholder="Servicios incluidos, condiciones acordadas y cualquier detalle que el cliente deba leer en su portal." style="min-height:70px"></textarea>
+            <textarea id="par-notas" maxlength="2000" placeholder="Servicios incluidos, condiciones acordadas y cualquier detalle que el cliente deba leer en su portal." style="min-height:70px"></textarea>
           </div>
           <div class="campo">
             <label>Número de propiedades</label>
@@ -837,7 +837,7 @@
           </div>
           <div class="campo">
             <label>Entregables</label>
-            <textarea id="mp-entregables" placeholder="Video 4K · Fotografías · Tour virtual" style="min-height:70px"></textarea>
+            <textarea id="mp-entregables" maxlength="2000" placeholder="Video 4K · Fotografías · Tour virtual" style="min-height:70px"></textarea>
           </div>
           <div class="campo" style="display:flex;align-items:center;gap:10px">
             <input type="checkbox" id="mp-es-adicional" style="width:auto;margin:0">
@@ -878,7 +878,7 @@
 
           <div class="campo">
             <label>Nota interna (opcional)</label>
-            <input type="text" id="upsell-nota" placeholder="Acordado durante la sesión, etc.">
+            <input type="text" id="upsell-nota" maxlength="500" placeholder="Acordado durante la sesión, etc.">
           </div>
 
           <div class="campo" style="display:flex;align-items:center;gap:10px">
@@ -1752,7 +1752,7 @@ function renderPanel(data) {
           </select>
         </div>
       </div>
-      <div class="campo campo-sm"><label>Notas (opcional)</label><input type="text" id="abono-notas" placeholder="Referencia, aclaración..."></div>
+      <div class="campo campo-sm"><label>Notas (opcional)</label><input type="text" id="abono-notas" maxlength="500" placeholder="Referencia, aclaración..."></div>
       <button class="btn-primario gold" style="width:100%" id="btn-abono" onclick="registrarAbono()">
         <i class="ti ti-check"></i> Registrar abono
       </button>
@@ -1779,7 +1779,7 @@ function renderPanel(data) {
     </div>` : ''}
     <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
       <p class="sec-label" style="margin-bottom:6px">Notas internas</p>
-      <textarea id="notas-internas-txt" rows="3" placeholder="Notas visibles solo para ti..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--page);color:var(--ink-1);box-sizing:border-box">${esc(c.NotasInternas || '')}</textarea>
+      <textarea id="notas-internas-txt" rows="3" maxlength="5000" placeholder="Notas visibles solo para ti..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--page);color:var(--ink-1);box-sizing:border-box">${esc(c.NotasInternas || '')}</textarea>
       <div style="display:flex;gap:6px;margin-top:6px">
         <button class="btn-primario gold btn-sm" onclick="guardarNotasInternas()">Guardar notas</button>
       </div>
@@ -1948,7 +1948,8 @@ async function registrarAbono(opts) {
       }
       throw new Error(data.error || 'Error desconocido');
     }
-    setMsg('msg-abono', 'Abono registrado correctamente.', 'ok');
+    setMsg('msg-abono', data.warning ? ('Abono registrado. Aviso: ' + data.warning) : 'Abono registrado correctamente.', 'ok');
+    if (data.warning) { try { console.warn('[abono]', data.warning); } catch(_) {} }
     cargarContratos();
     if (t && t === tokenActivo) {
       try { await abrirPanel(t); } catch(_) { /* panel reload failed, abono ya fue guardado */ }
@@ -2149,7 +2150,15 @@ async function cambiarEstatus() {
   const t = tokenActivo;
   setMsg('msg-estatus', '', '');
   try {
-    const data = await apiPost({ action: 'actualizarEstatus', token: t, estatus });
+    let data = await apiPost({ action: 'actualizarEstatus', token: t, estatus });
+    if (!data.ok && data.codigoError === 'TRANSICION_BLOQUEADA') {
+      const confirmar = confirm(
+        'Estás retrocediendo de "' + (data.estatusActual || '?') + '" a "' + estatus + '".\n\n' +
+        '¿Confirmas que es intencional?'
+      );
+      if (!confirmar) { setMsg('msg-estatus', 'Cambio cancelado.', ''); return; }
+      data = await apiPost({ action: 'actualizarEstatus', token: t, estatus, forzar: true });
+    }
     if (!data.ok) throw new Error(data.error || 'Error desconocido');
     if (t && t === tokenActivo) {
       await abrirPanel(t);
@@ -2357,11 +2366,20 @@ async function crearContrato(tipo) {
         var paqOpt = paqSel.options[paqSel.selectedIndex];
         paqNombre = paqOpt.dataset.nombre || paqSel.value;
       }
+      var fechaProp = (document.getElementById('par-fecha-' + pi) || {value:''}).value;
+      if (!paqNombre) {
+        setMsg(msgId, 'Propiedad ' + pi + ': falta paquete o nombre del servicio.', 'error');
+        return;
+      }
+      if (!fechaProp) {
+        setMsg(msgId, 'Propiedad ' + pi + ': falta fecha de sesión.', 'error');
+        return;
+      }
       propiedadesConfig.push({
         tipo        : pTipo,
         paquete     : paqNombre,
         entregables : (document.getElementById('par-entregables-' + pi) || {value:''}).value.trim(),
-        fechaSesion : (document.getElementById('par-fecha-' + pi) || {value:''}).value,
+        fechaSesion : fechaProp,
         horaSesion  : (document.getElementById('par-hora-' + pi) || {value:''}).value,
       });
     }
@@ -2547,7 +2565,7 @@ function fmxnFechaLarga(val) {
 
 function esc(str) {
   if (!str) return '';
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function safeHref(url) {
@@ -2618,7 +2636,7 @@ function renderPropCardsPar(n) {
       '</div>' +
       '<div class="campo">' +
         '<label>Entregables</label>' +
-        '<textarea id="par-entregables-' + i + '" placeholder="Se llena automáticamente al elegir paquete. Puedes editarlo." style="min-height:70px"></textarea>' +
+        '<textarea id="par-entregables-' + i + '" maxlength="2000" placeholder="Se llena automáticamente al elegir paquete. Puedes editarlo." style="min-height:70px"></textarea>' +
       '</div>' +
       '<div class="fila-2">' +
         '<div class="campo"><label>Fecha de sesión</label><input type="date" id="par-fecha-' + i + '"></div>' +
