@@ -1662,6 +1662,7 @@ function renderPanel(data) {
           ${p.direccion   ? `<div class="prop-dato"><span class="lbl">Dirección </span>${esc(p.direccion)}</div>` : ''}
           ${p.linkMaps    ? `<div class="prop-dato"><a href="${safeHref(p.linkMaps)}" target="_blank" rel="noopener" style="color:var(--gold);font-size:12px">Ver en Maps</a></div>` : ''}
           <div class="prop-dato"><span class="lbl">Características </span><span id="sobre-prop-${numProp}">${esc(p.sobreLaPropiedad || '—')}</span></div>
+          ${p.datosEspecificos && p.datosEspecificos.comentarios ? `<div class="prop-dato" style="background:var(--gold-dim);border-radius:6px;padding:6px 8px;margin-top:4px"><span class="lbl" style="color:var(--gold-dark,#9a7a2f)">Comentarios del cliente </span><span style="font-size:12px;line-height:1.5;white-space:pre-wrap">${esc(p.datosEspecificos.comentarios)}</span></div>` : ''}
           <div class="prop-card-acciones" style="margin-top:8px;display:flex;gap:6px;flex-wrap:wrap">
             <button class="btn-secundario btn-sm" style="flex:1" onclick="toggleReagendar(${numProp})">
               <i class="ti ti-calendar-event"></i> Reagendar
