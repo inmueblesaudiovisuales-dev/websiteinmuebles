@@ -749,11 +749,11 @@
           <div class="fila-2">
             <div class="campo">
               <label>Precio total acordado</label>
-              <input type="number" id="par-precio-total" placeholder="0" oninput="actualizarAnticipo('par')">
+              <input type="text" inputmode="decimal" id="par-precio-total" placeholder="0" oninput="actualizarAnticipo('par')">
             </div>
             <div class="campo">
               <label>Anticipo (50% por defecto)</label>
-              <input type="number" id="par-anticipo" placeholder="0">
+              <input type="text" inputmode="decimal" id="par-anticipo" placeholder="0">
             </div>
           </div>
           <div class="form-msg" id="msg-particular"></div>
@@ -1368,9 +1368,11 @@ function actualizarPrecio() {
   }
 }
 
+function parsePrecio(v) { return parseFloat(String(v || '').replace(/[^\d.]/g, '')) || 0; }
+
 function actualizarAnticipo(p) {
   if (p === 'est' && anticipoManual) return;
-  const total = parseFloat(document.getElementById(p + '-precio-total').value) || 0;
+  const total = parsePrecio(document.getElementById(p + '-precio-total').value);
   document.getElementById(p + '-anticipo').value = Math.round(total * 0.5);
 }
 
@@ -2351,8 +2353,8 @@ async function crearContrato(tipo) {
     const correo   = document.getElementById('par-correo').value.trim();
     const telefono = document.getElementById('par-telefono').value.trim();
     const numProps = parseInt(document.getElementById('par-num-props').value) || 1;
-    const ptotal   = parseFloat(document.getElementById('par-precio-total').value) || 0;
-    const anticipo = parseFloat(document.getElementById('par-anticipo').value) || 0;
+    const ptotal   = parsePrecio(document.getElementById('par-precio-total').value);
+    const anticipo = parsePrecio(document.getElementById('par-anticipo').value);
 
     if (!nombre) { setMsg(msgId, 'El nombre del cliente es obligatorio.', 'error'); return; }
     if (!ptotal) { setMsg(msgId, 'El precio total es obligatorio.', 'error'); return; }
