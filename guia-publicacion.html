@@ -677,6 +677,63 @@ body{
   overflow:hidden;
 }
 
+/* ============================================================
+   MOBILE ADAPTATIONS
+   ============================================================ */
+@media screen and (max-width:660px){
+  body{background:#f5f2ec}
+
+  .page{
+    width:100%;
+    min-height:auto;
+    margin:0 0 12px;
+  }
+
+  /* Cover */
+  .pg-cover{
+    min-height:100svh;
+    padding:48px 24px;
+  }
+  .cover-logo{width:220px;margin-bottom:28px}
+  .cover-title{font-size:20px}
+  .cover-sub{font-size:11px;margin-bottom:36px}
+  .cover-chips{gap:8px}
+  .cover-chip{font-size:9px;padding:5px 12px}
+  .cover-foot{position:relative;bottom:auto;padding:0;margin-top:32px;font-size:8.5px;justify-content:center;gap:20px}
+
+  /* Section pages */
+  .pg-section{padding:24px 18px 36px}
+  .sec-num{font-size:36px}
+  .sec-title{font-size:15px}
+  .sec-sub{font-size:8.5px}
+  .intro{font-size:11px;margin-bottom:16px}
+
+  /* Phone frames — regular pages (01-A, 02, 03) */
+  .pw{transform:scale(0.8)}
+  .step-cap{margin-top:0;font-size:10.5px;max-width:140px}
+  .arr{margin-top:140px}
+
+  /* Phone frames — Safari page (01-B, 4-phone layout) */
+  .pg-safari .pw{transform:scale(0.65)}
+  .pg-safari .step-cap{margin-top:-100px;max-width:140px}
+  .pg-safari .arr{margin-top:120px}
+  .pg-safari .step{max-width:190px}
+  .pg-safari .sec-hd{margin-bottom:6px;padding-bottom:6px}
+
+  .note{font-size:10px;margin-top:16px}
+  .pg-foot{bottom:3mm;right:4mm;font-size:8px}
+}
+
+/* Extra-small screens (iPhone SE, 320-380px) */
+@media screen and (max-width:380px){
+  .pg-section{padding:20px 14px 28px}
+  .pw{transform:scale(0.7)}
+  .arr{margin-top:122px}
+  .pg-safari .pw{transform:scale(0.58)}
+  .pg-safari .step-cap{margin-top:-118px}
+  .pg-safari .arr{margin-top:104px}
+}
+
 </style>
 </head>
 <body>
