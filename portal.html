@@ -1760,32 +1760,6 @@ function renderEtapa4() {
   html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
   html += '¿Necesitas ayuda? Escríbenos por WhatsApp</a>';
 
-  // Reseña interna
-  if (d.calificacion > 0) {
-    html += '<div class="card" style="text-align:center">';
-    html += '<p class="section-title" style="text-align:center">Gracias por tu reseña</p>';
-    var estrellasFilled = '';
-    for (var si = 1; si <= 5; si++) {
-      estrellasFilled += '<svg width="22" height="22" viewBox="0 0 24 24" fill="' + (si <= d.calificacion ? 'var(--gold)' : 'none') + '" stroke="var(--gold)" stroke-width="2" stroke-linecap="round" style="margin:0 2px"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
-    }
-    html += '<div style="margin-bottom:8px">' + estrellasFilled + '</div>';
-    if (d.resenaTexto) html += '<p style="font-size:12px;color:var(--concrete);font-style:italic;margin:0 0 12px">"' + esc(d.resenaTexto) + '"</p>';
-    html += '</div>';
-  } else {
-    html += '<div class="card" id="card-resena">';
-    html += '<p class="section-title">¿Cómo fue tu experiencia?</p>';
-    html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Tu opinión nos ayuda a mejorar.</p>';
-    html += '<div id="estrellas-rating" style="display:flex;justify-content:center;gap:6px;margin-bottom:16px">';
-    for (var ri = 1; ri <= 5; ri++) {
-      html += '<svg data-val="' + ri + '" class="estrella-rating" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--border-strong)" stroke-width="2" stroke-linecap="round" style="cursor:pointer;transition:fill .15s,stroke .15s"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>';
-    }
-    html += '</div>';
-    html += '<textarea id="resena-texto" rows="3" placeholder="Cuéntanos tu experiencia (opcional)..." style="width:100%;font-size:12px;resize:vertical;border:1px solid var(--border);border-radius:6px;padding:8px;background:var(--bg);color:var(--charcoal);box-sizing:border-box;margin-bottom:10px"></textarea>';
-    html += '<button class="btn-primary" id="btn-enviar-resena" disabled onclick="enviarResena()">Enviar reseña</button>';
-    html += '<div id="msg-resena" style="font-size:12px;margin-top:6px;text-align:center;min-height:16px"></div>';
-    html += '</div>';
-  }
-
   // Google review
   html += '<div class="card" style="text-align:center"><p class="section-title" style="text-align:center">¿Quedaste satisfecho?</p>';
   html += '<p style="font-size:13px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Tu reseña nos ayuda a llegar a más clientes como tú. ¡Gracias!</p>';
