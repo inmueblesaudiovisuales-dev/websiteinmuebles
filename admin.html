@@ -673,6 +673,15 @@
             <p style="font-size:11px;color:var(--ink-3);margin-bottom:8px;line-height:1.5">Las opciones marcadas aparecerán como toggles en el portal del cliente. El precio final se recalcula cuando el cliente las seleccione.</p>
             <div class="add-lista" id="lista-adicionales"></div>
           </div>
+          <div class="campo" style="background:var(--page);border:1px solid var(--border);border-radius:8px;padding:14px">
+            <label style="margin-bottom:6px">Servicios extra ya acordados <span style="font-weight:400;color:var(--ink-3)">(opcional)</span></label>
+            <p style="font-size:11px;color:var(--ink-3);margin-bottom:10px;line-height:1.5">Estos servicios están ya confirmados con el cliente y se suman al precio total desde el inicio. Aparecen en el PDF y en el portal bajo "Servicios adicionales".</p>
+            <div id="campo-extras-catalogo" style="margin-bottom:8px"></div>
+            <div id="lista-extras-acordados" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px"></div>
+            <button type="button" class="btn-secundario btn-sm" onclick="agregarExtraLibre()" style="font-size:12px">
+              + Agregar servicio personalizado
+            </button>
+          </div>
           <hr style="border:none;border-top:1px solid var(--border);margin:16px 0">
           <div class="campo">
             <label>Nombre del cliente</label>
@@ -1277,8 +1286,8 @@ function duplicarContrato() {
         if (sel.options[i].value === c.PaqueteBase) { sel.selectedIndex = i; break; }
       }
       actualizarPrecio();
-      // Marcar add-ons que tenía el contrato original
-      adicionales.forEach(clave => {
+      // Marcar add-ons ofrecidos (strings) que tenía el contrato original.
+      adicionales.filter(item => typeof item === 'string').forEach(clave => {
         const cb = document.querySelector(`#lista-adicionales input[value="${CSS.escape(clave)}"]`);
         if (cb) cb.checked = true;
       });
@@ -1355,6 +1364,23 @@ function actualizarPaquetes() {
         <span class="add-item-precio">+${fmxn(p.Precio)}</span>
       </label>`).join('');
   }
+
+  // Renderizar checkboxes de catálogo disponibles en la sección de extras acordados.
+  const contCatalogo = document.getElementById('campo-extras-catalogo');
+  if (contCatalogo) {
+    if (!adds.length) {
+      contCatalogo.innerHTML = '';
+    } else {
+      contCatalogo.innerHTML = '<p style="font-size:11px;color:var(--ink-3);margin-bottom:6px">Del catálogo:</p>' +
+        adds.map(p => `
+          <label class="add-item" style="margin-bottom:4px">
+            <input type="checkbox" class="extra-acordado-cat-cb" value="${esc(p.Clave)}" data-precio="${p.Precio}" onchange="actualizarPrecio()">
+            <span class="add-item-nombre">${esc(p.Nombre)}</span>
+            <span class="add-item-precio">+${fmxn(p.Precio)}</span>
+          </label>`).join('');
+    }
+  }
+
   actualizarPrecio();
 }
 
@@ -1363,12 +1389,34 @@ function actualizarPrecio() {
   const baseOpt = sel.options[sel.selectedIndex];
   const base    = parseFloat(baseOpt?.dataset?.precio) || 0;
   if (!precioManual) {
-    document.getElementById('est-precio-total').value = base;
+    // Sumar extras ya acordados (catálogo marcados + filas personalizadas).
+    let sumaExtras = 0;
+    document.querySelectorAll('.extra-acordado-cat-cb:checked').forEach(cb => {
+      sumaExtras += parseFloat(cb.dataset.precio) || 0;
+    });
+    document.querySelectorAll('.extra-libre-precio').forEach(inp => {
+      sumaExtras += parseFloat(inp.value) || 0;
+    });
+    document.getElementById('est-precio-total').value = base + sumaExtras;
     actualizarAnticipo('est');
   }
 }
 
 function parsePrecio(v) { return parseFloat(String(v || '').replace(/[^\d.]/g, '')) || 0; }
+
+function agregarExtraLibre() {
+  const lista = document.getElementById('lista-extras-acordados');
+  if (!lista) return;
+  const idx = lista.children.length;
+  const fila = document.createElement('div');
+  fila.style.cssText = 'display:grid;grid-template-columns:1fr auto auto;gap:6px;align-items:center';
+  fila.innerHTML = `
+    <input type="text" class="extra-libre-nombre" placeholder="Nombre del servicio" style="font-size:12px">
+    <input type="number" class="extra-libre-precio" placeholder="Precio MXN" min="0" step="100" style="width:110px;font-size:12px" oninput="actualizarPrecio()">
+    <button type="button" class="btn-secundario btn-sm" style="padding:4px 8px;font-size:12px" onclick="this.closest('div').remove();actualizarPrecio()">Quitar</button>
+  `;
+  lista.appendChild(fila);
+}
 
 function actualizarAnticipo(p) {
   if (p === 'est' && anticipoManual) return;
@@ -1583,9 +1631,19 @@ function renderPanel(data) {
 
   // ── PANE GENERAL ──
   const addHtml = adicionales.length
-    ? '<span style="display:inline-flex;flex-wrap:wrap;gap:4px;vertical-align:middle">' + adicionales.map(clave => {
-        const pkg = paquetes.find(p => p.Clave === clave);
-        return `<span style="background:var(--page);border:1px solid var(--border);border-radius:20px;font-size:11px;padding:2px 9px">${esc(pkg ? pkg.Nombre : clave)}</span>`;
+    ? '<span style="display:inline-flex;flex-wrap:wrap;gap:4px;vertical-align:middle">' + adicionales.map(item => {
+        let label;
+        if (typeof item === 'string') {
+          const pkg = paquetes.find(p => p.Clave === item);
+          label = pkg ? pkg.Nombre : item;
+        } else if (item && item.clave) {
+          const pkg = paquetes.find(p => p.Clave === item.clave);
+          label = (pkg ? pkg.Nombre : item.clave) + ' (incluido)';
+        } else {
+          label = (item && item.nombre ? item.nombre : '?')
+            + (item && item.precio ? ' — ' + fmxn(item.precio) : '') + ' (incluido)';
+        }
+        return `<span style="background:var(--page);border:1px solid var(--border);border-radius:20px;font-size:11px;padding:2px 9px">${esc(label)}</span>`;
       }).join('') + '</span>'
     : '<span style="font-size:12px;color:var(--ink-3)">Sin servicios adicionales</span>';
 
@@ -2027,7 +2085,12 @@ function abrirModalUpsell() {
 
   // Renderizar lista de adicionales del catálogo aún no aplicados
   const cont = document.getElementById('upsell-adicionales');
-  const yaTiene = new Set(adicionales || []);
+  // Construir el set de claves ya presentes (maneja array mixto de strings y objetos).
+  const yaTiene = new Set();
+  (adicionales || []).forEach(item => {
+    if (typeof item === 'string') yaTiene.add(item);
+    else if (item && item.clave) yaTiene.add(item.clave);
+  });
   const esAd = v => v === true || String(v || '').trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'') === 'si';
   const esActivo = v => v === true || (v !== false && String(v || '').trim().toLowerCase() !== 'no');
   const disponibles = (paquetes || []).filter(p => esAd(p.EsAdicional) && esActivo(p.Activo) && !yaTiene.has(p.Clave));
@@ -2111,10 +2174,7 @@ async function guardarUpsell() {
     return;
   }
 
-  const notaFinal = [
-    libreNombre && librePrecio ? ('servicio fuera de catálogo: ' + libreNombre + ' (+' + librePrecio + ')') : '',
-    nota,
-  ].filter(Boolean).join(' · ');
+  const notaFinal = [nota].filter(Boolean).join(' · ');
 
   const payload = {
     action: 'actualizarContratoUpsell',
@@ -2124,7 +2184,13 @@ async function guardarUpsell() {
     payload.agregarAdicionales = adicionalesSeleccionados;
     payload.sumarPrecioAdicionales = true;
   }
-  if (librePrecio) payload.ajustePrecioManual = librePrecio;
+  if (libreNombre && librePrecio) {
+    // Servicio con nombre: se guarda como objeto en AdicionalesJSON para mostrarlo en el portal.
+    payload.serviciosLibres = [{ nombre: libreNombre, precio: librePrecio }];
+  } else if (librePrecio) {
+    // Ajuste de precio sin nombre de servicio.
+    payload.ajustePrecioManual = librePrecio;
+  }
   if (!isNaN(precioTotalManual) && precioTotalManual > 0) payload.nuevoPrecioTotal = precioTotalManual;
   if (notaFinal) payload.nota = notaFinal;
   if (notificar) payload.notificarCliente = true;
@@ -2334,6 +2400,17 @@ async function crearContrato(tipo) {
     const adds   = Array.from(document.querySelectorAll('#lista-adicionales input[type="checkbox"]:checked')).map(c => c.value);
     const paqObj = paquetes.find(p => p.Clave === paqBase);
 
+    // Recopilar extras ya acordados: catálogo marcado + servicios personalizados.
+    const extrasAcordados = [];
+    document.querySelectorAll('.extra-acordado-cat-cb:checked').forEach(cb => {
+      extrasAcordados.push({ clave: cb.value, precio: parseFloat(cb.dataset.precio) || 0 });
+    });
+    document.querySelectorAll('#lista-extras-acordados > div').forEach(fila => {
+      const nombre = fila.querySelector('.extra-libre-nombre')?.value.trim();
+      const precio = parseFloat(fila.querySelector('.extra-libre-precio')?.value) || 0;
+      if (nombre && precio) extrasAcordados.push({ nombre, precio });
+    });
+
     body = {
       action         : 'crearContrato',
       tipoContrato   : 'estandar',
@@ -2342,6 +2419,7 @@ async function crearContrato(tipo) {
       telefonoCliente: telefono,
       paqueteBase    : paqBase,
       adicionales    : adds,
+      extrasAcordados: extrasAcordados,
       fechaSesion    : fecha,
       horaSesion     : hora,
       precioBase     : paqObj ? paqObj.Precio : ptotal,
@@ -2446,6 +2524,10 @@ function limpiarFormCrear(tipo) {
     document.getElementById('est-fecha').value = '';
     document.getElementById('est-hora').value  = '10:00';
     document.getElementById('tipo-residencial').checked = true;
+    // Limpiar extras acordados
+    const listaLibres = document.getElementById('lista-extras-acordados');
+    if (listaLibres) listaLibres.innerHTML = '';
+    document.querySelectorAll('.extra-acordado-cat-cb').forEach(cb => { cb.checked = false; });
     precioManual   = false;
     anticipoManual = false;
     actualizarPaquetes();
