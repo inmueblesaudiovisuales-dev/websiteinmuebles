@@ -1466,7 +1466,7 @@ function renderEtapa2() {
   mostrarEstado('');
   var d        = portalData;
   var total    = parseFloat(d.precioTotal) || 0;
-  var anticipo = total > 0 ? calcAnticipo(total) : (parseFloat(d.anticipo) || 0);
+  var anticipo = (d.anticipo !== undefined && d.anticipo !== '') ? parseFloat(d.anticipo) || 0 : calcAnticipo(total);
   var folio    = d.folio || '';
   var nombre1  = (d.nombre || '').split(' ')[0];
 
