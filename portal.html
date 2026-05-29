@@ -752,6 +752,20 @@ function renderEtapa1() {
   initCanvas();
   document.getElementById('btn-limpiar').addEventListener('click', limpiarFirma);
   document.getElementById('btn-firmar').addEventListener('click', validarYFirmar);
+
+  // Pre-rellenar logo de sesión anterior (B3: se ejecuta en CADA re-render)
+  if (portalData.logoPrecargadoUrl) {
+    if (!archivosSubidos['logo-0']) {
+      archivosSubidos['logo-0'] = portalData.logoPrecargadoUrl;
+    }
+    if (archivosSubidos['logo-0'] === portalData.logoPrecargadoUrl) {
+      setUploadStatus('logo', 0, 'ok', 'Logo de sesión anterior');
+    }
+  }
+  // Fix B5: restaurar status de logo subido por el cliente tras re-render
+  if (archivosSubidos['logo-0'] && archivosSubidos['logo-0'] !== (portalData.logoPrecargadoUrl || '')) {
+    setUploadStatus('logo', 0, 'ok', 'Logo subido');
+  }
 }
 
 /* ── ADD-ONS ────────────────────────────────────────────────────────────────── */
@@ -1885,7 +1899,6 @@ function subirArchivoPortal(tipo, propIndex, inputEl) {
     return;
   }
   var clave = tipo + '-' + propIndex;
-  delete archivosSubidos[clave];
   uploadsEnProgreso++;
   setUploadStatus(tipo, propIndex, 'loading', '');
   var reader = new FileReader();
