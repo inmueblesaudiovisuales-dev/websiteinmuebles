@@ -508,6 +508,32 @@
     .paq-tabla tr:last-child td { border-bottom: none; }
     .paq-inactivo { opacity: .45; }
     .badge-addon { display:inline-block; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700; background:var(--gold-pale); color:var(--gold); letter-spacing:.4px }
+    /* ── AUTOCOMPLETE CLIENTES ── */
+    .ac-dropdown {
+      position: absolute; z-index: 999;
+      background: var(--card); border: 1px solid var(--border2);
+      border-radius: var(--r); box-shadow: 0 4px 16px rgba(0,0,0,.12);
+      max-height: 220px; overflow-y: auto;
+      font-size: 13px; min-width: 260px;
+    }
+    .ac-item {
+      padding: 10px 14px; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .ac-item:last-child { border-bottom: none; }
+    .ac-item:hover, .ac-item.ac-activo { background: var(--gold-pale); }
+    .ac-nombre { font-weight: 600; color: var(--ink-1); }
+    .ac-sub { color: var(--ink-3); font-size: 11px; }
+    .ac-logo-badge {
+      display: inline-block; font-size: 10px; font-weight: 700;
+      background: #e8f5e9; color: #2e7d32;
+      border-radius: 4px; padding: 1px 6px; margin-top: 2px;
+    }
+    .ac-hint {
+      font-size: 11px; color: var(--ink-3);
+      margin-top: 4px; font-style: italic;
+    }
   </style>
 </head>
 <body>
@@ -536,6 +562,8 @@
 
 <!-- ═══ ADMIN ════════════════════════════════════════════════════════════════ -->
 <div id="pantalla-admin">
+    <!-- Dropdown de autocomplete — se posiciona por JS -->
+    <div id="ac-dropdown" class="ac-dropdown" style="display:none"></div>
   <div class="topbar">
     <span class="topbar-marca">Inmuebles Audiovisuales</span>
     <span class="topbar-sep">/</span>
@@ -968,6 +996,8 @@ const ESTATUS_ABIERTOS = ['Pendiente firma', 'Firmado', 'Anticipo recibido', 'En
 // ── Selección masiva (TEMPORAL — quitar cuando ya no se necesite) ──
 let modoSeleccion = false;
 let seleccionados = new Set();
+var _acSeleccionRecien = false; // flag para suprimir reapertura del dropdown tras seleccion
+let _clientesCache = [];  // cache para autocomplete
 
 function toggleModoSeleccion() {
   modoSeleccion = !modoSeleccion;
@@ -1085,6 +1115,7 @@ function intentarLogin() {
     if (history.replaceState) history.replaceState({}, '', location.pathname);
     cargarPaquetes();
     cargarContratos(tokenInicial);
+    cargarClientesParaAutocomplete(); // precarga cache para autocomplete (M2/L6)
   } else {
     document.getElementById('error-login').textContent = 'Contraseña incorrecta.';
   }
@@ -1120,6 +1151,7 @@ function mostrarTab(id, btn) {
   if (id === 'crm') cargarCRM();
   if (id === 'paquetes') cargarPaquetesAdmin();
   if (id === 'metricas') cargarMetricas();
+  if (id === 'nuevo') cargarClientesParaAutocomplete();
   if (id === 'sesiones') {
     if (!todosContratos.length) cargarContratos().then(renderSesionesFuturas);
     else renderSesionesFuturas();
@@ -1127,6 +1159,7 @@ function mostrarTab(id, btn) {
 }
 
 function mostrarSubTab(tipo, btn) {
+  cerrarDropdownAC();
   document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('activo'));
   btn.classList.add('activo');
   document.getElementById('form-estandar').style.display   = tipo === 'estandar'   ? 'block' : 'none';
@@ -2511,6 +2544,8 @@ async function crearContrato(tipo) {
 
     limpiarFormCrear(tipo);
     cargarContratos();
+    _clientesCache = []; // invalidar cache para que recargue clientes nuevos (M2)
+    cargarClientesParaAutocomplete(); // recargar inmediatamente en segundo plano
   } catch (e) {
     setMsg(msgId, 'Error: ' + e.message, 'error');
   } finally {
@@ -2532,10 +2567,16 @@ function limpiarFormCrear(tipo) {
     precioManual   = false;
     anticipoManual = false;
     actualizarPaquetes();
+    cerrarDropdownAC();
+    var logoHint = document.getElementById('ac-logo-hint-est');
+    if (logoHint) logoHint.remove();
   } else {
     ['par-nombre','par-correo','par-telefono','par-precio-total','par-anticipo','par-notas'].forEach(id => { var el = document.getElementById(id); if (el) el.value = ''; });
     document.getElementById('par-num-props').value = '1';
     renderPropCardsPar(1);
+    cerrarDropdownAC();
+    var logoHint = document.getElementById('ac-logo-hint-par');
+    if (logoHint) logoHint.remove();
   }
 }
 
@@ -2598,6 +2639,137 @@ function renderSesionesFuturas() {
   });
   el.innerHTML = html;
 }
+
+// ── AUTOCOMPLETE CLIENTES ─────────────────────────────────────────────────────
+
+async function cargarClientesParaAutocomplete() {
+  if (_clientesCache.length) return;
+  try {
+    const data = await apiGet({ action: 'listarClientes' });
+    if (data.ok) _clientesCache = data.clientes || [];
+  } catch(e) {}
+}
+
+function cerrarDropdownAC() {
+  const dd = document.getElementById('ac-dropdown');
+  if (dd) dd.style.display = 'none';
+}
+
+function mostrarDropdownAC(inputEl, texto, esParticular) {
+  const dd = document.getElementById('ac-dropdown');
+  if (!dd) return;
+
+  const q = (texto || '').toLowerCase().trim();
+  if (q.length < 2) { cerrarDropdownAC(); return; }
+
+  const resultados = _clientesCache.filter(cl =>
+    (cl.nombre || '').toLowerCase().includes(q) ||
+    (cl.correo  || '').toLowerCase().includes(q)
+  ).slice(0, 8);
+
+  if (!resultados.length) { cerrarDropdownAC(); return; }
+
+  dd.innerHTML = resultados.map((cl, i) => {
+    const logoBadge = cl.logoUrl
+      ? '<span class="ac-logo-badge">Logo guardado</span>'
+      : '';
+    return `<div class="ac-item" data-idx="${i}"
+      onmousedown="event.preventDefault();seleccionarClienteAC(${i},${esParticular})">
+      <span class="ac-nombre">${esc(cl.nombre)}</span>
+      <span class="ac-sub">${esc(cl.correo)}${cl.telefono ? ' · ' + esc(cl.telefono) : ''}</span>
+      ${logoBadge}
+    </div>`;
+  }).join('');
+
+  dd._resultados = resultados;
+
+  const rect = inputEl.getBoundingClientRect();
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  const ddHeight = Math.min(220, resultados.length * 56 + 8);
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  if (spaceBelow < ddHeight && spaceAbove > spaceBelow) {
+    dd.style.top = (rect.top + scrollY - ddHeight - 4) + 'px';
+  } else {
+    dd.style.top = (rect.bottom + scrollY + 4) + 'px';
+  }
+  dd.style.left  = rect.left + 'px';
+  dd.style.width = rect.width + 'px';
+  dd.style.display = 'block';
+}
+
+function seleccionarClienteAC(idx, esParticular) {
+  const dd = document.getElementById('ac-dropdown');
+  if (!dd || !dd._resultados) return;
+  const cl = dd._resultados[idx];
+  if (!cl) return;
+
+  const pref = esParticular ? 'par' : 'est';
+  const elNombre   = document.getElementById(pref + '-nombre');
+  const elCorreo   = document.getElementById(pref + '-correo');
+  const elTelefono = document.getElementById(pref + '-telefono');
+
+  if (elNombre)   elNombre.value   = cl.nombre   || '';
+  if (elCorreo)   elCorreo.value   = cl.correo   || '';
+  if (elTelefono) elTelefono.value = cl.telefono || '';
+
+  // Fix M1: suprimir reapertura del dropdown cuando el input event se dispare
+  _acSeleccionRecien = true;
+  setTimeout(function() { _acSeleccionRecien = false; }, 200);
+
+  cerrarDropdownAC();
+
+  const hintId = 'ac-logo-hint-' + pref;
+  var existingHint = document.getElementById(hintId);
+  if (existingHint) existingHint.remove();
+
+  if (cl.logoUrl && elNombre) {
+    var hint = document.createElement('p');
+    hint.id = hintId;
+    hint.className = 'ac-hint';
+    hint.textContent = 'Este cliente tiene logo guardado de una sesión anterior. El portal lo pre-llenará automáticamente.';
+    elNombre.closest('.campo').after(hint);
+  }
+}
+
+// Vincular autocomplete a los campos de nombre
+document.addEventListener('DOMContentLoaded', function() {
+  var estNombre = document.getElementById('est-nombre');
+  var parNombre = document.getElementById('par-nombre');
+
+  if (estNombre) {
+    estNombre.addEventListener('input', function() {
+      if (_acSeleccionRecien) return; // Fix M1
+      var hint = document.getElementById('ac-logo-hint-est');
+      if (hint) hint.remove(); // Fix M5
+      mostrarDropdownAC(this, this.value, false);
+    });
+    estNombre.addEventListener('blur', function() {
+      setTimeout(cerrarDropdownAC, 150);
+    });
+  }
+
+  if (parNombre) {
+    parNombre.addEventListener('input', function() {
+      if (_acSeleccionRecien) return; // Fix M1
+      var hint = document.getElementById('ac-logo-hint-par');
+      if (hint) hint.remove(); // Fix M5
+      mostrarDropdownAC(this, this.value, true);
+    });
+    parNombre.addEventListener('blur', function() {
+      setTimeout(cerrarDropdownAC, 150);
+    });
+  }
+
+  // Cerrar dropdown al hacer click fuera
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#ac-dropdown') &&
+        e.target.id !== 'est-nombre' &&
+        e.target.id !== 'par-nombre') {
+      cerrarDropdownAC();
+    }
+  });
+});
 
 // ── CRM ───────────────────────────────────────────────────────────────────────
 
