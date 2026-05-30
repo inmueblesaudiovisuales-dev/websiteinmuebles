@@ -538,7 +538,10 @@ function renderEtapa1() {
   var d           = portalData;
   var esParticular = d.tipoContrato === 'particular';
   var props        = d.propiedades || [];
-  var addons       = d.paquetesDisponibles || [];
+  // Solo mostrar add-ons que Bruno marcó explícitamente (strings en adicionales).
+  // Si no marcó ninguno, ofertasClaves=[]; addons queda vacío sin importar qué devuelva el backend.
+  var ofertasClaves = (d.adicionales || []).filter(function(x) { return typeof x === 'string'; });
+  var addons = ofertasClaves.length > 0 ? (d.paquetesDisponibles || []) : [];
   var nombre1      = (d.nombre || '').split(' ')[0] || 'bienvenido';
 
   // Init add-ons state
