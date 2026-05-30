@@ -653,7 +653,7 @@ function renderEtapa1() {
     props.forEach(function(p, i) {
       var n = i + 1;
       var esTerreno = (p.tipo || '').toLowerCase() === 'terreno';
-      orientaciones[n] = '';
+      orientaciones[n] = 'Vertical (9:16) — Reels, TikTok e Instagram';
       html += '<div class="card">';
       html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--border)">';
       if (!esParticular) {
@@ -671,7 +671,7 @@ function renderEtapa1() {
       html += '<div class="field"><label>Referencias de cómo llegar (opcional)</label><textarea id="inp-referencias-' + n + '" placeholder="Entre calles, portón negro, datos de acceso..."></textarea></div>';
 
       html += '<p class="section-title" style="margin-top:18px">Producción</p>';
-      html += '<div class="field" id="field-orientacion-' + n + '"><label>Orientación del video *</label>';
+      html += '<div class="field" id="field-orientacion-' + n + '" style="display:none"><label>Orientación del video *</label>';
       html += '<div class="orientacion-grid">';
       html += '<div class="orientacion-btn" id="ori-h-' + n + '" data-prop="' + n + '" data-valor="Horizontal (16:9) — YouTube, sitios web y pantallas">' +
         '<div class="img-wrap"><img src="https://inmueblesaudiovisuales.com/orientacion-horizontal.svg" alt="Horizontal"></div>' +
