@@ -421,8 +421,16 @@ function toast(msg) {
 // ── API ──
 async function apiGet(p) {
   const qs  = new URLSearchParams({ ...p, token: TOKEN }).toString();
-  const res = await fetch(API + '?' + qs, { redirect: 'follow' });
-  return res.json();
+  const ctrl = new AbortController();
+  const tid  = setTimeout(() => ctrl.abort(), 10000);
+  try {
+    const res = await fetch(API + '?' + qs, { redirect: 'follow', signal: ctrl.signal });
+    clearTimeout(tid);
+    return res.json();
+  } catch (e) {
+    clearTimeout(tid);
+    throw e;
+  }
 }
 
 async function apiPost(body) {
