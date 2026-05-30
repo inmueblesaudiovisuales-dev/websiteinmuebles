@@ -1203,7 +1203,7 @@ async function descargarCSV() {
     const url  = URL.createObjectURL(blob);
     const a    = document.createElement('a');
     a.href     = url;
-    a.download = 'contratos-' + new Date().toISOString().substring(0, 10) + '.csv';
+    a.download = 'contratos-' + new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10) + '.csv';
     a.click();
     URL.revokeObjectURL(url);
   } catch(e) {
@@ -1494,8 +1494,9 @@ function renderStatsBar(s) {
   const bar = document.getElementById('stats-bar');
   if (!bar) return;
   const ahora  = new Date();
-  const hoy    = ahora.toISOString().substring(0, 10);
-  const en7    = new Date(ahora.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10);
+  const tzOff  = ahora.getTimezoneOffset() * 60000;
+  const hoy    = new Date(ahora.getTime() - tzOff).toISOString().substring(0, 10);
+  const en7    = new Date(ahora.getTime() - tzOff + 7 * 24 * 60 * 60 * 1000).toISOString().substring(0, 10);
   const sesionesSemana = todosContratos.filter(c => {
     if (!c.fechaSesion) return false;
     const fs = String(c.fechaSesion).substring(0, 10);
@@ -1520,7 +1521,7 @@ function renderStatsBar(s) {
 function actualizarAlertaHoy() {
   const el = document.getElementById('alerta-sesion-hoy');
   if (!el) return;
-  const hoy = new Date().toISOString().substring(0, 10);
+  const hoy = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10);
   const sesionesHoy = todosContratos.filter(c =>
     c.fechaSesion && String(c.fechaSesion).substring(0, 10) === hoy
   );
@@ -2589,7 +2590,7 @@ function renderSesionesFuturas() {
     el.innerHTML = '<p style="color:var(--ink-3);font-style:italic;font-size:13px">Carga los contratos primero desde la pestaña Contratos.</p>';
     return;
   }
-  const hoy = new Date().toISOString().substring(0, 10);
+  const hoy = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().substring(0, 10);
   const futuras = todosContratos
     .filter(c => c.fechaSesion && String(c.fechaSesion).substring(0, 10) >= hoy)
     .sort((a, b) => String(a.fechaSesion).localeCompare(String(b.fechaSesion)));
