@@ -1697,17 +1697,9 @@ function renderEtapa3() {
   html += 'Imprimir / Guardar comprobante</button>';
 
   // Opciones de pago si hay saldo
-  var anticoE3 = (d.anticipo !== undefined && d.anticipo !== '') ? parseFloat(d.anticipo) || 0 : 1;
   if (saldo > 0) {
     html += '<div class="card"><p class="section-title">Pagar saldo restante</p>';
-    if (anticoE3 === 0) {
-      var textoIntroE3 = estatus === 'En produccion'
-        ? 'Tu proyecto está en producción. Estos son los datos para tu pago.'
-        : 'Estos son los datos para tu pago.';
-      html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">' + textoIntroE3 + '</p>';
-    } else {
-      html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Puedes liquidar el saldo antes, durante o después de la entrega del material.</p>';
-    }
+    html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">Estos son los datos para realizar el pago.</p>';
     html += '<details open style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px"><summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Transferencia bancaria<span style="font-size:11px;color:var(--concrete);font-weight:500">CLABE / SPEI</span></summary>';
     html += '<div style="padding:0 16px 16px"><div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">' + esc(d.banco || '') + '</span></div>';
     html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">' + esc(d.titular || '') + '</span></div>';
