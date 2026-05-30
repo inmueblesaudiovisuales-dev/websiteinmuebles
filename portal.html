@@ -1563,13 +1563,65 @@ function renderEtapa2() {
     html += 'Ya pagué. Avisarles ahora</a>';
     html += '</div>'; // end payment card
   } else {
-    var waMsgFirma = encodeURIComponent('Hola, acabo de firmar mi contrato. Mi folio es ' + folio + '.');
-    html += '<div class="card">';
-    html += '<p style="font-size:13px;color:var(--charcoal);line-height:1.7;margin-bottom:12px">Tu contrato fue firmado y tu fecha está confirmada. No se requiere anticipo para este servicio.</p>';
-    html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsgFirma + '" target="_blank" rel="noopener" class="btn-wa">';
-    html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>';
-    html += 'Avisarles que firmé</a>';
-    html += '</div>';
+    // anticipo === 0
+    if (total > 0) {
+      html += '<div class="card"><p class="section-title">Opciones de pago</p>';
+      html += '<p style="font-size:12px;color:var(--concrete);margin-bottom:16px;line-height:1.6">No se requiere anticipo. Puedes realizar el pago cuando estés listo. Tu fecha ya está confirmada.</p>';
+
+      html += '<details open style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
+      html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Transferencia bancaria<span style="font-size:11px;color:var(--concrete);font-weight:500">CLABE / SPEI</span></summary>';
+      html += '<div style="padding:0 16px 16px">';
+      html += '<div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">' + esc(d.banco || 'Banamex') + '</span></div>';
+      html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">' + esc(d.titular || 'Bruno Gutierrez Salazar') + '</span></div>';
+      html += '<div class="dato-fila"><span class="dato-label">CLABE</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="clabe-e2-0">' + esc(d.clabe || '') + '</span><button class="btn-copy" id="btn-copy-clabe-e2-0">Copiar</button></span></div>';
+      if (d.cuenta) html += '<div class="dato-fila"><span class="dato-label">Número de cuenta</span><span class="dato-valor">' + esc(d.cuenta) + '</span></div>';
+      html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(total) + '</span></div>';
+      html += '</div></details>';
+
+      html += '<details style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
+      html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Depósito en OXXO o 7-Eleven<span style="font-size:11px;color:var(--concrete);font-weight:500">Tarjeta Banamex</span></summary>';
+      html += '<div style="padding:0 16px 16px">';
+      html += '<div class="dato-fila"><span class="dato-label">Banco</span><span class="dato-valor">Banamex</span></div>';
+      html += '<div class="dato-fila"><span class="dato-label">Núm. de tarjeta</span><span class="dato-valor" style="display:flex;align-items:center;gap:8px;justify-content:flex-end"><span id="tarjeta-oxxo-e2-0" class="tarjeta-chip">5544 9206 0686 5310</span><button class="btn-copy" id="btn-copy-oxxo-e2-0">Copiar</button></span></div>';
+      html += '<div class="dato-fila"><span class="dato-label">Titular</span><span class="dato-valor">Bruno Gutierrez Salazar</span></div>';
+      html += '<div class="dato-fila" style="border-bottom:none"><span class="dato-label">Importe</span><span class="dato-valor" style="color:var(--gold)">' + formatMXN(total) + '</span></div>';
+      html += '</div>';
+      html += '<div style="padding:0 14px 14px;font-size:12px;color:var(--concrete);line-height:1.8"><ol style="padding-left:16px;margin:0">';
+      html += '<li>Ve a cualquier tienda OXXO o 7-Eleven.</li>';
+      html += '<li>Dile al cajero que quieres hacer un depósito con número de tarjeta Banamex.</li>';
+      html += '<li>Proporciona el número de tarjeta: <strong class="tarjeta-chip" style="display:inline-block;margin:0 2px">5544 9206 0686 5310</strong></li>';
+      html += '<li>Indica el monto: <strong style="color:var(--charcoal)">' + formatMXN(total) + '</strong></li>';
+      html += '<li>Guarda el ticket y envíanoslo por WhatsApp para confirmar tu pago.</li>';
+      html += '</ol></div></details>';
+
+      if (d.clipLink) {
+        html += '<details style="border:1.5px solid var(--border-strong);border-radius:10px;overflow:hidden;margin-bottom:10px">';
+        html += '<summary style="padding:14px 16px;cursor:pointer;font-size:13px;font-weight:700;color:var(--charcoal);list-style:none;display:flex;align-items:center;justify-content:space-between">Tarjeta de crédito o débito<span style="font-size:11px;color:var(--concrete);font-weight:500">Clip / pago en línea</span></summary>';
+        html += '<div style="padding:12px 16px 16px">';
+        html += '<a href="' + esc(d.clipLink) + '" target="_blank" rel="noopener" class="btn-secondary" style="text-decoration:none;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px">Pagar con tarjeta</a>';
+        html += '<ol style="padding-left:16px;margin:0;font-size:12px;color:var(--concrete);line-height:1.8">' +
+          '<li>Haz clic en <strong style="color:var(--charcoal)">Pagar con tarjeta</strong></li>' +
+          '<li>Ingresa el monto: <strong style="color:var(--charcoal)">' + formatMXN(total) + '</strong></li>' +
+          '<li>En el campo <strong style="color:var(--charcoal)">Concepto</strong> escribe tu nombre y folio: <strong style="color:var(--charcoal)">' + esc(nombre1) + ' ' + esc(folio) + '</strong></li>' +
+          '<li>Completa el pago con tu tarjeta</li>' +
+          '<li>Envíanos el comprobante por WhatsApp para confirmar</li>' +
+        '</ol></div></details>';
+      }
+
+      var waMsgTotal = encodeURIComponent('Hola, acabo de realizar el pago (' + formatMXN(total) + '). Mi folio es ' + folio + '.');
+      html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsgTotal + '" target="_blank" rel="noopener" class="btn-wa">';
+      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>';
+      html += 'Ya pagué. Avisarles ahora</a>';
+      html += '</div>';
+    } else {
+      var waMsgFirma = encodeURIComponent('Hola, acabo de firmar mi contrato. Mi folio es ' + folio + '.');
+      html += '<div class="card">';
+      html += '<p style="font-size:13px;color:var(--charcoal);line-height:1.7;margin-bottom:12px">Tu contrato fue firmado y tu fecha está confirmada. No se requiere ningún pago para este servicio.</p>';
+      html += '<a href="' + esc(d.waLink || 'https://wa.me/5218127174207') + '?text=' + waMsgFirma + '" target="_blank" rel="noopener" class="btn-wa">';
+      html += '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413"/></svg>';
+      html += 'Avisarles que firmé</a>';
+      html += '</div>';
+    }
   }
 
   html += '</div>'; // end wrap
@@ -1593,6 +1645,27 @@ function renderEtapa2() {
       btnOxxoE2.textContent = 'Copiado';
       btnOxxoE2.classList.add('copiado');
       setTimeout(function() { btnOxxoE2.textContent = 'Copiar'; btnOxxoE2.classList.remove('copiado'); }, 2500);
+    });
+  }
+  // Listeners para anticipo=0 con total>0
+  var btnClabeE20 = document.getElementById('btn-copy-clabe-e2-0');
+  if (btnClabeE20) {
+    btnClabeE20.addEventListener('click', function() {
+      var txt = (document.getElementById('clabe-e2-0') || {textContent:''}).textContent.trim();
+      navigator.clipboard.writeText(txt).catch(function() {});
+      btnClabeE20.textContent = 'Copiada';
+      btnClabeE20.classList.add('copiado');
+      setTimeout(function() { btnClabeE20.textContent = 'Copiar'; btnClabeE20.classList.remove('copiado'); }, 2500);
+    });
+  }
+  var btnOxxoE20 = document.getElementById('btn-copy-oxxo-e2-0');
+  if (btnOxxoE20) {
+    btnOxxoE20.addEventListener('click', function() {
+      var txt = (document.getElementById('tarjeta-oxxo-e2-0') || {textContent:''}).textContent.trim();
+      navigator.clipboard.writeText(txt).catch(function() {});
+      btnOxxoE20.textContent = 'Copiado';
+      btnOxxoE20.classList.add('copiado');
+      setTimeout(function() { btnOxxoE20.textContent = 'Copiar'; btnOxxoE20.classList.remove('copiado'); }, 2500);
     });
   }
 }
