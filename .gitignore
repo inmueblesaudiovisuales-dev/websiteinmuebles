@@ -1,0 +1,3 @@
+# Artefactos de verificacion local (screenshots de Playwright)
+.verify/
+.playwright-mcp/
