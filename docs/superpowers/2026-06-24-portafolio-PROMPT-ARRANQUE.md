@@ -7,10 +7,10 @@
 Vamos a programar el rediseño del portafolio de Inmuebles Audiovisuales. El diseño, copy y estructura YA están aprobados; tu trabajo es **construir y verificar**, no rediseñar. No reabras decisiones de diseño.
 
 **Antes de tocar código, lee en este orden:**
-1. `docs/superpowers/2026-06-24-portafolio-HANDOFF.md` — contexto completo (léelo entero).
-2. `docs/superpowers/plans/2026-06-24-portafolio-implementacion.md` — el plan a ejecutar paso a paso.
-3. `docs/superpowers/specs/2026-06-12-portafolio-rediseno-design.md` — el diseño detallado.
-4. `portafolio-mockup.html` — la **fuente de verdad visual**: el resultado debe verse y comportarse igual.
+1. `/Users/brunogutierrez/websiteinmuebles/docs/superpowers/2026-06-24-portafolio-HANDOFF.md` — contexto completo (léelo entero).
+2. `/Users/brunogutierrez/websiteinmuebles/docs/superpowers/plans/2026-06-24-portafolio-implementacion.md` — el plan a ejecutar paso a paso.
+3. `/Users/brunogutierrez/websiteinmuebles/docs/superpowers/specs/2026-06-12-portafolio-rediseno-design.md` — el diseño detallado.
+4. `/Users/brunogutierrez/websiteinmuebles/portafolio-mockup.html` — la **fuente de verdad visual**: el resultado debe verse y comportarse igual.
 
 **Qué hacer:** ejecuta el plan de implementación tarea por tarea (Fases 0–5). Parte de `portafolio-mockup.html`, promuévelo a `portafolio.html` y endurécelo para producción (Cloudflare Stream, robustez sin JS, accesibilidad, meta, rendimiento). Se despliega con placeholders hasta que lleguen los assets reales; eso está previsto.
 
