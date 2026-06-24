@@ -1,7 +1,24 @@
 <!DOCTYPE html>
-<!-- MOCKUP de alta fidelidad. Direccion: VENTA, voz del propio index de IAV.
-     Videos todos juntos -> 360 -> fotos -> contacto. Sin numeros/testimonios/relleno.
-     Copy borrador. Placeholders en vez de media. NO es el archivo final. -->
+<!--
+  Portafolio · Inmuebles Audiovisuales · Monterrey
+  Direccion: VENTA, voz del propio index de IAV. Videos todos juntos -> 360 -> fotos -> contacto.
+  HTML/CSS/JS puro, sin build. Se pega y publica.
+
+  ============================ REEMPLAZAR (assets reales) ============================
+  Se publica con PLACEHOLDERS hasta que lleguen los assets. Para activar el media real:
+
+  1. CODE de la cuenta de Cloudflare Stream  -> reemplazar STREAM_CODE en el <script> final.
+  2. VIDEOS verticales (5) en Stream: poner el VIDEO_ID en cada <video data-stream> de la tira
+     (cada tarjeta esta rotulada con su ubicacion: San Pedro, Cumbres, Valle Oriente,
+     Complejo deportivo, Colonia privada) y su poster en el atributo poster.
+  3. HERO: el mejor video vertical -> <video class="hero__video" data-stream> + su poster.
+     Poster de Stream: https://customer-<CODE>.cloudflarestream.com/<VIDEO_ID>/thumbnails/thumbnail.jpg
+  4. 360: ya enlaza a CloudPano (https://app.cloudpano.com/group/RI9t58XNh). Confirmar link real.
+  5. FOTOS (5-6) de Cloudflare Images (cuenta 4FlhPwMCquiTgnacg31UZQ):
+     reemplazar cada .ph del mosaico por <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/<ID>/public" alt="...">.
+  6. WhatsApp: numero 528127174207 (confirmar) en los enlaces wa.me.
+  ===================================================================================
+-->
 <html lang="es-MX">
 <head>
 <meta charset="UTF-8">
@@ -87,6 +104,9 @@ a{color:inherit;text-decoration:none}
 .scard__cta:hover{color:var(--char)}
 .scard__cta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
 @media(min-width:760px){.scard{flex-basis:300px}}
+/* Video real (Cloudflare Stream) montado sobre el póster/placeholder; aparece solo al cargar */
+.scard__video,.hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .45s ease;z-index:1;pointer-events:none}
+.scard__video.is-on,.hero__video.is-on{opacity:1}
 
 /* 360 */
 .r360{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:start}
@@ -145,6 +165,8 @@ a{color:inherit;text-decoration:none}
   </div>
   <div class="hero__media">
     <div class="ph"><div class="ph__play"></div><span class="ph__t">Mejor video · vertical <b>[placeholder]</b><br>se reproduce solo</span></div>
+    <!-- REEMPLAZAR: data-stream = VIDEO_ID del mejor video; poster = thumbnail de Stream -->
+    <video class="hero__video" data-stream="REEMPLAZAR-HERO-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
   </div>
 </section>
 
@@ -158,8 +180,9 @@ a{color:inherit;text-decoration:none}
 
     <figure class="scard">
       <div class="scard__media">
-        <!-- REEMPLAZAR (Fase 2): <video class="scard__video" data-stream="STREAM-ID" muted loop playsinline preload="none" poster="POSTER-URL" aria-hidden="true"></video> -->
         <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
+        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> San Pedro</span>
@@ -169,8 +192,9 @@ a{color:inherit;text-decoration:none}
 
     <figure class="scard">
       <div class="scard__media">
-        <!-- REEMPLAZAR (Fase 2): <video class="scard__video" data-stream="STREAM-ID" muted loop playsinline preload="none" poster="POSTER-URL" aria-hidden="true"></video> -->
         <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
+        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Cumbres</span>
@@ -180,8 +204,9 @@ a{color:inherit;text-decoration:none}
 
     <figure class="scard">
       <div class="scard__media">
-        <!-- REEMPLAZAR (Fase 2): <video class="scard__video" data-stream="STREAM-ID" muted loop playsinline preload="none" poster="POSTER-URL" aria-hidden="true"></video> -->
         <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
+        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Valle Oriente</span>
@@ -191,8 +216,9 @@ a{color:inherit;text-decoration:none}
 
     <figure class="scard">
       <div class="scard__media">
-        <!-- REEMPLAZAR (Fase 2): <video class="scard__video" data-stream="STREAM-ID" muted loop playsinline preload="none" poster="POSTER-URL" aria-hidden="true"></video> -->
         <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
+        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Complejo deportivo</span>
@@ -202,8 +228,9 @@ a{color:inherit;text-decoration:none}
 
     <figure class="scard">
       <div class="scard__media">
-        <!-- REEMPLAZAR (Fase 2): <video class="scard__video" data-stream="STREAM-ID" muted loop playsinline preload="none" poster="POSTER-URL" aria-hidden="true"></video> -->
         <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
+        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Colonia privada</span>
@@ -283,6 +310,8 @@ a{color:inherit;text-decoration:none}
   </footer>
 </section>
 
+<!-- hls.js: reproducir HLS de Cloudflare Stream donde no es nativo (Chrome/Firefox). Safari usa HLS nativo. -->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 <script>
 // El contenido (tira de videos, WhatsApp, 360) ya está en el HTML estático:
 // la página funciona completa aunque este script no corra. El JS solo realza.
@@ -290,6 +319,51 @@ a{color:inherit;text-decoration:none}
   // Año del footer (el HTML ya trae 2026 literal como respaldo sin JS).
   var anio = document.getElementById('anio');
   if (anio) anio.textContent = new Date().getFullYear();
+
+  // --- Cloudflare Stream ---
+  // CODE de la cuenta de Stream. Mientras sea REEMPLAZAR, los videos no se montan
+  // y se queda visible el póster/placeholder (nunca un cuadro vacío).
+  var STREAM_CODE = "REEMPLAZAR-CODE";
+
+  function montarStream(v){
+    if (v.src || v.dataset.mounted) return;
+    var id = v.dataset.stream;
+    if (!id || id.indexOf("REEMPLAZAR") === 0) return;        // sin asset -> queda el póster
+    if (!STREAM_CODE || STREAM_CODE.indexOf("REEMPLAZAR") === 0) return; // sin CODE -> queda el póster
+    var url = "https://customer-" + STREAM_CODE + ".cloudflarestream.com/" + id + "/manifest/video.m3u8";
+    v.addEventListener("loadeddata", function(){ v.classList.add("is-on"); }, { once: true });
+    if (v.canPlayType("application/vnd.apple.mpegurl")) {     // Safari / iOS: HLS nativo
+      v.src = url;
+    } else if (window.Hls && window.Hls.isSupported()) {      // Chrome / Firefox: hls.js
+      var h = new Hls();
+      h.attachMedia(v);
+      h.on(Hls.Events.MEDIA_ATTACHED, function(){ h.loadSource(url); });
+    } else {
+      return;                                                 // sin soporte HLS -> queda el póster
+    }
+    v.dataset.mounted = "1";
+  }
+
+  // Respetar prefers-reduced-motion: sin autoplay. Se queda el póster/placeholder, estático.
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var videos = document.querySelectorAll("[data-stream]");
+
+  if (!reduce && "IntersectionObserver" in window) {
+    // Reproducir solo lo visible; pausar lo demás (rendimiento).
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        var v = e.target;
+        if (e.isIntersecting){
+          montarStream(v);
+          var p = v.play && v.play();
+          if (p && p.catch) p.catch(function(){});
+        } else if (v.pause) {
+          v.pause();
+        }
+      });
+    }, { rootMargin: "200px 0px" });
+    videos.forEach(function(v){ io.observe(v); });
+  }
 })();
 </script>
 </body>
