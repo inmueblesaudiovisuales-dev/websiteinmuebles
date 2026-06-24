@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portafolio — Inmuebles Audiovisuales</title>
+<meta name="description" content="Portafolio de producción audiovisual para bienes raíces en Monterrey. Video cinematográfico, drone, fotografía HDR y recorridos 360°.">
+<link rel="canonical" href="https://inmueblesaudiovisuales.com/portafolio">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://inmueblesaudiovisuales.com/portafolio">
+<meta property="og:title" content="Portafolio — Inmuebles Audiovisuales">
+<meta property="og:description" content="Producción audiovisual para bienes raíces en Monterrey: video cinematográfico, drone, fotografía HDR y recorridos 360°.">
+<meta property="og:image" content="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio--ppi6028-hdr/public">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/x-icon" href="favicons/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* TOKENS */
+:root {
+  --bg:        #F2EDE3;
+  --surface:   #1C1C1E;
+  --gold:      #C9A84C;
+  --gold-text: #7A5E1A;   /* oro legible para texto sobre papel (5.2:1) */
+  --gold-bg:   rgba(201,168,76,.12);
+  --gold-bd:   rgba(201,168,76,.28);
+  --text:      #18181B;
+  --text2:     #4A4A4E;
+  --text3:     #656569;   /* gris legible sobre papel (5.0:1) */
+  --on-s:      #F5F5F5;
+  --on-s2:     #909094;
+  --bdr:       rgba(0,0,0,.09);
+  --bdr-m:     rgba(0,0,0,.14);
+  --bdr-s:     rgba(255,255,255,.07);
+  --card-sh:   0 12px 32px -12px rgba(28,20,8,.28);
+  --maxw:      1100px;
+}
+
+/* BASE */
+body {
+  font-family: 'Montserrat', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* FOCUS VISIBLE */
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* NAV */
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg);
+  border-bottom: 1px solid var(--bdr);
+  padding: 0 20px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+  color: var(--text);
+  text-decoration: none;
+}
+.nav-logo b { color: var(--gold-text); font-weight: 800; }
+.nav-back {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 4px;
+}
+.nav-back:hover { color: var(--text); }
+
+/* HERO */
+.hero {
+  padding: 36px 20px 0;
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+.eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  width: 20px; height: 1px;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+.hero h1 {
+  font-size: 44px;
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.04em;
+  color: var(--text);
+  margin-bottom: 24px;
+}
+.hero h1 .gold { color: var(--gold-text); }
+
+/* PILLS */
+.pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.pill {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--text2);
+  border: 1px solid var(--bdr-m);
+  background: transparent;
+  padding: 9px 15px;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: background .15s, color .15s, border-color .15s;
+}
+.pill:hover { background: var(--gold); color: var(--surface); border-color: var(--gold); }
+
+/* SECTION WRAPPER */
+.sec {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 0 4px;
+  scroll-margin-top: 68px;
+}
+
+/* SECTION HEADER */
+.sh {
+  padding: 0 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.sh-l { position: relative; }
+.sh-n {
+  font-size: 66px;
+  font-weight: 900;
+  letter-spacing: -.06em;
+  line-height: .78;
+  color: rgba(0,0,0,.055);
+  position: absolute;
+  top: -6px; left: -3px;
+  pointer-events: none;
+  user-select: none;
+}
+.sh-name {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -.025em;
+  color: var(--text);
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+}
+.sh-cat {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-top: 5px;
+}
+.sh-more {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--gold-text);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* FEATURED CARD */
+.feat {
+  margin: 0 20px 7px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--card-sh);
+}
+.feat-img { position: relative; }
+.feat-img img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  display: block;
+}
+.feat-grad {
+  position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(9,9,11,.8) 0%, transparent 52%);
+}
+.feat-play {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  background: rgba(9,9,11,.4);
+  backdrop-filter: blur(6px);
+  border: 1.5px solid rgba(255,255,255,.78);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(0,0,0,.3);
+}
+.feat-play svg { width: 17px; height: 17px; fill: #fff; margin-left: 2px; }
+.feat-foot {
+  padding: 12px 15px 14px;
+  display: flex; align-items: center;
+}
+.feat-name { font-size: 15px; font-weight: 600; color: var(--on-s); }
+.feat-svc {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--on-s2); margin-top: 3px;
+}
+
+/* MINI GRID */
+.g2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 0 20px;
+}
+.mini {
+  border-radius: 12px; overflow: hidden;
+  background: var(--surface);
+  box-shadow: var(--card-sh);
+}
+.mini img { width: 100%; display: block; object-fit: cover; }
+.mini.sq img { aspect-ratio: 1/1; }
+.mini.tall img { aspect-ratio: 9/16; }
+.mini-foot {
+  padding: 9px 11px 10px;
+  border-top: 1px solid var(--bdr-s);
+}
+.mini-name { font-size: 12px; font-weight: 600; color: var(--on-s); }
+.mini-svc {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--on-s2); margin-top: 2px;
+}
+
+/* DIVIDER */
+.div { height: 1px; background: var(--bdr); margin: 36px 20px; max-width: 1040px; margin-left: auto; margin-right: auto; }
+
+/* VR */
+.vr-feat {
+  margin: 0 20px 7px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--surface);
+  border: 1px solid rgba(201,168,76,.22);
+  box-shadow: var(--card-sh);
+}
+.vr-wrap { position: relative; }
+.vr-wrap img {
+  width: 100%; aspect-ratio: 16/9;
+  object-fit: cover; display: block;
+  filter: brightness(.62) saturate(.78);
+}
+.vr-wrap::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(to top, rgba(9,9,11,.55) 0%, transparent 45%);
+  pointer-events: none;
+}
+.vr-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; z-index: 1;
+}
+.vr-ring {
+  width: 54px; height: 54px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(201,168,76,.7);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(9,9,11,.35);
+  backdrop-filter: blur(4px);
+}
+.vr-ring svg { width: 23px; height: 23px; stroke: var(--gold); fill: none; stroke-width: 1.4; }
+.vr-lbl {
+  font-size: 10px; font-weight: 800;
+  letter-spacing: .14em; text-transform: uppercase;
+  color: rgba(255,255,255,.82);
+}
+.vr-foot {
+  padding: 12px 15px 14px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.vr-name { font-size: 15px; font-weight: 600; color: var(--on-s); }
+.vr-svc { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--on-s2); margin-top: 3px; }
+.vr-tag {
+  font-size: 9px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--gold);
+  background: var(--gold-bg); border: 1px solid var(--gold-bd);
+  padding: 4px 9px; border-radius: 9999px; white-space: nowrap;
+}
+.g2-vr { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 20px; }
+.vr-mini {
+  border-radius: 12px; overflow: hidden;
+  border: 1px solid rgba(201,168,76,.18);
+  background: var(--surface); position: relative;
+  box-shadow: var(--card-sh);
+}
+.vr-mini img {
+  width: 100%; aspect-ratio: 16/9;
+  object-fit: cover; display: block;
+  filter: brightness(.6) saturate(.76);
+}
+.vr-mini-c {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+}
+.vr-mini-r {
+  width: 30px; height: 30px; border-radius: 50%;
+  border: 1px solid rgba(201,168,76,.55);
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(9,9,11,.3);
+  backdrop-filter: blur(3px);
+}
+.vr-mini-r svg { width: 13px; height: 13px; stroke: var(--gold); fill: none; stroke-width: 1.4; }
+.vr-mini-ft { padding: 7px 10px 8px; border-top: 1px solid rgba(201,168,76,.1); }
+.vr-mini-nm { font-size: 11px; font-weight: 600; color: var(--on-s); }
+
+/* MASONRY */
+.masonry {
+  padding: 0 20px;
+  column-count: 2;
+  column-gap: 10px;
+}
+.m-item {
+  break-inside: avoid;
+  margin-bottom: 10px;
+  border-radius: 11px;
+  overflow: hidden;
+  box-shadow: var(--card-sh);
+}
+.m-item img { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
+.m-item:nth-child(3n+2) img { aspect-ratio: 3/4; }
+.m-item:nth-child(3n) img { aspect-ratio: 1/1; }
+.m-more {
+  padding: 16px 20px;
+  font-size: 10px; font-weight: 800;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--gold-text); text-align: center;
+  max-width: var(--maxw); margin: 0 auto;
+}
+
+/* CTA */
+.cta-wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 20px 52px; }
+.cta {
+  padding: 32px 24px;
+  background: var(--surface);
+  border-radius: 18px;
+  text-align: center;
+  box-shadow: var(--card-sh);
+}
+.cta-ey {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .22em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 12px;
+  display: flex; align-items: center;
+  justify-content: center; gap: 8px;
+}
+.cta-ey::before, .cta-ey::after { content: ''; width: 18px; height: 1px; background: var(--gold); }
+.cta-title {
+  font-size: 22px; font-weight: 900;
+  letter-spacing: -.03em; line-height: 1.05;
+  color: var(--on-s); margin-bottom: 8px;
+}
+.cta-sub {
+  font-size: 12px; color: var(--on-s2);
+  line-height: 1.65; margin-bottom: 24px;
+}
+.cta-btn {
+  display: flex; align-items: center;
+  justify-content: center; gap: 9px;
+  background: var(--gold); color: var(--surface);
+  font-family: 'Montserrat', sans-serif;
+  font-size: 11px; font-weight: 900;
+  letter-spacing: .14em; text-transform: uppercase;
+  padding: 16px 28px; border-radius: 9999px;
+  text-decoration: none; width: 100%;
+  box-shadow: 0 10px 28px rgba(201,168,76,.32);
+}
+.cta-btn svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+/* RESPONSIVE DESKTOP */
+@media (min-width: 768px) {
+  .nav { padding: 0 40px; }
+
+  .hero { padding: 56px 40px 0; }
+  .hero h1 { font-size: 66px; }
+
+  .sh { padding: 0 40px; }
+  .sh-n { font-size: 96px; top: -10px; left: -6px; }
+  .sh-name { font-size: 28px; }
+
+  .feat { margin: 0 40px 10px; }
+
+  /* Secciones 01 y 02: destacada izquierda (1.55fr) + minis apiladas derecha (1fr) */
+  .sec-split .split {
+    display: grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 12px;
+    padding: 0 40px;
+    align-items: stretch;
+  }
+  .sec-split .split .feat { margin: 0; display: flex; flex-direction: column; }
+  .sec-split .split .feat-img { flex: 1; }
+  .sec-split .split .feat-img img { height: 100%; aspect-ratio: auto; }
+  .sec-split .split .g2 {
+    padding: 0;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 12px;
+  }
+  .sec-split .split .g2 .mini { display: flex; flex-direction: column; }
+  .sec-split .split .g2 .mini img { flex: 1; height: 100%; aspect-ratio: auto; }
+
+  .g2 { padding: 0 40px; gap: 12px; }
+  .g2-vr { padding: 0 40px; gap: 12px; }
+  .vr-feat { margin: 0 40px 10px; }
+  .vr-wrap img { aspect-ratio: 21/9; }
+
+  .masonry {
+    padding: 0 40px;
+    column-count: 4;
+    column-gap: 12px;
+  }
+  .m-item { margin-bottom: 12px; }
+
+  .div { margin: 48px auto; }
+
+  .cta-wrap { padding: 0 40px 64px; }
+  .cta { padding: 44px 52px; }
+  .cta-title { font-size: 30px; }
+  .cta-sub { font-size: 13px; }
+  .cta-btn { width: auto; padding: 16px 40px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" aria-label="Principal">
+  <a class="nav-logo" href="index.html">Inmuebles <b>AV</b></a>
+  <a class="nav-back" href="index.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+    Inicio
+  </a>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="eyebrow">Portafolio</div>
+  <h1>Producción que <span class="gold">vende.</span></h1>
+  <nav class="pills" aria-label="Filtrar por categoría">
+    <a class="pill" href="#residencial">Residencial</a>
+    <a class="pill" href="#terrenos">Terrenos</a>
+    <a class="pill" href="#recorridos" aria-label="Recorridos 360 grados">360°</a>
+    <a class="pill" href="#fotografia">Fotos</a>
+  </nav>
+</div>
+
+<!-- 01 RESIDENCIAL -->
+<section class="sec sec-split" id="residencial" aria-labelledby="h-residencial">
+  <div class="sh">
+    <div class="sh-l">
+      <div class="sh-n" aria-hidden="true">01</div>
+      <h2 class="sh-name" id="h-residencial">Residencial</h2>
+      <div class="sh-cat">Video · Drone · Recorrido</div>
+    </div>
+    <a class="sh-more" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20cotizar%20una%20propiedad" aria-label="Cotizar proyecto residencial">Cotizar →</a>
+  </div>
+
+  <div class="split">
+    <div class="feat">
+      <div class="feat-img">
+        <img
+          src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio--ppi6028-hdr/public"
+          alt="Sala de estar residencial con iluminación cinematográfica"
+          loading="eager">
+        <div class="feat-grad" aria-hidden="true"></div>
+        <div class="feat-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="feat-foot">
+        <div>
+          <div class="feat-name">Casa Lomas del Valle</div>
+          <div class="feat-svc">Video · Drone · Recorrido 360°</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="mini sq">
+        <img
+          src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-inmuebles-audiovisuales-22/public"
+          alt="Interior residencial Cantabria II"
+          loading="lazy">
+        <div class="mini-foot">
+          <div class="mini-name">Cantabria II</div>
+          <div class="mini-svc">Video · Drone</div>
+        </div>
+      </div>
+      <div class="mini sq">
+        <img
+          src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-inmuebles-audiovisuales-4/public"
+          alt="Recámara residencial Bosques del Valle"
+          loading="lazy">
+        <div class="mini-foot">
+          <div class="mini-name">Bosques del Valle</div>
+          <div class="mini-svc">Video · Drone</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div" aria-hidden="true"></div>
+
+<!-- 02 TERRENOS -->
+<section class="sec sec-split" id="terrenos" aria-labelledby="h-terrenos">
+  <div class="sh">
+    <div class="sh-l">
+      <div class="sh-n" aria-hidden="true">02</div>
+      <h2 class="sh-name" id="h-terrenos">Terrenos</h2>
+      <div class="sh-cat">Drone · Fotografía aérea</div>
+    </div>
+    <a class="sh-more" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20cotizar%20una%20propiedad" aria-label="Cotizar proyecto de terrenos">Cotizar →</a>
+  </div>
+
+  <div class="split">
+    <div class="feat">
+      <div class="feat-img">
+        <img
+          src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-exterior-2/public"
+          alt="Vista aérea de terreno residencial"
+          loading="lazy">
+        <div class="feat-grad" aria-hidden="true"></div>
+        <div class="feat-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+      </div>
+      <div class="feat-foot">
+        <div>
+          <div class="feat-name">Hacienda el Rosario</div>
+          <div class="feat-svc">Drone · Fotografía aérea</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2">
+      <div class="mini sq">
+        <img
+          src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-inmuebles-audiovisuales-2603-10-14/public"
+          alt="Terreno Privada del Roble vista aérea"
+          loading="lazy">
+        <div class="mini-foot">
+          <div class="mini-name">Privada del Roble</div>
+          <div class="mini-svc">Drone</div>
+        </div>
+      </div>
+      <div class="mini sq">
+        <img
+          src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-cantabria-22/public"
+          alt="Terreno Cantabria Norte"
+          loading="lazy">
+        <div class="mini-foot">
+          <div class="mini-name">Cantabria Norte</div>
+          <div class="mini-svc">Drone · Video</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div" aria-hidden="true"></div>
+
+<!-- 03 RECORRIDOS 360° -->
+<section class="sec" id="recorridos" aria-labelledby="h-recorridos">
+  <div class="sh">
+    <div class="sh-l">
+      <div class="sh-n" aria-hidden="true">03</div>
+      <h2 class="sh-name" id="h-recorridos">Recorridos 360°</h2>
+      <div class="sh-cat">Recorrido virtual interactivo</div>
+    </div>
+    <a class="sh-more" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20cotizar%20una%20propiedad" aria-label="Cotizar recorrido virtual 360 grados">Cotizar →</a>
+  </div>
+
+  <div class="vr-feat">
+    <div class="vr-wrap">
+      <img
+        src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-inmuebles-audiovisuales-2509-03-24/public"
+        alt="Interior Casa San Pedro para recorrido virtual"
+        loading="lazy">
+      <div class="vr-center" aria-hidden="true">
+        <div class="vr-ring">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+        <div class="vr-lbl">Explorar recorrido</div>
+      </div>
+    </div>
+    <div class="vr-foot">
+      <div>
+        <div class="vr-name">Casa San Pedro</div>
+        <div class="vr-svc">Recorrido 360° interactivo</div>
+      </div>
+      <div class="vr-tag">360°</div>
+    </div>
+  </div>
+
+  <div class="g2-vr">
+    <div class="vr-mini">
+      <img
+        src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-2603-18-1-23/public"
+        alt="Interior para recorrido virtual Residencial Sur"
+        loading="lazy">
+      <div class="vr-mini-c" aria-hidden="true">
+        <div class="vr-mini-r">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+      </div>
+      <div class="vr-mini-ft">
+        <div class="vr-mini-nm">Residencial Sur</div>
+      </div>
+    </div>
+    <div class="vr-mini">
+      <img
+        src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-inmuebles-audiovisuales-2509-03-7/public"
+        alt="Interior para recorrido virtual Casa Loma Sur"
+        loading="lazy">
+      <div class="vr-mini-c" aria-hidden="true">
+        <div class="vr-mini-r">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+          </svg>
+        </div>
+      </div>
+      <div class="vr-mini-ft">
+        <div class="vr-mini-nm">Casa Loma Sur</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="div" aria-hidden="true"></div>
+
+<!-- 04 FOTOGRAFÍA -->
+<section class="sec" id="fotografia" aria-labelledby="h-fotografia">
+  <div class="sh">
+    <div class="sh-l">
+      <div class="sh-n" aria-hidden="true">04</div>
+      <h2 class="sh-name" id="h-fotografia">Fotografía</h2>
+      <div class="sh-cat">Interiores · HDR · Arquitectura</div>
+    </div>
+    <a class="sh-more" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20cotizar%20una%20propiedad" aria-label="Cotizar sesión de fotografía">Cotizar →</a>
+  </div>
+
+  <div class="masonry">
+    <div class="m-item">
+      <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio--ppi5956-hdr/public"
+        alt="Fotografía HDR de interior residencial" loading="lazy">
+    </div>
+    <div class="m-item">
+      <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-cocina-2/public"
+        alt="Fotografía de cocina profesional" loading="lazy">
+    </div>
+    <div class="m-item">
+      <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-2603-18-1-4/public"
+        alt="Fotografía de interior arquitectónico" loading="lazy">
+    </div>
+    <div class="m-item">
+      <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-2603-18-1-53/public"
+        alt="Fotografía de interior con iluminación natural" loading="lazy">
+    </div>
+    <div class="m-item">
+      <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-proposal-inc-2604-10-9/public"
+        alt="Fotografía de fachada exterior" loading="lazy">
+    </div>
+    <div class="m-item">
+      <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/portafolio-inmuebles-audiovisuales-22-2/public"
+        alt="Fotografía de espacio interior moderno" loading="lazy">
+    </div>
+  </div>
+  <p class="m-more">Ver todas las fotos →</p>
+</section>
+
+<!-- CTA -->
+<div class="cta-wrap">
+  <div class="cta">
+    <div class="cta-ey">Cotiza tu proyecto</div>
+    <h2 class="cta-title">Agenda tu sesión de producción</h2>
+    <p class="cta-sub">Respondemos en menos de 24 horas. Sin compromisos.</p>
+    <a class="cta-btn" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20cotizar%20una%20propiedad">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Cotizar por WhatsApp
+    </a>
+  </div>
+</div>
+
+</body>
+</html>
