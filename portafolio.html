@@ -23,9 +23,33 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Mockup · Portafolio · Inmuebles Audiovisuales</title>
+<title>Portafolio · Inmuebles Audiovisuales · Video y Fotografía de Bienes Raíces en Monterrey</title>
+<meta name="description" content="Producción audiovisual inmobiliaria en Monterrey: video, recorridos 360° y fotografía que ayudan a vender más rápido. Mira el trabajo y cotiza por WhatsApp.">
+<meta name="theme-color" content="#F9F7F4">
+<link rel="canonical" href="https://inmueblesaudiovisuales.com/portafolio.html">
+
+<!-- Favicons -->
+<link rel="icon" type="image/x-icon" href="favicons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+
+<!-- Open Graph / Twitter -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Portafolio · Inmuebles Audiovisuales · Monterrey">
+<meta property="og:description" content="Video, recorridos 360° y fotografía inmobiliaria que ayudan a vender más rápido en Monterrey. Mira el trabajo y cotiza por WhatsApp.">
+<meta property="og:image" content="https://inmueblesaudiovisuales.com/fotografia-inmobiliaria-monterrey.webp">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://inmueblesaudiovisuales.com/portafolio.html">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://inmueblesaudiovisuales.com/fotografia-inmobiliaria-monterrey.webp">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://imagedelivery.net">
+<link rel="dns-prefetch" href="https://cloudflarestream.com">
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -41,6 +65,10 @@ body{font-family:var(--sans);background:var(--cream);color:var(--char);font-weig
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 ::selection{background:var(--gold);color:var(--char)}
+/* Accesibilidad: skip link y foco visible */
+.skip{position:absolute;left:8px;top:-60px;z-index:50;background:var(--char);color:var(--white);padding:.7rem 1.1rem;border-radius:8px;font-size:.8rem;font-weight:700;transition:top .15s}
+.skip:focus{top:8px}
+:focus-visible{outline:2px solid var(--goldink);outline-offset:3px;border-radius:4px}
 .wrap{width:min(1240px,92vw);margin-inline:auto}
 .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--goldink)}
 .kicker{display:block;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--goldink);margin:0 0 .7rem}
@@ -142,26 +170,38 @@ a{color:inherit;text-decoration:none}
 .cta p{color:var(--muted);margin:.9rem 0 1.8rem;font-size:1.02rem}
 .foot{padding:2rem var(--gut) calc(2rem + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;border-top:1px solid var(--bd);margin-top:clamp(2.5rem,6vh,4rem)}
 .foot span{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Respetar prefers-reduced-motion: sin animaciones ni desplazamiento suave. (El autoplay de video se desactiva en el JS.) */
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .hero__cue svg{animation:none}
+  .r360__media .pan{animation:none}
+}
 </style>
 </head>
 <body>
 
+<a class="skip" href="#contenido">Saltar al contenido</a>
+
 <header class="nav">
-  <div class="nav__in">
+  <nav class="nav__in" aria-label="Navegación principal">
     <a class="nav__logo" href="#">Inmuebles <b>AV</b></a>
     <div class="nav__right">
-      <a class="nav__back" href="index.html">← Sitio</a>
-      <a class="wa" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> WhatsApp</a>
+      <a class="nav__back" href="index.html" aria-label="Volver al sitio">← Sitio</a>
+      <a class="wa" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp (se abre en pestaña nueva)" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> WhatsApp</a>
     </div>
-  </div>
+  </nav>
 </header>
+
+<main id="contenido">
 
 <!-- HERO -->
 <section class="hero">
   <div class="hero__copy">
     <span class="eyebrow">Producción audiovisual inmobiliaria · Monterrey</span>
     <h1>La diferencia entre <em>vender rápido</em> y quedarse esperando.</h1>
-    <a class="hero__cue" href="#trabajo">Ver el trabajo <svg viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+    <a class="hero__cue" href="#trabajo">Ver el trabajo <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
   </div>
   <div class="hero__media">
     <div class="ph"><div class="ph__play"></div><span class="ph__t">Mejor video · vertical <b>[placeholder]</b><br>se reproduce solo</span></div>
@@ -174,7 +214,7 @@ a{color:inherit;text-decoration:none}
 <section class="sec sec--white" id="trabajo">
   <div class="wrap sechead">
     <span class="kicker" style="margin:0">Proyectos recientes · Monterrey</span>
-    <span class="hint">Desliza <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    <span class="hint">Desliza <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
   </div>
   <div class="strip" id="strip">
 
@@ -186,7 +226,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> San Pedro</span>
-        <a class="scard__cta" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20San%20Pedro%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en San Pedro" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20San%20Pedro%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -198,7 +238,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Cumbres</span>
-        <a class="scard__cta" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20Cumbres%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en Cumbres" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20Cumbres%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -210,7 +250,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Valle Oriente</span>
-        <a class="scard__cta" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20el%20departamento%20en%20Valle%20Oriente%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del departamento en Valle Oriente" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20el%20departamento%20en%20Valle%20Oriente%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -222,7 +262,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Complejo deportivo</span>
-        <a class="scard__cta" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20el%20terreno%20del%20complejo%20deportivo%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno del complejo deportivo" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20el%20terreno%20del%20complejo%20deportivo%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -234,7 +274,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Colonia privada</span>
-        <a class="scard__cta" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20el%20terreno%20en%20colonia%20privada%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno en colonia privada" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20el%20terreno%20en%20colonia%20privada%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -251,15 +291,15 @@ a{color:inherit;text-decoration:none}
         <p class="r360__intro">Una visita virtual: el comprador recorre toda la propiedad desde su teléfono, a cualquier hora, sin que nadie tenga que acompañarlo.</p>
         <div class="r360__points">
           <div class="rp">
-            <span class="rp__ic"><svg viewBox="0 0 24 24"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
+            <span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
             <div><p class="rp__h">La ven completa</p><p class="rp__b">Recorre cada espacio como si estuviera ahí. Nada queda a la imaginación.</p></div>
           </div>
           <div class="rp">
-            <span class="rp__ic"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
+            <span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
             <div><p class="rp__h">Filtra a los serios</p><p class="rp__b">Solo agenda visita quien de verdad está interesado. Menos vueltas en vano.</p></div>
           </div>
           <div class="rp">
-            <span class="rp__ic"><svg viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
+            <span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
             <div><p class="rp__h">Vende a distancia</p><p class="rp__b">Le vendes a quien está fuera de la ciudad y no puede ir en persona.</p></div>
           </div>
         </div>
@@ -269,7 +309,7 @@ a{color:inherit;text-decoration:none}
           <div class="pan"></div>
           <div class="lbl">
             <span class="r360__badge">360° · recorrido residencial</span>
-            <a class="ghost" target="_blank" rel="noopener" href="https://app.cloudpano.com/group/RI9t58XNh"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg> Abrir recorrido</a>
+            <a class="ghost" target="_blank" rel="noopener" aria-label="Abrir el recorrido virtual 360° (se abre en pestaña nueva)" href="https://app.cloudpano.com/group/RI9t58XNh"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg> Abrir recorrido</a>
           </div>
         </div>
         <p class="r360__hint">Arrástralo para mirar a tu alrededor · se abre en pestaña nueva</p>
@@ -301,14 +341,16 @@ a{color:inherit;text-decoration:none}
       <span class="eyebrow">Cotiza tu proyecto</span>
       <h2 style="margin-top:.7rem">Tu propiedad merece esta producción.</h2>
       <p>Escríbenos por WhatsApp y la producimos.</p>
-      <a class="wa" target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> Escríbenos por WhatsApp</a>
+      <a class="wa" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp (se abre en pestaña nueva)" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> Escríbenos por WhatsApp</a>
     </div>
   </div>
-  <footer class="foot wrap">
-    <span>Inmuebles Audiovisuales © <span id="anio">2026</span></span>
-    <span>Producción audiovisual · Monterrey, México</span>
-  </footer>
 </section>
+</main>
+
+<footer class="foot wrap">
+  <span>Inmuebles Audiovisuales © <span id="anio">2026</span></span>
+  <span>Producción audiovisual · Monterrey, México</span>
+</footer>
 
 <!-- hls.js: reproducir HLS de Cloudflare Stream donde no es nativo (Chrome/Firefox). Safari usa HLS nativo. -->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
