@@ -1063,67 +1063,13 @@ document.addEventListener('keydown', function(e){
       <h2 class="font-bold mb-4" style="font-size:clamp(24px,4vw,36px);letter-spacing:-.015em;color:#1C1C1E">Portafolio</h2>
       <p style="font-size:16px;line-height:1.7;color:#9B9B9F;max-width:480px;margin:0 auto">Proyectos recientes en Monterrey y área metropolitana.</p>
     </div>
-    <div class="flex justify-center mb-10 px-0">
-      <div class="flex gap-1 bg-[#F9F7F4] rounded-full p-1 border border-[#E8E8EA] w-full max-w-sm">
-        <button class="port-tab-btn active flex-1" onclick="switchPort('video',this)">Video<br>Residencial</button>
-        <button class="port-tab-btn flex-1" onclick="switchPort('terrenos',this)">Video<br>Terrenos</button>
-        <button class="port-tab-btn flex-1" onclick="switchPort('virtual',this)">Recorrido<br>Inmersivo</button>
-      </div>
+    <div style="text-align:center">
+      <a href="portafolio.html" class="block rounded-xl overflow-hidden mx-auto mb-8" style="max-width:880px;aspect-ratio:16/9" aria-label="Ver el portafolio completo">
+        <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/ee01ff60-6722-42da-3164-4b6cbcc67100/public" alt="Producción audiovisual inmobiliaria — Inmuebles Audiovisuales" style="width:100%;height:100%;object-fit:cover" loading="lazy">
+      </a>
+      <a href="portafolio.html" class="inline-flex items-center gap-2 rounded-full font-bold" style="background:#C9A84C;color:#1C1C1E;font-size:13px;letter-spacing:.06em;text-transform:uppercase;padding:14px 28px">Ver el portafolio completo →</a>
     </div>
-    <div id="port-video" style="display:grid;gap:20px">
-      <div>
-        <div class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-          <span class="material-symbols-outlined" style="font-size:48px;color:rgba(201,168,76,0.4)">play_circle</span>
-          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,0.6)">Próximamente</span>
-        </div>
-        <p class="font-semibold mt-3 mb-1" style="font-size:14px;color:#1C1C1E">Villa San Pedro</p>
-        <p style="font-size:12px;color:#9B9B9F">Video Cinemático Premium</p>
-      </div>
-      <div>
-        <div class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-          <span class="material-symbols-outlined" style="font-size:48px;color:rgba(201,168,76,0.4)">play_circle</span>
-          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,0.6)">Próximamente</span>
-        </div>
-        <p class="font-semibold mt-3 mb-1" style="font-size:14px;color:#1C1C1E">Penthouse Valle Oriente</p>
-        <p style="font-size:12px;color:#9B9B9F">Video Cinemático + Fotografía Profesional</p>
-      </div>
-    </div>
-    <div id="port-terrenos" class="port-panel" style="display:none" data-grid="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div>
-        <div class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-          <span class="material-symbols-outlined" style="font-size:48px;color:rgba(201,168,76,0.4)">play_circle</span>
-          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,0.6)">Próximamente</span>
-        </div>
-        <p class="font-semibold mt-3 mb-1" style="font-size:14px;color:#1C1C1E">Vistas de la Sierra · García</p>
-        <p style="font-size:12px;color:#9B9B9F">Paquete Premium Terreno</p>
-      </div>
-      <div>
-        <div class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-          <span class="material-symbols-outlined" style="font-size:48px;color:rgba(201,168,76,0.4)">play_circle</span>
-          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,0.6)">Próximamente</span>
-        </div>
-        <p class="font-semibold mt-3 mb-1" style="font-size:14px;color:#1C1C1E">Lotes Carretera Laredo</p>
-        <p style="font-size:12px;color:#9B9B9F">Video Aéreo + Delimitación</p>
-      </div>
-    </div>
-    <div id="port-virtual" class="port-panel" style="display:none" data-grid="grid grid-cols-1 md:grid-cols-3 gap-5">
-      <div>
-        <div class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-          <span class="material-symbols-outlined" style="font-size:48px;color:rgba(201,168,76,0.4)">play_circle</span>
-          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,0.6)">Próximamente</span>
-        </div>
-        <p class="font-semibold mt-3 mb-1" style="font-size:14px;color:#1C1C1E">Penthouse Arboleda · Valle Oriente</p>
-        <p style="font-size:12px;color:#9B9B9F">Recorrido Virtual Inmersivo</p>
-      </div>
-      <div>
-        <div class="rounded-xl overflow-hidden relative" style="aspect-ratio:16/9;background:#1C1C1E;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px">
-          <span class="material-symbols-outlined" style="font-size:48px;color:rgba(201,168,76,0.4)">play_circle</span>
-          <span style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(201,168,76,0.6)">Próximamente</span>
-        </div>
-        <p class="font-semibold mt-3 mb-1" style="font-size:14px;color:#1C1C1E">Casa San Pedro Garza García</p>
-        <p style="font-size:12px;color:#9B9B9F">Recorrido Virtual Inmersivo</p>
-      </div>
-    </div>
+
   </div>
 </section>
 

@@ -1,30 +1,12 @@
 <!DOCTYPE html>
 <!--
   Portafolio · Inmuebles Audiovisuales · Monterrey
-  Direccion: VENTA, voz del propio index de IAV. Videos todos juntos -> 360 -> fotos -> contacto.
-  HTML/CSS/JS puro, sin build. Se pega y publica.
-
-  ============================ REEMPLAZAR (assets reales) ============================
-  Se publica con PLACEHOLDERS hasta que lleguen los assets. Para activar el media real:
-
-  1. CODE de la cuenta de Cloudflare Stream  -> reemplazar STREAM_CODE en el <script> final.
-  2. VIDEOS (6 verticales 9:16, favoritos primero) en Stream: reemplazar cada data-stream
-     REEMPLAZAR-01..06 por su UID, y poner el poster (thumbnail de Stream). Masters listos
-     en _stream-masters/ (1080x1920). Mapeo:
-       01 Residencial (favorito) = 2509.03 IA version final 4k
-       02 Terreno    (favorito) = IAV-2606.07-A_1
-       03 Residencial           = 2602.09 IA 9x16
-       04 Residencial           = 2603.10 IA 9x16 v2
-       05 Terreno               = 2603.04 IA 9x16 narradov1
-       06 Terreno               = 2603.24 IA 9x16 NARRADO
-  3. HERO: pendiente (por ahora sin hero). Cuando se defina el mejor video ->
-     <video class="hero__video" data-stream> + su poster.
-     Poster de Stream: https://customer-<CODE>.cloudflarestream.com/<VIDEO_ID>/thumbnails/thumbnail.jpg
-  4. 360: ya enlaza a CloudPano (https://app.cloudpano.com/group/RI9t58XNh). Confirmar link real.
-  5. FOTOS (5-6) de Cloudflare Images (cuenta 4FlhPwMCquiTgnacg31UZQ):
-     reemplazar cada .ph del mosaico por <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/<ID>/public" alt="...">.
-  6. WhatsApp: numero 528127174207 (confirmar) en los enlaces wa.me.
-  ===================================================================================
+  VENTA -> WhatsApp. HTML/CSS/JS puro, sin build. Media real:
+  - Videos: Cloudflare Stream (CODE cl73mgx0feu2w8io), clasificados Residencial / Terreno.
+    Clic para reproducir con sonido (sin autoplay), uno a la vez.
+  - Fotos: Cloudflare Images (hash 4FlhPwMCquiTgnacg31UZQ).
+  - 360: enlace a CloudPano (pestaña nueva).
+  - Hero: foto destacada (sin video).
 -->
 <html lang="es-MX">
 <head>
@@ -72,29 +54,21 @@ body{font-family:var(--sans);background:var(--cream);color:var(--char);font-weig
 img{display:block;max-width:100%}
 a{color:inherit;text-decoration:none}
 ::selection{background:var(--gold);color:var(--char)}
-/* Accesibilidad: skip link y foco visible */
 .skip{position:absolute;left:8px;top:-60px;z-index:50;background:var(--char);color:var(--white);padding:.7rem 1.1rem;border-radius:8px;font-size:.8rem;font-weight:700;transition:top .15s}
 .skip:focus{top:8px}
 :focus-visible{outline:2px solid var(--goldink);outline-offset:3px;border-radius:4px}
 .wrap{width:min(1240px,92vw);margin-inline:auto}
 .eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--goldink)}
-.kicker{display:block;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--goldink);margin:0 0 .7rem}
+.kicker{display:inline-flex;align-items:center;gap:.6rem;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--goldink);margin:0 0 .7rem}
+.kicker::before{content:"";width:26px;height:1px;background:var(--goldink)}
 
-.ph{position:relative;background:repeating-linear-gradient(45deg,#EFECE4 0 14px,#F4F1EA 14px 28px);
-   border:1px dashed var(--bd2);border-radius:6px;overflow:hidden;
-   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;text-align:center;padding:1rem}
-.ph__play{width:54px;height:54px;border-radius:50%;background:var(--white);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
-.ph__play::after{content:"";border-left:15px solid var(--gold);border-top:9px solid transparent;border-bottom:9px solid transparent;margin-left:4px}
-.ph__t{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-.ph__t b{color:var(--goldink)}
-
-.wa{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:var(--char);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.78rem 1.3rem;border-radius:999px;transition:background .25s}
-.wa:hover{background:var(--goldL)}
+.wa{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:var(--char);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.85rem 1.4rem;border-radius:999px;transition:background .25s,transform .25s;min-height:46px}
+.wa:hover{background:var(--goldL);transform:translateY(-2px)}
 .wa svg{width:15px;height:15px;fill:currentColor}
 
 /* NAV */
 .nav{position:sticky;top:0;z-index:30;background:rgba(249,247,244,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd)}
-.nav__in{display:flex;align-items:center;justify-content:space-between;padding:.95rem var(--gut)}
+.nav__in{display:flex;align-items:center;justify-content:space-between;padding:.85rem var(--gut)}
 .nav__logo{font-size:1.02rem;font-weight:800}
 .nav__logo b{color:var(--goldink);font-weight:800}
 .nav__right{display:flex;align-items:center;gap:1.4rem}
@@ -102,107 +76,101 @@ a{color:inherit;text-decoration:none}
 .nav__back:hover{color:var(--char)}
 @media(min-width:880px){.nav__back{display:inline}}
 
-/* HERO */
-.hero{display:grid;grid-template-columns:1fr;align-items:center;gap:2rem;padding:clamp(2.2rem,6vh,4.5rem) var(--gut) clamp(3rem,8vh,5.5rem)}
-.hero__media{position:relative;width:100%;aspect-ratio:9/16;max-height:58vh;margin-inline:auto;max-width:340px}
-.hero__media .ph{position:absolute;inset:0;border-color:var(--gold)}
+/* HERO (foto destacada, sin video) */
+.hero{display:grid;grid-template-columns:1fr;align-items:center;gap:clamp(1.6rem,4vw,3rem);padding:clamp(2rem,5vh,4rem) var(--gut) clamp(2.6rem,7vh,5rem)}
+.hero__media{order:1;width:100%;aspect-ratio:3/2;border-radius:14px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 18px 50px rgba(28,28,30,.10)}
+.hero__media img{width:100%;height:100%;object-fit:cover}
 .hero__copy{order:2}
-.hero h1{font-size:clamp(2.4rem,5.4vw,4.1rem);font-weight:800;line-height:1.03;letter-spacing:-.022em;margin:.9rem 0 0;max-width:15ch}
+.hero h1{font-size:clamp(2.3rem,5.2vw,4rem);font-weight:800;line-height:1.03;letter-spacing:-.022em;margin:.9rem 0 0;max-width:15ch}
 .hero h1 em{font-style:normal;color:var(--goldink)}
-.hero__cta{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.4rem;margin:2rem 0 0}
+.hero__sub{margin:1.2rem 0 0;color:var(--muted);font-size:1.04rem;max-width:40ch}
+.hero__cta{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.4rem;margin:1.9rem 0 0}
 .hero__cue{display:inline-flex;align-items:center;gap:.55rem;font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--goldink)}
 .hero__cue svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;animation:bob 1.8s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 @media(min-width:880px){
-  .hero{grid-template-columns:1fr .9fr;gap:clamp(2.5rem,5vw,5rem);min-height:90vh}
+  .hero{grid-template-columns:1.05fr 1fr;gap:clamp(2.5rem,5vw,5rem);min-height:84vh}
   .hero__copy{order:1}
-  .hero__media{order:2;max-width:440px;max-height:80vh}
+  .hero__media{order:2;aspect-ratio:4/3}
 }
 
 /* SECCION */
-.sec{padding:clamp(3.4rem,9vh,6.5rem) 0}
+.sec{padding:clamp(3.2rem,8vh,6rem) 0}
 .sec--white{background:var(--white);border-top:1px solid var(--bd)}
-/* nudge contextual a WhatsApp al cerrar una sección */
-.nudge{font-size:.95rem;color:var(--muted);margin:1.6rem 0 0}
+.sec h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;letter-spacing:-.015em;line-height:1.1;max-width:24ch;margin:.2rem 0 0}
+.sechead{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:0 0 1.6rem}
+.hint{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:none;align-items:center;gap:.4rem}
+.hint svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8}
+@media(max-width:720px){.hint{display:inline-flex}}
+.nudge{font-size:.95rem;color:var(--muted);margin:1.7rem 0 0}
 .nudge a{color:var(--goldink);font-weight:700;border-bottom:1px solid var(--gold);transition:color .2s,border-color .2s}
 .nudge a:hover{color:var(--char);border-color:var(--char)}
-.sec h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;letter-spacing:-.015em;line-height:1.1;max-width:22ch}
-.sechead{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:0 0 1.6rem}
-.sechead .hint{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:.4rem}
-.sechead .hint svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8}
 
-/* VIDEOS — todos juntos, tira horizontal */
-.strip{display:flex;gap:clamp(.9rem,2vw,1.4rem);overflow-x:auto;scroll-snap-type:x mandatory;padding:0 var(--gut) 1rem;scrollbar-width:none}
-.strip::-webkit-scrollbar{display:none}
-.scard{flex:0 0 clamp(220px,74vw,300px);scroll-snap-align:start;display:flex;flex-direction:column;gap:.8rem}
-.scard__media{position:relative;aspect-ratio:9/16;width:100%}
-.scard__media .ph{position:absolute;inset:0}
-.scard__foot{display:flex;flex-direction:column;align-items:flex-start;gap:.65rem}
-.scard__loc{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
-.scard__loc svg{width:14px;height:14px;fill:none;stroke:var(--goldink);stroke-width:1.7}
-.scard__cta{font-size:.74rem;font-weight:800;letter-spacing:.04em;color:var(--goldink);display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--gold);padding:.55rem .95rem;border-radius:999px;transition:background .25s,color .25s,border-color .25s}
-.scard__cta:hover{background:var(--gold);color:var(--char);border-color:var(--gold)}
-.scard__cta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
-@media(min-width:760px){.scard{flex-basis:300px}}
-/* foco en el video activo: hover en desktop, tarjeta centrada en táctil */
-.scard{transition:opacity .35s ease,transform .35s ease}
-.scard__media{transition:transform .35s ease}
-@media(hover:hover){
-  .strip:hover .scard{opacity:.55}
-  .strip:hover .scard:hover{opacity:1}
-  .scard:hover .scard__media{transform:translateY(-5px)}
+/* VIDEOS — clasificados, contenidos en margenes, clic para reproducir */
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2.2vw,1.5rem);max-width:1000px;margin-inline:auto}
+.vcard{display:flex;flex-direction:column;gap:.8rem}
+.vcard__media{position:relative;aspect-ratio:9/16;border-radius:12px;overflow:hidden;border:1px solid var(--bd);background:var(--cream)}
+.vcard__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vcard__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#000;z-index:2}
+.vcard.playing .vcard__poster,.vcard.playing .vcard__play{display:none}
+.vcard.playing .vcard__video{display:block}
+.vcard__play{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;z-index:3;
+  background:rgba(255,255,255,.92);box-shadow:0 8px 26px rgba(28,28,30,.22);display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s}
+.vcard__play::after{content:"";border-left:20px solid var(--goldink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
+.vcard__play:hover{transform:scale(1.07);background:#fff}
+.vcard__media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,30,.26),transparent 38%);z-index:1;pointer-events:none;transition:opacity .3s}
+.vcard.playing .vcard__media::after{opacity:0}
+.vcard__foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+.vcard__loc{font-size:.92rem;font-weight:700;display:inline-flex;align-items:center;gap:.4rem}
+.vcard__loc svg{width:15px;height:15px;fill:none;stroke:var(--goldink);stroke-width:1.7}
+.vcard__cta{font-size:.72rem;font-weight:800;letter-spacing:.04em;color:var(--goldink);display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--gold);padding:.5rem .85rem;border-radius:999px;transition:background .25s,color .25s;min-height:40px}
+.vcard__cta:hover{background:var(--gold);color:var(--char)}
+.vcard__cta svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2}
+@media(max-width:720px){
+  .vgrid{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;max-width:none;padding-bottom:.6rem;scrollbar-width:none}
+  .vgrid::-webkit-scrollbar{display:none}
+  .vcard{flex:0 0 78%;scroll-snap-align:center}
 }
-@media(hover:none){
-  .strip.focusing .scard{opacity:.5}
-  .strip.focusing .scard.is-active{opacity:1}
-}
-/* Póster real (thumbnail de Stream): visible sin JS, debajo del video */
-.scard__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;background:var(--cream)}
-/* Video real (Cloudflare Stream) montado sobre el póster; aparece solo al cargar */
-.scard__video,.hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .45s ease;z-index:1;pointer-events:none}
-.scard__video.is-on,.hero__video.is-on{opacity:1}
 
 /* 360 */
-.r360{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:start}
+.r360{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:center}
 .r360__copy h2{margin:0 0 1.1rem}
 .r360__intro{font-size:1.04rem;color:var(--char);max-width:46ch}
-.r360__points{margin:1.6rem 0 0;display:flex;flex-direction:column;gap:1.1rem}
+.r360__points{margin:1.6rem 0 0;display:grid;gap:1.1rem}
 .rp{display:grid;grid-template-columns:auto 1fr;gap:.85rem;align-items:start}
 .rp__ic{width:34px;height:34px;border-radius:50%;background:var(--goldtint);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
 .rp__ic svg{width:17px;height:17px;fill:none;stroke:var(--goldink);stroke-width:1.7}
 .rp__h{font-size:.95rem;font-weight:700;margin:.15rem 0 .2rem}
 .rp__b{font-size:.9rem;color:var(--muted);max-width:42ch}
-.r360__media{position:relative;aspect-ratio:4/3;border-radius:8px;overflow:hidden;border:1px solid var(--bd)}
+.r360__ctas{display:flex;flex-wrap:wrap;gap:.8rem 1.2rem;align-items:center;margin:1.8rem 0 0}
+.r360__media{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
 .r360__media .pan{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#EFECE4 0 40px,#F5F2EC 40px 80px);animation:pan 11s linear infinite;z-index:0}
 @keyframes pan{from{transform:translateX(0)}to{transform:translateX(-80px)}}
 .r360__media .lbl{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.9rem;text-align:center;padding:1rem}
 .r360__badge{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--goldink);background:rgba(255,255,255,.85);padding:.3rem .7rem;border-radius:999px}
-.ghost{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.7rem 1.2rem;border-radius:999px;border:1px solid var(--char);color:var(--char);background:rgba(255,255,255,.8)}
+.ghost{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.8rem 1.3rem;border-radius:999px;border:1px solid var(--char);color:var(--char);background:rgba(255,255,255,.8);min-height:46px;transition:border-color .2s,color .2s}
+.ghost:hover{border-color:var(--goldink);color:var(--goldink)}
 .ghost svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7}
-.r360__hint{font-size:.78rem;color:var(--muted);margin:.8rem 0 0;text-align:center}
-@media(min-width:920px){.r360{grid-template-columns:1fr 1fr;gap:clamp(2.5rem,5vw,4.5rem);align-items:center}.r360__media{aspect-ratio:4/5}}
+@media(min-width:920px){.r360{grid-template-columns:1fr 1fr;gap:clamp(2.5rem,5vw,4.5rem)}.r360__media{aspect-ratio:4/5}.r360__points{grid-template-columns:1fr 1fr}}
 
-/* FOTOS — mosaico que llena */
-.fmos{display:grid;gap:10px;grid-template-columns:1fr 1fr;grid-auto-rows:130px;
-  grid-template-areas:"a a" "b c" "d d" "e f"}
-.fmos .ph{position:relative}.fmos .ph__play{display:none}
-.fa{grid-area:a}.fb{grid-area:b}.fc{grid-area:c}.fd{grid-area:d}.fe{grid-area:e}.ff{grid-area:f}
-@media(min-width:760px){.fmos{grid-template-columns:repeat(4,1fr);grid-auto-rows:165px;gap:12px;
-    grid-template-areas:"a a b c" "a a d e" "f f d e"}}
+/* FOTOS — mosaico contenido */
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:1.7rem}
+.pgrid figure{margin:0;overflow:hidden;border-radius:8px;border:1px solid var(--bd)}
+.pgrid img{width:100%;height:100%;aspect-ratio:3/2;object-fit:cover}
+.pgrid .wide{grid-column:span 2}
+@media(min-width:680px){.pgrid{grid-template-columns:repeat(3,1fr);gap:12px}}
+@media(min-width:1040px){.pgrid{grid-template-columns:repeat(4,1fr)}}
 
 /* CIERRE */
 .cta{background:var(--goldtint);border:1px solid var(--gold);border-radius:18px;padding:clamp(2.6rem,6vw,4.2rem);text-align:center}
-.cta h2{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;color:var(--char);margin:0 auto;letter-spacing:-.015em;max-width:none}
+.cta h2{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;color:var(--char);margin:.7rem auto 0;letter-spacing:-.015em;max-width:18ch}
 .cta p{color:var(--muted);margin:.9rem 0 1.8rem;font-size:1.02rem}
-.foot{padding:2rem var(--gut) calc(2rem + env(safe-area-inset-bottom));display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;border-top:1px solid var(--bd);margin-top:clamp(2.5rem,6vh,4rem)}
+.foot{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;padding:2rem var(--gut) calc(2rem + env(safe-area-inset-bottom));border-top:1px solid var(--bd);margin-top:clamp(2.5rem,6vh,4rem)}
 .foot span{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 
-/* Respetar prefers-reduced-motion: sin animaciones ni desplazamiento suave. (El autoplay de video se desactiva en el JS.) */
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
-  .hero__cue svg{animation:none}
-  .r360__media .pan{animation:none}
 }
 </style>
 </head>
@@ -227,151 +195,174 @@ a{color:inherit;text-decoration:none}
   <div class="hero__copy">
     <span class="eyebrow">Producción audiovisual inmobiliaria · Monterrey</span>
     <h1>La diferencia entre <em>vender rápido</em> y quedarse esperando.</h1>
+    <p class="hero__sub">El video convierte el interés en acción antes de la primera visita.</p>
     <div class="hero__cta">
       <a class="wa" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp (se abre en pestaña nueva)" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> Cotizar por WhatsApp</a>
-      <a class="hero__cue" href="#trabajo">Ver el trabajo <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+      <a class="hero__cue" href="#residencial">Ver el trabajo <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
     </div>
   </div>
   <div class="hero__media">
-    <div class="ph"><div class="ph__play"></div><span class="ph__t">Mejor video · vertical <b>[placeholder]</b><br>se reproduce solo</span></div>
-    <!-- REEMPLAZAR: data-stream = VIDEO_ID del mejor video; poster = thumbnail de Stream -->
-    <video class="hero__video" data-stream="REEMPLAZAR-HERO-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+    <img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/ee01ff60-6722-42da-3164-4b6cbcc67100/public" alt="Sala residencial amplia — producción de Inmuebles Audiovisuales" fetchpriority="high">
   </div>
 </section>
 
-<!-- VIDEOS — todos juntos -->
-<section class="sec sec--white" id="trabajo">
-  <div class="wrap sechead">
-    <span class="kicker" style="margin:0">Proyectos recientes · Monterrey</span>
-    <span class="hint">Desliza <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+<!-- VIDEOS RESIDENCIAL -->
+<section class="sec sec--white" id="residencial">
+  <div class="wrap">
+    <div class="sechead">
+      <div>
+        <span class="kicker">Residencial</span>
+        <h2>Casas y departamentos en video.</h2>
+      </div>
+      <span class="hint">Desliza <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>
+    <div class="vgrid">
+
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/4b940872c1f5812f6f16503b3e3c9663/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="4b940872c1f5812f6f16503b3e3c9663" playsinline preload="none" controls poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/4b940872c1f5812f6f16503b3e3c9663/thumbnails/thumbnail.jpg?height=900"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video residencial con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </figcaption>
+      </figure>
+
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/ed43474d6c831a6fb7ef5e1bd9debd1c/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="ed43474d6c831a6fb7ef5e1bd9debd1c" playsinline preload="none" controls poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/ed43474d6c831a6fb7ef5e1bd9debd1c/thumbnails/thumbnail.jpg?height=900"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video residencial con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </figcaption>
+      </figure>
+
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/227043a6e087886ba9571ac5bcb39078/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="227043a6e087886ba9571ac5bcb39078" playsinline preload="none" controls poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/227043a6e087886ba9571ac5bcb39078/thumbnails/thumbnail.jpg?height=900"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video residencial con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </figcaption>
+      </figure>
+
+    </div>
   </div>
-  <div class="strip" id="strip">
+</section>
 
-    <!-- 1 · Residencial (favorito) · fuente: 2509.03 IA version final 4k -->
-    <figure class="scard">
-      <div class="scard__media">
-        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/4b940872c1f5812f6f16503b3e3c9663/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
-        <video class="scard__video" data-stream="4b940872c1f5812f6f16503b3e3c9663" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/4b940872c1f5812f6f16503b3e3c9663/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
+<!-- VIDEOS TERRENO -->
+<section class="sec" id="terreno">
+  <div class="wrap">
+    <div class="sechead">
+      <div>
+        <span class="kicker">Terreno</span>
+        <h2>Terrenos que se entienden de un vistazo.</h2>
       </div>
-      <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </figcaption>
-    </figure>
+      <span class="hint">Desliza <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+    </div>
+    <div class="vgrid">
 
-    <!-- 2 · Terreno (favorito) · fuente: IAV-2606.07-A_1 -->
-    <figure class="scard">
-      <div class="scard__media">
-        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/20ebd72cddcf68d5f3bb39df6cea66b0/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
-        <video class="scard__video" data-stream="20ebd72cddcf68d5f3bb39df6cea66b0" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/20ebd72cddcf68d5f3bb39df6cea66b0/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
-      </div>
-      <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </figcaption>
-    </figure>
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/20ebd72cddcf68d5f3bb39df6cea66b0/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="20ebd72cddcf68d5f3bb39df6cea66b0" playsinline preload="none" controls poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/20ebd72cddcf68d5f3bb39df6cea66b0/thumbnails/thumbnail.jpg?height=900"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video de terreno con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </figcaption>
+      </figure>
 
-    <!-- 3 · Residencial · fuente: 2602.09 IA 9x16 -->
-    <figure class="scard">
-      <div class="scard__media">
-        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/ed43474d6c831a6fb7ef5e1bd9debd1c/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
-        <video class="scard__video" data-stream="ed43474d6c831a6fb7ef5e1bd9debd1c" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/ed43474d6c831a6fb7ef5e1bd9debd1c/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
-      </div>
-      <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </figcaption>
-    </figure>
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/c8dcdd1d76e162223bf1bd5e66c745d6/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="c8dcdd1d76e162223bf1bd5e66c745d6" playsinline preload="none" controls poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/c8dcdd1d76e162223bf1bd5e66c745d6/thumbnails/thumbnail.jpg?height=900"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video de terreno con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </figcaption>
+      </figure>
 
-    <!-- 4 · Residencial · fuente: 2603.10 IA 9x16 v2 -->
-    <figure class="scard">
-      <div class="scard__media">
-        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/227043a6e087886ba9571ac5bcb39078/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
-        <video class="scard__video" data-stream="227043a6e087886ba9571ac5bcb39078" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/227043a6e087886ba9571ac5bcb39078/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
-      </div>
-      <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </figcaption>
-    </figure>
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/8136f630160faf2a1dacc87d534ad930/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="8136f630160faf2a1dacc87d534ad930" playsinline preload="none" controls poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/8136f630160faf2a1dacc87d534ad930/thumbnails/thumbnail.jpg?height=900"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video de terreno con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </figcaption>
+      </figure>
 
-    <!-- 5 · Terreno · fuente: 2603.04 IA 9x16 narradov1 -->
-    <figure class="scard">
-      <div class="scard__media">
-        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/c8dcdd1d76e162223bf1bd5e66c745d6/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
-        <video class="scard__video" data-stream="c8dcdd1d76e162223bf1bd5e66c745d6" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/c8dcdd1d76e162223bf1bd5e66c745d6/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
-      </div>
-      <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </figcaption>
-    </figure>
-
-    <!-- 6 · Terreno · fuente: 2603.24 IA 9x16 NARRADO -->
-    <figure class="scard">
-      <div class="scard__media">
-        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/8136f630160faf2a1dacc87d534ad930/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
-        <video class="scard__video" data-stream="8136f630160faf2a1dacc87d534ad930" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/8136f630160faf2a1dacc87d534ad930/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
-      </div>
-      <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
-      </figcaption>
-    </figure>
-
+    </div>
   </div>
 </section>
 
 <!-- 360 -->
-<section class="sec" id="r360">
+<section class="sec sec--white" id="r360">
   <div class="wrap">
     <div class="r360">
       <div class="r360__copy">
         <span class="kicker">Recorrido virtual 360°</span>
         <h2>Que recorran la propiedad completa antes de pedir una cita.</h2>
-        <p class="r360__intro">Una visita virtual: el comprador recorre toda la propiedad desde su teléfono, a cualquier hora, sin que nadie tenga que acompañarlo.</p>
+        <p class="r360__intro">Una visita virtual: el comprador recorre toda la propiedad desde su teléfono, a cualquier hora, sin que nadie lo acompañe.</p>
         <div class="r360__points">
-          <div class="rp">
-            <span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg></span>
-            <div><p class="rp__h">La propiedad, completa</p><p class="rp__b">Recorren cada espacio como si estuvieran ahí. Nada queda a la imaginación.</p></div>
-          </div>
-          <div class="rp">
-            <span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span>
-            <div><p class="rp__h">Filtra a los compradores serios</p><p class="rp__b">Solo agenda visita quien de verdad está interesado. Menos vueltas en vano.</p></div>
-          </div>
-          <div class="rp">
-            <span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span>
-            <div><p class="rp__h">Vende a distancia</p><p class="rp__b">Le vendes a quien está fuera de la ciudad y no puede ir en persona.</p></div>
-          </div>
+          <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg></span><div><p class="rp__h">La propiedad, completa</p><p class="rp__b">Recorren cada espacio como si estuvieran ahí. Nada queda a la imaginación.</p></div></div>
+          <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="rp__h">Filtra a los compradores serios</p><p class="rp__b">Solo agenda visita quien de verdad está interesado. Menos vueltas en vano.</p></div></div>
+          <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><p class="rp__h">Vende a distancia</p><p class="rp__b">Le vendes a quien está fuera de la ciudad y no puede ir en persona.</p></div></div>
         </div>
-        <p class="nudge">¿Quieres un recorrido 360 para tu propiedad? <a target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20recorrido%20360%20para%20mi%20propiedad.">Cotiza por WhatsApp</a></p>
+        <div class="r360__ctas">
+          <a class="ghost" target="_blank" rel="noopener" aria-label="Abrir el recorrido virtual 360° (se abre en pestaña nueva)" href="https://app.cloudpano.com/tours/UuTw8BcDs">Abrir recorrido <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg></a>
+          <span class="nudge" style="margin:0">¿Quieres un recorrido 360 para tu propiedad? <a target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20recorrido%20360%20para%20mi%20propiedad.">Cotiza por WhatsApp</a></span>
+        </div>
       </div>
       <div>
-        <div class="r360__media">
+        <a class="r360__media" target="_blank" rel="noopener" aria-label="Abrir el recorrido virtual 360° (se abre en pestaña nueva)" href="https://app.cloudpano.com/tours/UuTw8BcDs" style="display:block">
           <div class="pan"></div>
           <div class="lbl">
             <span class="r360__badge">360° · recorrido residencial</span>
-            <a class="ghost" target="_blank" rel="noopener" aria-label="Abrir el recorrido virtual 360° (se abre en pestaña nueva)" href="https://app.cloudpano.com/group/RI9t58XNh"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg> Abrir recorrido</a>
+            <span class="ghost" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg> Abrir recorrido</span>
           </div>
-        </div>
-        <p class="r360__hint">Vista previa · el recorrido completo se abre en pestaña nueva</p>
+        </a>
+        <p class="nudge" style="text-align:center;font-size:.78rem">Vista previa · el recorrido completo se abre en pestaña nueva</p>
       </div>
     </div>
   </div>
 </section>
 
 <!-- FOTOS -->
-<section class="sec sec--white" id="fotos">
+<section class="sec" id="fotos">
   <div class="wrap">
     <span class="kicker">Fotografía</span>
     <h2>Atrae más miradas.</h2>
-    <div class="fmos" style="margin-top:1.6rem">
-      <div class="ph fa"><span class="ph__t">Foto</span></div>
-      <div class="ph fb"><span class="ph__t">Foto</span></div>
-      <div class="ph fc"><span class="ph__t">Foto</span></div>
-      <div class="ph fd"><span class="ph__t">Foto</span></div>
-      <div class="ph fe"><span class="ph__t">Foto</span></div>
-      <div class="ph ff"><span class="ph__t">Foto</span></div>
+    <div class="pgrid">
+      <figure class="wide"><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/f1891001-e90e-45ca-0818-521b1a29b800/public" alt="Cocina de diseño — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/64968852-3666-4007-7a70-4ceb44a37300/public" alt="Fachada residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/3bf733fd-de1b-4d0d-5627-b7843e99bc00/public" alt="Cocina — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/13b41797-ee1f-4815-f799-0e6085b11800/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/4e9d68d9-565f-4bb2-6a7f-1999c03e8400/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure class="wide"><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/64b6b81d-ef65-425f-6a20-908f0fe4a800/public" alt="Sala de cine en casa — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/829ddeac-411f-4077-1105-e966b9327d00/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/5dcb84b4-37d4-4878-ca2a-584cf58bde00/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/3c370aef-0fd4-439a-ba2c-b4f2dc8f5a00/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/94a5c86b-554d-47f5-7795-999dbb2be600/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure class="wide"><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/d4d1c9d4-bf1f-4b23-83cf-5407cfa91a00/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/bc2ed869-2565-4ef4-3f85-0e6642756700/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/0228faf3-d40e-46bc-884d-982b2824e800/public" alt="Interior residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/ee01ff60-6722-42da-3164-4b6cbcc67100/public" alt="Sala residencial — Inmuebles Audiovisuales" loading="lazy"></figure>
+      <figure><img src="https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/dad31053-c640-4479-bbe6-0f001afb1000/public" alt="Espacio comercial — Inmuebles Audiovisuales" loading="lazy"></figure>
     </div>
     <p class="nudge">¿Quieres fotografía profesional de tu propiedad? <a target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20fotograf%C3%ADa%20profesional%20para%20mi%20propiedad.">Cotiza por WhatsApp</a></p>
   </div>
@@ -382,12 +373,13 @@ a{color:inherit;text-decoration:none}
   <div class="wrap">
     <div class="cta">
       <span class="eyebrow">Cotiza tu proyecto</span>
-      <h2 style="margin-top:.7rem">Tu propiedad merece esta producción.</h2>
+      <h2>Tu propiedad merece esta producción.</h2>
       <p>Escríbenos por WhatsApp y la producimos.</p>
       <a class="wa" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp (se abre en pestaña nueva)" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> Escríbenos por WhatsApp</a>
     </div>
   </div>
 </section>
+
 </main>
 
 <footer class="foot wrap">
@@ -395,72 +387,43 @@ a{color:inherit;text-decoration:none}
   <span>Producción audiovisual · Monterrey, México</span>
 </footer>
 
-<!-- hls.js: reproducir HLS de Cloudflare Stream donde no es nativo (Chrome/Firefox). Safari usa HLS nativo. -->
+<!-- hls.js: reproducir HLS de Cloudflare Stream donde no es nativo. Safari usa HLS nativo. -->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"></script>
 <script>
-// El contenido (tira de videos, WhatsApp, 360) ya está en el HTML estático:
-// la página funciona completa aunque este script no corra. El JS solo realza.
 (function(){
-  // Año del footer (el HTML ya trae 2026 literal como respaldo sin JS).
-  var anio = document.getElementById('anio');
-  if (anio) anio.textContent = new Date().getFullYear();
+  var anio = document.getElementById('anio'); if (anio) anio.textContent = new Date().getFullYear();
 
-  // --- Cloudflare Stream ---
-  // CODE de la cuenta de Stream. Mientras sea REEMPLAZAR, los videos no se montan
-  // y se queda visible el póster/placeholder (nunca un cuadro vacío).
   var STREAM_CODE = "cl73mgx0feu2w8io";
+  var current = null; // tarjeta reproduciéndose
 
-  function montarStream(v){
-    if (v.src || v.dataset.mounted) return;
-    var id = v.dataset.stream;
-    if (!id || id.indexOf("REEMPLAZAR") === 0) return;        // sin asset -> queda el póster
-    if (!STREAM_CODE || STREAM_CODE.indexOf("REEMPLAZAR") === 0) return; // sin CODE -> queda el póster
+  function mount(v){
+    if (v.dataset.mounted) return;
+    var id = v.dataset.stream; if (!id) return;
     var url = "https://customer-" + STREAM_CODE + ".cloudflarestream.com/" + id + "/manifest/video.m3u8";
-    v.addEventListener("loadeddata", function(){ v.classList.add("is-on"); }, { once: true });
-    if (v.canPlayType("application/vnd.apple.mpegurl")) {     // Safari / iOS: HLS nativo
-      v.src = url;
-    } else if (window.Hls && window.Hls.isSupported()) {      // Chrome / Firefox: hls.js
-      var h = new Hls();
-      h.attachMedia(v);
-      h.on(Hls.Events.MEDIA_ATTACHED, function(){ h.loadSource(url); });
-    } else {
-      return;                                                 // sin soporte HLS -> queda el póster
-    }
+    if (v.canPlayType("application/vnd.apple.mpegurl")) { v.src = url; }
+    else if (window.Hls && window.Hls.isSupported()) { var h = new Hls(); h.attachMedia(v); h.on(Hls.Events.MEDIA_ATTACHED, function(){ h.loadSource(url); }); }
+    else { v.src = url; }
     v.dataset.mounted = "1";
   }
 
-  // Respetar prefers-reduced-motion: sin autoplay. Se queda el póster/placeholder, estático.
-  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  var videos = document.querySelectorAll("[data-stream]");
-
-  if (!reduce && "IntersectionObserver" in window) {
-    // Reproducir solo lo visible; pausar lo demás (rendimiento).
-    var io = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){
-        var v = e.target;
-        if (e.isIntersecting){
-          montarStream(v);
-          var p = v.play && v.play();
-          if (p && p.catch) p.catch(function(){});
-        } else if (v.pause) {
-          v.pause();
-        }
-      });
-    }, { rootMargin: "200px 0px" });
-    videos.forEach(function(v){ io.observe(v); });
-  }
-
-  // Foco en la tira (solo táctil): resalta el video centrado y atenúa los demás.
-  // En desktop el foco es por hover (CSS), así que aquí no se toca.
-  var strip = document.getElementById("strip");
-  if (strip && "IntersectionObserver" in window && window.matchMedia &&
-      window.matchMedia("(hover: none)").matches) {
-    strip.classList.add("focusing");
-    var fo = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ e.target.classList.toggle("is-active", e.isIntersecting); });
-    }, { root: strip, threshold: 0.72 });
-    strip.querySelectorAll(".scard").forEach(function(c){ fo.observe(c); });
-  }
+  document.querySelectorAll(".vcard").forEach(function(card){
+    var v = card.querySelector(".vcard__video");
+    var btn = card.querySelector(".vcard__play");
+    if (!v || !btn) return;
+    btn.addEventListener("click", function(){
+      if (current && current !== card){
+        var cv = current.querySelector(".vcard__video");
+        if (cv) cv.pause();
+        current.classList.remove("playing");
+      }
+      mount(v);
+      card.classList.add("playing");
+      current = card;
+      v.muted = false;
+      var p = v.play();
+      if (p && p.catch) p.catch(function(){});
+    });
+  });
 })();
 </script>
 </body>
