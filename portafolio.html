@@ -144,8 +144,9 @@ a{color:inherit;text-decoration:none}
 .rp__b{font-size:.9rem;color:var(--muted);max-width:42ch}
 .r360__ctas{display:flex;flex-wrap:wrap;gap:.8rem 1.2rem;align-items:center;margin:1.8rem 0 0}
 .r360__media{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
-.r360__media .pan{position:absolute;inset:0;background:repeating-linear-gradient(90deg,#EFECE4 0 40px,#F5F2EC 40px 80px);animation:pan 11s linear infinite;z-index:0}
-@keyframes pan{from{transform:translateX(0)}to{transform:translateX(-80px)}}
+.r360__media .pan{position:absolute;inset:0;background:url("https://imagedelivery.net/4FlhPwMCquiTgnacg31UZQ/2259a170-ab20-4969-fd95-f03145222f00/public") center/cover no-repeat;z-index:0;transform:scale(1.1);animation:pan 18s ease-in-out infinite alternate}
+.r360__media::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(to bottom,rgba(20,20,24,.18),transparent 30%,transparent 60%,rgba(20,20,24,.28));pointer-events:none}
+@keyframes pan{from{transform:scale(1.1) translateX(-3.5%)}to{transform:scale(1.1) translateX(3.5%)}}
 .r360__media .lbl{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.9rem;text-align:center;padding:1rem}
 .r360__badge{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--goldink);background:rgba(255,255,255,.85);padding:.3rem .7rem;border-radius:999px}
 .ghost{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.8rem 1.3rem;border-radius:999px;border:1px solid var(--char);color:var(--char);background:rgba(255,255,255,.8);min-height:46px;transition:border-color .2s,color .2s}
