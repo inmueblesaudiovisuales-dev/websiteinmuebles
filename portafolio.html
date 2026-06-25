@@ -97,23 +97,28 @@ a{color:inherit;text-decoration:none}
 
 /* HERO */
 .hero{display:grid;grid-template-columns:1fr;align-items:center;gap:2rem;padding:clamp(2.2rem,6vh,4.5rem) var(--gut) clamp(3rem,8vh,5.5rem)}
-.hero__media{position:relative;width:100%;aspect-ratio:9/16;max-height:78vh;margin-inline:auto;max-width:360px}
+.hero__media{position:relative;width:100%;aspect-ratio:9/16;max-height:58vh;margin-inline:auto;max-width:340px}
 .hero__media .ph{position:absolute;inset:0;border-color:var(--gold)}
 .hero__copy{order:2}
-.hero h1{font-size:clamp(2.2rem,5vw,3.7rem);font-weight:800;line-height:1.06;letter-spacing:-.02em;margin:.9rem 0 0;max-width:15ch}
+.hero h1{font-size:clamp(2.4rem,5.4vw,4.1rem);font-weight:800;line-height:1.03;letter-spacing:-.022em;margin:.9rem 0 0;max-width:15ch}
 .hero h1 em{font-style:normal;color:var(--goldink)}
-.hero__cue{display:inline-flex;align-items:center;gap:.55rem;margin:1.9rem 0 0;font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--goldink)}
+.hero__cta{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.4rem;margin:2rem 0 0}
+.hero__cue{display:inline-flex;align-items:center;gap:.55rem;font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--goldink)}
 .hero__cue svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;animation:bob 1.8s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
 @media(min-width:880px){
   .hero{grid-template-columns:1fr .9fr;gap:clamp(2.5rem,5vw,5rem);min-height:90vh}
   .hero__copy{order:1}
-  .hero__media{order:2;max-width:440px}
+  .hero__media{order:2;max-width:440px;max-height:80vh}
 }
 
 /* SECCION */
 .sec{padding:clamp(3.4rem,9vh,6.5rem) 0}
-.sec--white{background:var(--white)}
+.sec--white{background:var(--white);border-top:1px solid var(--bd)}
+/* nudge contextual a WhatsApp al cerrar una sección */
+.nudge{font-size:.95rem;color:var(--muted);margin:1.6rem 0 0}
+.nudge a{color:var(--goldink);font-weight:700;border-bottom:1px solid var(--gold);transition:color .2s,border-color .2s}
+.nudge a:hover{color:var(--char);border-color:var(--char)}
 .sec h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;letter-spacing:-.015em;line-height:1.1;max-width:22ch}
 .sechead{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:0 0 1.6rem}
 .sechead .hint{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:inline-flex;align-items:center;gap:.4rem}
@@ -125,13 +130,25 @@ a{color:inherit;text-decoration:none}
 .scard{flex:0 0 clamp(220px,74vw,300px);scroll-snap-align:start;display:flex;flex-direction:column;gap:.8rem}
 .scard__media{position:relative;aspect-ratio:9/16;width:100%}
 .scard__media .ph{position:absolute;inset:0}
-.scard__foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem}
+.scard__foot{display:flex;flex-direction:column;align-items:flex-start;gap:.65rem}
 .scard__loc{font-size:.95rem;font-weight:700;display:flex;align-items:center;gap:.4rem}
 .scard__loc svg{width:14px;height:14px;fill:none;stroke:var(--goldink);stroke-width:1.7}
-.scard__cta{font-size:.8rem;font-weight:700;color:var(--goldink);display:inline-flex;align-items:center;gap:.3rem}
-.scard__cta:hover{color:var(--char)}
+.scard__cta{font-size:.74rem;font-weight:800;letter-spacing:.04em;color:var(--goldink);display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--gold);padding:.55rem .95rem;border-radius:999px;transition:background .25s,color .25s,border-color .25s}
+.scard__cta:hover{background:var(--gold);color:var(--char);border-color:var(--gold)}
 .scard__cta svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:2}
 @media(min-width:760px){.scard{flex-basis:300px}}
+/* foco en el video activo: hover en desktop, tarjeta centrada en táctil */
+.scard{transition:opacity .35s ease,transform .35s ease}
+.scard__media{transition:transform .35s ease}
+@media(hover:hover){
+  .strip:hover .scard{opacity:.55}
+  .strip:hover .scard:hover{opacity:1}
+  .scard:hover .scard__media{transform:translateY(-5px)}
+}
+@media(hover:none){
+  .strip.focusing .scard{opacity:.5}
+  .strip.focusing .scard.is-active{opacity:1}
+}
 /* Video real (Cloudflare Stream) montado sobre el póster/placeholder; aparece solo al cargar */
 .scard__video,.hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .45s ease;z-index:1;pointer-events:none}
 .scard__video.is-on,.hero__video.is-on{opacity:1}
@@ -201,7 +218,10 @@ a{color:inherit;text-decoration:none}
   <div class="hero__copy">
     <span class="eyebrow">Producción audiovisual inmobiliaria · Monterrey</span>
     <h1>La diferencia entre <em>vender rápido</em> y quedarse esperando.</h1>
-    <a class="hero__cue" href="#trabajo">Ver el trabajo <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+    <div class="hero__cta">
+      <a class="wa" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp (se abre en pestaña nueva)" href="https://wa.me/528127174207?text=Hola%2C%20vi%20su%20portafolio%20y%20me%20gustar%C3%ADa%20cotizar%20la%20producci%C3%B3n%20de%20una%20propiedad."><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg> Cotizar por WhatsApp</a>
+      <a class="hero__cue" href="#trabajo">Ver el trabajo <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></a>
+    </div>
   </div>
   <div class="hero__media">
     <div class="ph"><div class="ph__play"></div><span class="ph__t">Mejor video · vertical <b>[placeholder]</b><br>se reproduce solo</span></div>
@@ -226,7 +246,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> San Pedro</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en San Pedro" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20San%20Pedro%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en San Pedro" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20San%20Pedro%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -238,7 +258,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Cumbres</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en Cumbres" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20Cumbres%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en Cumbres" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20Cumbres%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -250,7 +270,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Valle Oriente</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del departamento en Valle Oriente" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20departamento%20en%20Valle%20Oriente%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del departamento en Valle Oriente" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20departamento%20en%20Valle%20Oriente%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -262,7 +282,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Complejo deportivo</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno del complejo deportivo" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20terreno%20del%20complejo%20deportivo%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno del complejo deportivo" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20terreno%20del%20complejo%20deportivo%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -274,7 +294,7 @@ a{color:inherit;text-decoration:none}
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Colonia privada</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno en colonia privada" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20terreno%20en%20colonia%20privada%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno en colonia privada" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20terreno%20en%20colonia%20privada%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
@@ -303,6 +323,7 @@ a{color:inherit;text-decoration:none}
             <div><p class="rp__h">Vende a distancia</p><p class="rp__b">Le vendes a quien está fuera de la ciudad y no puede ir en persona.</p></div>
           </div>
         </div>
+        <p class="nudge">¿Quieres un recorrido 360 para tu propiedad? <a target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20recorrido%20360%20para%20mi%20propiedad.">Cotiza por WhatsApp</a></p>
       </div>
       <div>
         <div class="r360__media">
@@ -331,6 +352,7 @@ a{color:inherit;text-decoration:none}
       <div class="ph fe"><span class="ph__t">Foto</span></div>
       <div class="ph ff"><span class="ph__t">Foto</span></div>
     </div>
+    <p class="nudge">¿Quieres fotografía profesional de tu propiedad? <a target="_blank" rel="noopener" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20fotograf%C3%ADa%20profesional%20para%20mi%20propiedad.">Cotiza por WhatsApp</a></p>
   </div>
 </section>
 
@@ -405,6 +427,18 @@ a{color:inherit;text-decoration:none}
       });
     }, { rootMargin: "200px 0px" });
     videos.forEach(function(v){ io.observe(v); });
+  }
+
+  // Foco en la tira (solo táctil): resalta el video centrado y atenúa los demás.
+  // En desktop el foco es por hover (CSS), así que aquí no se toca.
+  var strip = document.getElementById("strip");
+  if (strip && "IntersectionObserver" in window && window.matchMedia &&
+      window.matchMedia("(hover: none)").matches) {
+    strip.classList.add("focusing");
+    var fo = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ e.target.classList.toggle("is-active", e.isIntersecting); });
+    }, { root: strip, threshold: 0.72 });
+    strip.querySelectorAll(".scard").forEach(function(c){ fo.observe(c); });
   }
 })();
 </script>
