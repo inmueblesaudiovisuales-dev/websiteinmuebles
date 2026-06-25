@@ -8,10 +8,17 @@
   Se publica con PLACEHOLDERS hasta que lleguen los assets. Para activar el media real:
 
   1. CODE de la cuenta de Cloudflare Stream  -> reemplazar STREAM_CODE en el <script> final.
-  2. VIDEOS verticales (5) en Stream: poner el VIDEO_ID en cada <video data-stream> de la tira
-     (cada tarjeta esta rotulada con su ubicacion: San Pedro, Cumbres, Valle Oriente,
-     Complejo deportivo, Colonia privada) y su poster en el atributo poster.
-  3. HERO: el mejor video vertical -> <video class="hero__video" data-stream> + su poster.
+  2. VIDEOS (6 verticales 9:16, favoritos primero) en Stream: reemplazar cada data-stream
+     REEMPLAZAR-01..06 por su UID, y poner el poster (thumbnail de Stream). Masters listos
+     en _stream-masters/ (1080x1920). Mapeo:
+       01 Residencial (favorito) = 2509.03 IA version final 4k
+       02 Terreno    (favorito) = IAV-2606.07-A_1
+       03 Residencial           = 2602.09 IA 9x16
+       04 Residencial           = 2603.10 IA 9x16 v2
+       05 Terreno               = 2603.04 IA 9x16 narradov1
+       06 Terreno               = 2603.24 IA 9x16 NARRADO
+  3. HERO: pendiente (por ahora sin hero). Cuando se defina el mejor video ->
+     <video class="hero__video" data-stream> + su poster.
      Poster de Stream: https://customer-<CODE>.cloudflarestream.com/<VIDEO_ID>/thumbnails/thumbnail.jpg
   4. 360: ya enlaza a CloudPano (https://app.cloudpano.com/group/RI9t58XNh). Confirmar link real.
   5. FOTOS (5-6) de Cloudflare Images (cuenta 4FlhPwMCquiTgnacg31UZQ):
@@ -238,63 +245,81 @@ a{color:inherit;text-decoration:none}
   </div>
   <div class="strip" id="strip">
 
+    <!-- 1 · Residencial (favorito) · fuente: 2509.03 IA version final 4k -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
-        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <div class="ph"><div class="ph__play"></div><span class="ph__t">Residencial <b>[muestra]</b></span></div>
+        <!-- REEMPLAZAR-01: data-stream = UID de Stream; poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-01" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> San Pedro</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en San Pedro" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20San%20Pedro%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
+    <!-- 2 · Terreno (favorito) · fuente: IAV-2606.07-A_1 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
-        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <div class="ph"><div class="ph__play"></div><span class="ph__t">Terreno <b>[muestra]</b></span></div>
+        <!-- REEMPLAZAR-02: data-stream = UID de Stream; poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-02" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Cumbres</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el de la casa en Cumbres" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20de%20la%20casa%20en%20Cumbres%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
+    <!-- 3 · Residencial · fuente: 2602.09 IA 9x16 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
-        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <div class="ph"><div class="ph__play"></div><span class="ph__t">Residencial <b>[muestra]</b></span></div>
+        <!-- REEMPLAZAR-03: data-stream = UID de Stream; poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-03" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Valle Oriente</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del departamento en Valle Oriente" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20departamento%20en%20Valle%20Oriente%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
+    <!-- 4 · Residencial · fuente: 2603.10 IA 9x16 v2 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
-        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <div class="ph"><div class="ph__play"></div><span class="ph__t">Residencial <b>[muestra]</b></span></div>
+        <!-- REEMPLAZAR-04: data-stream = UID de Stream; poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-04" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Complejo deportivo</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno del complejo deportivo" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20terreno%20del%20complejo%20deportivo%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 
+    <!-- 5 · Terreno · fuente: 2603.04 IA 9x16 narradov1 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Video vertical <b>[placeholder]</b></span></div>
-        <!-- REEMPLAZAR: data-stream = VIDEO_ID de esta propiedad (ver ubicación abajo); poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-STREAM-ID" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <div class="ph"><div class="ph__play"></div><span class="ph__t">Terreno <b>[muestra]</b></span></div>
+        <!-- REEMPLAZAR-05: data-stream = UID de Stream; poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-05" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
-        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg> Colonia privada</span>
-        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video como el del terreno en colonia privada" href="https://wa.me/528127174207?text=Hola%2C%20vi%20el%20video%20del%20terreno%20en%20colonia%20privada%20y%20me%20gustar%C3%ADa%20algo%20as%C3%AD%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      </figcaption>
+    </figure>
+
+    <!-- 6 · Terreno · fuente: 2603.24 IA 9x16 NARRADO -->
+    <figure class="scard">
+      <div class="scard__media">
+        <div class="ph"><div class="ph__play"></div><span class="ph__t">Terreno <b>[muestra]</b></span></div>
+        <!-- REEMPLAZAR-06: data-stream = UID de Stream; poster = thumbnail de Stream -->
+        <video class="scard__video" data-stream="REEMPLAZAR-06" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+      </div>
+      <figcaption class="scard__foot">
+        <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
+        <a class="scard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
       </figcaption>
     </figure>
 

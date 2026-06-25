@@ -4,3 +4,6 @@
 
 # Brainstorm visual companion
 .superpowers/
+_stream-masters/
+.DS_Store
+.claude/
