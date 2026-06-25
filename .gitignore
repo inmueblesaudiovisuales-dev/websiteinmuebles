@@ -8,3 +8,5 @@ _stream-masters/
 .DS_Store
 .claude/
 stream-token.txt
+_img/
+_img-opt/
