@@ -156,7 +156,9 @@ a{color:inherit;text-decoration:none}
   .strip.focusing .scard{opacity:.5}
   .strip.focusing .scard.is-active{opacity:1}
 }
-/* Video real (Cloudflare Stream) montado sobre el póster/placeholder; aparece solo al cargar */
+/* Póster real (thumbnail de Stream): visible sin JS, debajo del video */
+.scard__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;background:var(--cream)}
+/* Video real (Cloudflare Stream) montado sobre el póster; aparece solo al cargar */
 .scard__video,.hero__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:6px;opacity:0;transition:opacity .45s ease;z-index:1;pointer-events:none}
 .scard__video.is-on,.hero__video.is-on{opacity:1}
 
@@ -248,9 +250,8 @@ a{color:inherit;text-decoration:none}
     <!-- 1 · Residencial (favorito) · fuente: 2509.03 IA version final 4k -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Residencial <b>[muestra]</b></span></div>
-        <!-- REEMPLAZAR-01: data-stream = UID de Stream; poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-01" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/4b940872c1f5812f6f16503b3e3c9663/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
+        <video class="scard__video" data-stream="4b940872c1f5812f6f16503b3e3c9663" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/4b940872c1f5812f6f16503b3e3c9663/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
@@ -261,9 +262,8 @@ a{color:inherit;text-decoration:none}
     <!-- 2 · Terreno (favorito) · fuente: IAV-2606.07-A_1 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Terreno <b>[muestra]</b></span></div>
-        <!-- REEMPLAZAR-02: data-stream = UID de Stream; poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-02" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/20ebd72cddcf68d5f3bb39df6cea66b0/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
+        <video class="scard__video" data-stream="20ebd72cddcf68d5f3bb39df6cea66b0" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/20ebd72cddcf68d5f3bb39df6cea66b0/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
@@ -274,9 +274,8 @@ a{color:inherit;text-decoration:none}
     <!-- 3 · Residencial · fuente: 2602.09 IA 9x16 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Residencial <b>[muestra]</b></span></div>
-        <!-- REEMPLAZAR-03: data-stream = UID de Stream; poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-03" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/ed43474d6c831a6fb7ef5e1bd9debd1c/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
+        <video class="scard__video" data-stream="ed43474d6c831a6fb7ef5e1bd9debd1c" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/ed43474d6c831a6fb7ef5e1bd9debd1c/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
@@ -287,9 +286,8 @@ a{color:inherit;text-decoration:none}
     <!-- 4 · Residencial · fuente: 2603.10 IA 9x16 v2 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Residencial <b>[muestra]</b></span></div>
-        <!-- REEMPLAZAR-04: data-stream = UID de Stream; poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-04" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/227043a6e087886ba9571ac5bcb39078/thumbnails/thumbnail.jpg?height=900" alt="Video residencial · Inmuebles Audiovisuales" loading="lazy">
+        <video class="scard__video" data-stream="227043a6e087886ba9571ac5bcb39078" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/227043a6e087886ba9571ac5bcb39078/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
@@ -300,9 +298,8 @@ a{color:inherit;text-decoration:none}
     <!-- 5 · Terreno · fuente: 2603.04 IA 9x16 narradov1 -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Terreno <b>[muestra]</b></span></div>
-        <!-- REEMPLAZAR-05: data-stream = UID de Stream; poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-05" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/c8dcdd1d76e162223bf1bd5e66c745d6/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
+        <video class="scard__video" data-stream="c8dcdd1d76e162223bf1bd5e66c745d6" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/c8dcdd1d76e162223bf1bd5e66c745d6/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
@@ -313,9 +310,8 @@ a{color:inherit;text-decoration:none}
     <!-- 6 · Terreno · fuente: 2603.24 IA 9x16 NARRADO -->
     <figure class="scard">
       <div class="scard__media">
-        <div class="ph"><div class="ph__play"></div><span class="ph__t">Terreno <b>[muestra]</b></span></div>
-        <!-- REEMPLAZAR-06: data-stream = UID de Stream; poster = thumbnail de Stream -->
-        <video class="scard__video" data-stream="REEMPLAZAR-06" muted loop playsinline preload="none" poster="" aria-hidden="true"></video>
+        <img class="scard__poster" src="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/8136f630160faf2a1dacc87d534ad930/thumbnails/thumbnail.jpg?height=900" alt="Video de terreno · Inmuebles Audiovisuales" loading="lazy">
+        <video class="scard__video" data-stream="8136f630160faf2a1dacc87d534ad930" muted loop playsinline preload="none" poster="https://customer-cl73mgx0feu2w8io.cloudflarestream.com/8136f630160faf2a1dacc87d534ad930/thumbnails/thumbnail.jpg?height=900" aria-hidden="true"></video>
       </div>
       <figcaption class="scard__foot">
         <span class="scard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
@@ -412,7 +408,7 @@ a{color:inherit;text-decoration:none}
   // --- Cloudflare Stream ---
   // CODE de la cuenta de Stream. Mientras sea REEMPLAZAR, los videos no se montan
   // y se queda visible el póster/placeholder (nunca un cuadro vacío).
-  var STREAM_CODE = "REEMPLAZAR-CODE";
+  var STREAM_CODE = "cl73mgx0feu2w8io";
 
   function montarStream(v){
     if (v.src || v.dataset.mounted) return;
