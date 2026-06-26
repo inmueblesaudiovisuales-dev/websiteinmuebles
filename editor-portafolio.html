@@ -120,23 +120,39 @@ iframe#prev.m{width:390px;max-width:100%}
 .dialog p{font-size:.82rem;color:var(--muted);margin:0 0 .9rem;line-height:1.5}
 .dialog textarea{width:100%;min-height:200px;font-family:ui-monospace,monospace;font-size:.7rem;border:1px solid var(--bd2);border-radius:8px;padding:.7rem}
 .dialog__row{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem}
+.dialog code{font-family:ui-monospace,monospace;background:var(--cream);border:1px solid var(--bd);border-radius:4px;padding:.05rem .35rem;font-size:.78rem}
+.dialog .f input[type=password]{width:100%;border:1px solid var(--bd2);border-radius:7px;padding:.55rem .65rem;font-size:.82rem;background:#fff;font-family:ui-monospace,monospace}
+.publog{font-family:ui-monospace,monospace;font-size:.74rem;line-height:1.7;background:#1c1c1e;color:#e6e5e2;border-radius:8px;padding:.8rem .9rem;max-height:230px;overflow:auto;margin:.4rem 0 0}
+.publog .ok{color:#7fd6a0}.publog .er{color:#ff9b86}.publog .mut{color:#9a988f}
+.publog a{color:#e2c289;border-bottom:1px solid #6b5a2a}
+/* aviso de borrador sin publicar */
+.draft{display:none;background:#2c2b29;color:#f2efe9;padding:.55rem 1.1rem;font-size:.76rem;align-items:center;gap:.7rem}
+.draft.show{display:flex}
+.draft b{color:#e2c289}
+.draft button{margin-left:auto;background:transparent;color:#cfcecb;border:1px solid #555;border-radius:6px;padding:.3rem .7rem;font-size:.66rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.draft button:hover{border-color:#888;color:#fff}
 </style>
 </head>
 <body>
 
 <div class="top">
   <span class="top__brand"><span class="dot"></span>Editor de Portafolio</span>
-  <span class="top__tag">Prototipo</span>
+  <span class="top__tag">Beta</span>
   <span class="top__sp"></span>
   <span class="top__save" id="saveState">Guardado ✓</span>
   <button class="btn btn--ghost" id="btnReset" title="Volver al portafolio publicado actual"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restablecer</button>
   <button class="btn btn--ghost" id="btnJSON"><svg viewBox="0 0 24 24"><path d="M8 3H5v18h3M16 3h3v18h-3"/></svg>Config JSON</button>
   <button class="btn btn--ghost" id="btnHTML"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Descargar HTML</button>
-  <button class="btn btn--gold" id="btnPublish" disabled title="Próximo paso: conectar el backend para publicar con un clic"><svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Publicar</button>
+  <button class="btn btn--gold" id="btnPublish" title="Subir cambios a producción (GitHub → Cloudflare)"><svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Publicar</button>
 </div>
 
 <div class="note">
-  <b>Prototipo del editor.</b> Edita aquí y mira el resultado en vivo a la derecha. Por ahora guarda en este navegador (autosave) y puedes <b>Descargar HTML</b> para publicar. El botón <b>Publicar</b> de un clic se activa cuando conectemos el backend.
+  <b>Editor de portafolio.</b> Edita aquí y mira el resultado en vivo a la derecha. Los cambios se guardan en este navegador (autosave); con <b>Publicar</b> se suben a producción y Cloudflare despliega en ~1&nbsp;min. También puedes <b>Descargar HTML</b> como respaldo.
+</div>
+
+<div class="draft" id="draftBar">
+  <span>Estás editando un <b>borrador sin publicar</b>. Tus cambios no están en vivo hasta que pulses <b>Publicar</b>.</span>
+  <button id="draftDiscard">Descartar borrador</button>
 </div>
 
 <div class="shell">
@@ -162,6 +178,23 @@ iframe#prev.m{width:390px;max-width:100%}
     <div class="dialog__row">
       <button class="btn btn--ghost" id="dlgCopy" style="color:var(--char);border-color:var(--bd2)">Copiar</button>
       <button class="btn btn--gold" id="dlgClose">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de publicación -->
+<div class="dialog-back" id="pubBack">
+  <div class="dialog">
+    <h3 id="pubTitle">Publicar cambios</h3>
+    <div id="pubTokenStep">
+      <p>Para publicar, el editor sube <b>portafolio.html</b> y <b>portafolio.config.json</b> a GitHub (rama <code id="pubBranch"></code>) y Cloudflare despliega solo en ~1&nbsp;min.</p>
+      <p style="margin-top:-.3rem">Pega un <b>token de GitHub</b> con permiso de escritura solo en este repositorio. Se guarda únicamente en esta pestaña (se borra al cerrarla). Cómo crearlo: en el documento <i>docs/editor-portafolio-setup.md</i>.</p>
+      <div class="f"><label>Token de GitHub (ghp_… o github_pat_…)</label><input type="password" id="pubToken" placeholder="github_pat_…" autocomplete="off"></div>
+    </div>
+    <div id="pubLog" class="publog" hidden></div>
+    <div class="dialog__row">
+      <button class="btn btn--ghost" id="pubCancel" style="color:var(--char);border-color:var(--bd2)">Cancelar</button>
+      <button class="btn btn--gold" id="pubGo">Publicar ahora</button>
     </div>
   </div>
 </div>
@@ -237,11 +270,26 @@ const DEFAULT = {
 };
 
 const LS_KEY = "iav_portafolio_editor_v1";
-let cfg = load();
+let cfg = structuredClone(DEFAULT);   // se reemplaza en boot()
 
-function load(){
-  try { const s = localStorage.getItem(LS_KEY); if (s) return JSON.parse(s); } catch(e){}
-  return structuredClone(DEFAULT);
+/* Publicación a GitHub. Cloudflare Pages despliega solo al hacer commit en `branch`. */
+const PUBLISH = {
+  owner: "inmueblesaudiovisuales-dev",
+  repo: "websiteinmuebles",
+  branch: "main",                 // rama de producción (la que despliega Cloudflare)
+  htmlPath: "portafolio.html",
+  configPath: "portafolio.config.json"
+};
+const GH_TOKEN_KEY = "iav_gh_token";
+const ghToken = () => { try { return sessionStorage.getItem(GH_TOKEN_KEY) || ""; } catch(e){ return ""; } };
+
+function readDraft(){ try { const s=localStorage.getItem(LS_KEY); if(s) return JSON.parse(s); } catch(e){} return null; }
+function stripMeta(o){ const c=structuredClone(o); delete c._comment; delete c.version; return c; }
+async function fetchPublished(){
+  // misma-origin cuando el editor se sirve junto al sitio; 404 en local → fallback
+  const r = await fetch(PUBLISH.configPath, { cache:"no-store" });
+  if (!r.ok) throw new Error("config "+r.status);
+  return stripMeta(await r.json());
 }
 let saveTimer=null;
 function save(){
@@ -254,6 +302,13 @@ function save(){
 }
 const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const wa  = t => `https://wa.me/${cfg.phone}?text=${encodeURIComponent(t)}`;
+function configJSON(){
+  const out = Object.assign(
+    { _comment:"Fuente de verdad del contenido del portafolio. La edita editor-portafolio.html y la publica junto con portafolio.html.", version:1 },
+    stripMeta(cfg)
+  );
+  return JSON.stringify(out, null, 2) + "\n";
+}
 
 /* ───────── Iconos SVG (idénticos al portafolio) ───────── */
 const SVG = {
@@ -750,10 +805,10 @@ function download(name, text, type){
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 document.getElementById('btnHTML').onclick=()=>download('portafolio.html', buildHTML(cfg), 'text/html;charset=utf-8');
-document.getElementById('btnReset').onclick=()=>{
-  if(confirm('¿Descartar tus cambios y volver al portafolio publicado actual?')){
-    cfg=structuredClone(DEFAULT); save(); renderEditor(); renderPreview();
-  }
+document.getElementById('btnReset').onclick=async ()=>{
+  if(!confirm('¿Descartar tus cambios y volver al portafolio publicado actual?')) return;
+  try { cfg = await fetchPublished(); } catch(e){ cfg = structuredClone(DEFAULT); }
+  save(); hideDraftBanner(); renderEditor(); renderPreview();
 };
 // Dialog para JSON
 const dlgBack=document.getElementById('dlgBack');
@@ -767,7 +822,7 @@ document.getElementById('dlgClose').onclick=()=>dlgBack.classList.remove('show')
 dlgBack.onclick=e=>{ if(e.target===dlgBack) dlgBack.classList.remove('show'); };
 document.getElementById('dlgCopy').onclick=()=>{ const t=document.getElementById('dlgText'); t.select(); try{document.execCommand('copy');}catch(e){} navigator.clipboard&&navigator.clipboard.writeText(t.value); document.getElementById('dlgCopy').textContent='Copiado ✓'; setTimeout(()=>document.getElementById('dlgCopy').textContent='Copiar',1500); };
 document.getElementById('btnJSON').onclick=()=>{
-  showDialog('Configuración (JSON)','Este es el contenido de tu portafolio como datos. Es lo que el backend guardará cuando conectemos el botón Publicar. Por ahora puedes copiarlo o descargarlo como respaldo.', JSON.stringify(cfg,null,2));
+  showDialog('Configuración (JSON)','El contenido de tu portafolio como datos. Es lo que se guarda en portafolio.config.json al publicar. Puedes copiarlo o descargarlo como respaldo.', configJSON());
 };
 
 /* ───────── Preview viewport toggles ───────── */
@@ -781,9 +836,97 @@ document.querySelectorAll('.prev__bar .seg button').forEach(btn=>{
   };
 });
 
-/* ───────── Init ───────── */
-renderEditor();
-renderPreview();
+/* ───────── Aviso de borrador ───────── */
+function showDraftBanner(){ document.getElementById('draftBar').classList.add('show'); }
+function hideDraftBanner(){ document.getElementById('draftBar').classList.remove('show'); }
+document.getElementById('draftDiscard').onclick=()=>document.getElementById('btnReset').click();
+
+/* ───────── Publicar a GitHub ───────── */
+const b64 = str => btoa(unescape(encodeURIComponent(str)));   // base64 de UTF-8
+const ghHeaders = t => ({ "Authorization":"Bearer "+t, "Accept":"application/vnd.github+json", "X-GitHub-Api-Version":"2022-11-28" });
+const ghBase = () => `https://api.github.com/repos/${PUBLISH.owner}/${PUBLISH.repo}`;
+
+async function ghGetSha(path){
+  const r = await fetch(`${ghBase()}/contents/${encodeURIComponent(path)}?ref=${PUBLISH.branch}`, { headers: ghHeaders(ghToken()) });
+  if (r.status === 404) return null;
+  if (!r.ok) throw new Error(`No pude leer ${path} (HTTP ${r.status}). ${r.status===401?'Token inválido o sin permiso.':''}`);
+  return (await r.json()).sha;
+}
+async function ghPutFile(path, content, message){
+  const sha = await ghGetSha(path);
+  const body = { message, content: b64(content), branch: PUBLISH.branch };
+  if (sha) body.sha = sha;
+  const r = await fetch(`${ghBase()}/contents/${encodeURIComponent(path)}`, {
+    method:"PUT", headers:{ ...ghHeaders(ghToken()), "Content-Type":"application/json" }, body: JSON.stringify(body)
+  });
+  if (!r.ok){ let d=""; try{ d=(await r.json()).message||""; }catch(e){} throw new Error(`No pude subir ${path} (HTTP ${r.status}). ${d}`); }
+  return r.json();
+}
+
+const pubBack=document.getElementById('pubBack');
+function plog(html, cls){ const d=document.getElementById('pubLog'); d.hidden=false; const line=document.createElement('div'); if(cls)line.className=cls; line.innerHTML=html; d.appendChild(line); d.scrollTop=d.scrollHeight; }
+function openPublish(){
+  document.getElementById('pubBranch').textContent = PUBLISH.branch;
+  document.getElementById('pubLog').hidden = true;
+  document.getElementById('pubLog').innerHTML = "";
+  document.getElementById('pubTokenStep').style.display = ghToken() ? "none" : "block";
+  document.getElementById('pubToken').value = "";
+  document.getElementById('pubGo').disabled = false;
+  document.getElementById('pubGo').textContent = "Publicar ahora";
+  pubBack.classList.add('show');
+}
+document.getElementById('btnPublish').onclick = openPublish;
+document.getElementById('pubCancel').onclick = ()=>pubBack.classList.remove('show');
+pubBack.onclick = e=>{ if(e.target===pubBack) pubBack.classList.remove('show'); };
+
+document.getElementById('pubGo').onclick = async ()=>{
+  // token
+  if (!ghToken()){
+    const t = document.getElementById('pubToken').value.trim();
+    if (!t){ plog('Pega tu token de GitHub para continuar.', 'er'); return; }
+    try { sessionStorage.setItem(GH_TOKEN_KEY, t); } catch(e){}
+    document.getElementById('pubTokenStep').style.display = "none";
+  }
+  const go = document.getElementById('pubGo');
+  go.disabled = true; go.textContent = "Publicando…";
+  document.getElementById('pubLog').hidden = false; document.getElementById('pubLog').innerHTML = "";
+  const stamp = new Date().toISOString().slice(0,16).replace('T',' ');
+  try {
+    plog('<span class="mut">Conectando con GitHub…</span>');
+    plog('Subiendo <b>'+PUBLISH.configPath+'</b>…');
+    await ghPutFile(PUBLISH.configPath, configJSON(), `portafolio: actualizar contenido (${stamp})`);
+    plog('✓ Config guardada', 'ok');
+    plog('Subiendo <b>'+PUBLISH.htmlPath+'</b>…');
+    await ghPutFile(PUBLISH.htmlPath, buildHTML(cfg), `portafolio: publicar cambios (${stamp})`);
+    plog('✓ Página publicada', 'ok');
+    plog('<span class="ok">Listo.</span> Cloudflare desplegará en ~1 min. Verifica en <a href="https://inmueblesaudiovisuales.com/portafolio" target="_blank" rel="noopener">inmueblesaudiovisuales.com/portafolio</a>');
+    hideDraftBanner();
+    document.getElementById('saveState').textContent = "Publicado ✓";
+    go.textContent = "Publicado ✓";
+  } catch(err){
+    plog('✗ '+ (err && err.message ? err.message : 'Error desconocido'), 'er');
+    if (/401|inválido|sin permiso/i.test(err.message||'')){ try{ sessionStorage.removeItem(GH_TOKEN_KEY); }catch(e){} plog('<span class="mut">Token borrado. Vuelve a abrir Publicar e ingrésalo de nuevo.</span>'); }
+    go.disabled = false; go.textContent = "Reintentar";
+  }
+};
+
+/* ───────── Arranque ───────── */
+async function boot(){
+  const draft = readDraft();
+  let published = null;
+  try { published = await fetchPublished(); } catch(e){ /* local/404: sin published */ }
+  if (draft){
+    cfg = draft;
+    if (published && JSON.stringify(published) !== JSON.stringify(stripMeta(draft))) showDraftBanner();
+  } else if (published){
+    cfg = published;
+  } else {
+    cfg = structuredClone(DEFAULT);
+  }
+  renderEditor();
+  renderPreview();
+}
+boot();
 </script>
 </body>
 </html>

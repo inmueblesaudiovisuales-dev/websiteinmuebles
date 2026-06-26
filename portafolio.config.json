@@ -1,0 +1,62 @@
+{
+  "_comment": "Fuente de verdad del contenido del portafolio. La edita editor-portafolio.html y la publica junto con portafolio.html. No editar a mano salvo que sepas lo que haces.",
+  "version": 1,
+  "phone": "528127174207",
+  "hero": {
+    "eyebrow": "Producción audiovisual inmobiliaria · Monterrey",
+    "h1": "La diferencia entre <em>vender rápido</em> y quedarse esperando.",
+    "sub": "El video convierte el interés en acción antes de la primera visita.",
+    "imageId": "64968852-3666-4007-7a70-4ceb44a37300"
+  },
+  "residencial": {
+    "kicker": "Residencial",
+    "h2": "Casas y departamentos en video.",
+    "waText": "Hola, me interesa un video residencial para mi propiedad.",
+    "videos": [
+      { "uid": "4b940872c1f5812f6f16503b3e3c9663", "loc": "Residencial", "hidden": false },
+      { "uid": "ed43474d6c831a6fb7ef5e1bd9debd1c", "loc": "Residencial", "hidden": false },
+      { "uid": "227043a6e087886ba9571ac5bcb39078", "loc": "Residencial", "hidden": false }
+    ]
+  },
+  "terreno": {
+    "kicker": "Terreno",
+    "h2": "Terrenos que se entienden de un vistazo.",
+    "waText": "Hola, me interesa un video para mostrar mi terreno.",
+    "videos": [
+      { "uid": "20ebd72cddcf68d5f3bb39df6cea66b0", "loc": "Terreno", "hidden": false },
+      { "uid": "c8dcdd1d76e162223bf1bd5e66c745d6", "loc": "Terreno", "hidden": false },
+      { "uid": "8136f630160faf2a1dacc87d534ad930", "loc": "Terreno", "hidden": false }
+    ]
+  },
+  "r360": {
+    "kicker": "Recorrido virtual 360°",
+    "h2": "Que recorran la propiedad completa antes de pedir una cita.",
+    "intro": "Una visita virtual: el comprador recorre toda la propiedad desde su teléfono, a cualquier hora, sin que nadie lo acompañe.",
+    "bgImageId": "2259a170-ab20-4969-fd95-f03145222f00",
+    "tourUrl": "https://app.cloudpano.com/tours/UuTw8BcDs",
+    "badge": "360° · recorrido residencial",
+    "waText": "Hola, me interesa un recorrido 360 para mi propiedad."
+  },
+  "fotos": {
+    "kicker": "Fotografía",
+    "h2": "Atrae más miradas.",
+    "waText": "Hola, me interesa fotografía profesional para mi propiedad.",
+    "photos": [
+      { "id": "f1891001-e90e-45ca-0818-521b1a29b800", "alt": "Cocina de diseño — Inmuebles Audiovisuales", "wide": true, "hidden": false },
+      { "id": "64968852-3666-4007-7a70-4ceb44a37300", "alt": "Fachada residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "3bf733fd-de1b-4d0d-5627-b7843e99bc00", "alt": "Cocina — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "13b41797-ee1f-4815-f799-0e6085b11800", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "4e9d68d9-565f-4bb2-6a7f-1999c03e8400", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "64b6b81d-ef65-425f-6a20-908f0fe4a800", "alt": "Sala de cine en casa — Inmuebles Audiovisuales", "wide": true, "hidden": false },
+      { "id": "829ddeac-411f-4077-1105-e966b9327d00", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "5dcb84b4-37d4-4878-ca2a-584cf58bde00", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "3c370aef-0fd4-439a-ba2c-b4f2dc8f5a00", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "94a5c86b-554d-47f5-7795-999dbb2be600", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "d4d1c9d4-bf1f-4b23-83cf-5407cfa91a00", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": true, "hidden": false },
+      { "id": "bc2ed869-2565-4ef4-3f85-0e6642756700", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "0228faf3-d40e-46bc-884d-982b2824e800", "alt": "Interior residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "ee01ff60-6722-42da-3164-4b6cbcc67100", "alt": "Sala residencial — Inmuebles Audiovisuales", "wide": false, "hidden": false },
+      { "id": "dad31053-c640-4479-bbe6-0f001afb1000", "alt": "Espacio comercial — Inmuebles Audiovisuales", "wide": false, "hidden": false }
+    ]
+  }
+}
