@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<!--
+  Editor de Portafolio · Inmuebles Audiovisuales
+  PROTOTIPO (sin backend todavía). Edita un modelo de datos (config) y genera
+  el portafolio.html completo. Drag & drop para reordenar, mostrar/ocultar,
+  editar textos, agregar media por ID. Preview en vivo = salida real.
+
+  Persistencia actual: localStorage (autosave) + "Descargar HTML/JSON".
+  Próximo paso: botón "Publicar" → guarda vía backend (Apps Script) y
+  Cloudflare Pages despliega. Ese botón está deshabilitado por ahora.
+-->
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>Editor de Portafolio · Inmuebles Audiovisuales</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1/Sortable.min.js"></script>
+<style>
+:root{
+  --cream:#F9F7F4; --white:#FFFFFF; --char:#1C1C1E;
+  --gold:#C9A84C; --goldL:#E2C289; --goldink:#7A5E1A; --goldtint:#FBF6E9;
+  --muted:#6B6A66; --bd:#E8E8EA; --bd2:#DAD8D2; --red:#C0492F; --green:#2E7D52;
+  --sans:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--cream);color:var(--char);line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+input,textarea,select{font-family:inherit}
+
+/* TOPBAR */
+.top{position:sticky;top:0;z-index:40;background:var(--char);color:#fff;display:flex;align-items:center;gap:1rem;padding:.7rem 1.1rem;flex-wrap:wrap}
+.top__brand{font-weight:800;letter-spacing:.02em;font-size:.95rem;display:flex;align-items:center;gap:.55rem}
+.top__brand .dot{width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.top__tag{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:#bdbcb8;border:1px solid #444;padding:.18rem .5rem;border-radius:999px}
+.top__sp{flex:1}
+.top__save{font-size:.68rem;color:#9fd9b4;letter-spacing:.04em;min-width:84px;text-align:right}
+.btn{border:0;border-radius:8px;padding:.6rem .95rem;font-size:.72rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;display:inline-flex;align-items:center;gap:.45rem;transition:transform .12s,background .2s,opacity .2s}
+.btn:hover{transform:translateY(-1px)}
+.btn--gold{background:var(--gold);color:var(--char)}
+.btn--gold:hover{background:var(--goldL)}
+.btn--ghost{background:transparent;color:#fff;border:1px solid #555}
+.btn--ghost:hover{border-color:#888}
+.btn[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+.btn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2}
+
+/* LAYOUT */
+.shell{display:grid;grid-template-columns:minmax(360px,520px) 1fr;gap:0;height:calc(100vh - 53px)}
+.pane{overflow-y:auto;height:100%}
+.pane--edit{border-right:1px solid var(--bd2);background:var(--cream)}
+.pane--prev{background:#5b5a57;position:relative}
+@media(max-width:920px){
+  .shell{grid-template-columns:1fr;height:auto}
+  .pane{height:auto}
+  .pane--prev{position:sticky;top:53px;height:60vh;z-index:5}
+}
+
+.note{background:var(--goldtint);border-bottom:1px solid var(--gold);padding:.7rem 1.1rem;font-size:.76rem;color:var(--goldink);line-height:1.45}
+.note b{font-weight:800}
+
+/* GROUPS */
+.grp{border-bottom:1px solid var(--bd2)}
+.grp__head{width:100%;text-align:left;background:var(--white);border:0;padding:.95rem 1.1rem;display:flex;align-items:center;gap:.6rem;font-weight:800;font-size:.86rem;letter-spacing:.01em}
+.grp__head:hover{background:#fcfbf9}
+.grp__chev{margin-left:auto;transition:transform .2s;color:var(--muted)}
+.grp.open .grp__chev{transform:rotate(90deg)}
+.grp__count{font-size:.64rem;font-weight:700;letter-spacing:.06em;color:var(--muted);background:var(--cream);border:1px solid var(--bd);padding:.12rem .5rem;border-radius:999px}
+.grp__body{display:none;padding:.5rem 1.1rem 1.2rem}
+.grp.open .grp__body{display:block}
+.kic{font-size:.6rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--goldink)}
+
+/* FIELDS */
+.f{margin:.7rem 0}
+.f label{display:block;font-size:.66rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .3rem}
+.f input[type=text],.f textarea,.f select{width:100%;border:1px solid var(--bd2);border-radius:7px;padding:.55rem .65rem;font-size:.82rem;background:#fff;color:var(--char)}
+.f textarea{resize:vertical;min-height:54px;line-height:1.45}
+.f input:focus,.f textarea:focus,.f select:focus{outline:2px solid var(--goldL);outline-offset:0;border-color:var(--gold)}
+.f .hint{font-size:.64rem;color:var(--muted);margin-top:.25rem}
+
+/* MEDIA LIST */
+.list{display:flex;flex-direction:column;gap:.55rem;margin:.6rem 0}
+.it{display:flex;gap:.6rem;align-items:center;background:#fff;border:1px solid var(--bd2);border-radius:9px;padding:.5rem;transition:opacity .2s,box-shadow .2s}
+.it.hidden{opacity:.45}
+.it.sortable-ghost{box-shadow:0 0 0 2px var(--gold);opacity:.7}
+.it.sortable-chosen{box-shadow:0 8px 22px rgba(0,0,0,.16)}
+.it__grip{cursor:grab;color:var(--bd2);flex:0 0 auto;padding:.2rem;touch-action:none}
+.it__grip:active{cursor:grabbing}
+.it__grip svg{width:16px;height:16px;fill:currentColor}
+.it__thumb{flex:0 0 auto;width:46px;height:62px;border-radius:6px;object-fit:cover;background:#ddd;border:1px solid var(--bd)}
+.it__thumb.ph{width:62px;height:46px}
+.it__main{flex:1;min-width:0}
+.it__id{font-size:.66rem;color:var(--muted);font-family:ui-monospace,monospace;word-break:break-all;line-height:1.3}
+.it__field{width:100%;border:1px solid var(--bd);border-radius:6px;padding:.32rem .45rem;font-size:.74rem;margin-top:.3rem;background:#fff}
+.it__btns{display:flex;flex-direction:column;gap:.3rem;flex:0 0 auto}
+.ibtn{width:30px;height:30px;border-radius:6px;border:1px solid var(--bd2);background:#fff;display:flex;align-items:center;justify-content:center;color:var(--muted)}
+.ibtn:hover{border-color:var(--char);color:var(--char)}
+.ibtn.on{background:var(--goldtint);border-color:var(--gold);color:var(--goldink)}
+.ibtn--del:hover{border-color:var(--red);color:var(--red)}
+.ibtn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2}
+
+.add{display:flex;gap:.4rem;margin-top:.5rem}
+.add input{flex:1;border:1px dashed var(--bd2);border-radius:7px;padding:.5rem .6rem;font-size:.76rem;background:#fff}
+.add button{background:var(--char);color:#fff;border:0;border-radius:7px;padding:0 .9rem;font-size:.7rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+.add button:hover{background:#000}
+
+/* PREVIEW */
+.prev__bar{position:sticky;top:0;z-index:2;background:#3f3e3b;color:#cfcecb;display:flex;align-items:center;gap:.7rem;padding:.5rem .8rem;font-size:.68rem;letter-spacing:.06em}
+.prev__bar .seg{display:flex;gap:.25rem;margin-left:auto}
+.seg button{background:#2c2b29;color:#cfcecb;border:1px solid #555;border-radius:6px;padding:.3rem .6rem;font-size:.64rem;font-weight:700;letter-spacing:.04em}
+.seg button.on{background:var(--gold);color:var(--char);border-color:var(--gold)}
+.frameWrap{display:flex;justify-content:center;padding:14px}
+iframe#prev{background:#fff;border:0;border-radius:8px;box-shadow:0 12px 40px rgba(0,0,0,.3);width:100%;height:calc(100vh - 53px - 33px - 28px)}
+iframe#prev.m{width:390px;max-width:100%}
+@media(max-width:920px){iframe#prev{height:calc(60vh - 33px - 28px)}}
+.dialog-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:60;display:none;align-items:center;justify-content:center;padding:1rem}
+.dialog-back.show{display:flex}
+.dialog{background:#fff;border-radius:12px;max-width:560px;width:100%;max-height:84vh;overflow:auto;padding:1.4rem}
+.dialog h3{font-size:1rem;margin:0 0 .6rem}
+.dialog p{font-size:.82rem;color:var(--muted);margin:0 0 .9rem;line-height:1.5}
+.dialog textarea{width:100%;min-height:200px;font-family:ui-monospace,monospace;font-size:.7rem;border:1px solid var(--bd2);border-radius:8px;padding:.7rem}
+.dialog__row{display:flex;gap:.6rem;justify-content:flex-end;margin-top:.9rem}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="top__brand"><span class="dot"></span>Editor de Portafolio</span>
+  <span class="top__tag">Prototipo</span>
+  <span class="top__sp"></span>
+  <span class="top__save" id="saveState">Guardado ✓</span>
+  <button class="btn btn--ghost" id="btnReset" title="Volver al portafolio publicado actual"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>Restablecer</button>
+  <button class="btn btn--ghost" id="btnJSON"><svg viewBox="0 0 24 24"><path d="M8 3H5v18h3M16 3h3v18h-3"/></svg>Config JSON</button>
+  <button class="btn btn--ghost" id="btnHTML"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5M12 15V3"/></svg>Descargar HTML</button>
+  <button class="btn btn--gold" id="btnPublish" disabled title="Próximo paso: conectar el backend para publicar con un clic"><svg viewBox="0 0 24 24"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>Publicar</button>
+</div>
+
+<div class="note">
+  <b>Prototipo del editor.</b> Edita aquí y mira el resultado en vivo a la derecha. Por ahora guarda en este navegador (autosave) y puedes <b>Descargar HTML</b> para publicar. El botón <b>Publicar</b> de un clic se activa cuando conectemos el backend.
+</div>
+
+<div class="shell">
+  <div class="pane pane--edit" id="editPane"><!-- groups injected --></div>
+  <div class="pane pane--prev">
+    <div class="prev__bar">
+      Vista previa en vivo
+      <div class="seg">
+        <button data-vw="desk" class="on">Escritorio</button>
+        <button data-vw="mob">Móvil</button>
+        <button data-vw="open" title="Abrir en pestaña nueva">Abrir ↗</button>
+      </div>
+    </div>
+    <div class="frameWrap"><iframe id="prev" title="Vista previa del portafolio"></iframe></div>
+  </div>
+</div>
+
+<div class="dialog-back" id="dlgBack">
+  <div class="dialog">
+    <h3 id="dlgTitle"></h3>
+    <p id="dlgDesc"></p>
+    <textarea id="dlgText" readonly></textarea>
+    <div class="dialog__row">
+      <button class="btn btn--ghost" id="dlgCopy" style="color:var(--char);border-color:var(--bd2)">Copiar</button>
+      <button class="btn btn--gold" id="dlgClose">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ───────── Constantes de tu cuenta Cloudflare ───────── */
+const STREAM_CODE = "cl73mgx0feu2w8io";          // Cloudflare Stream (videos)
+const IMG_HASH    = "4FlhPwMCquiTgnacg31UZQ";     // Cloudflare Images (fotos)
+const PHONE       = "528127174207";
+const streamPoster = uid => `https://customer-${STREAM_CODE}.cloudflarestream.com/${uid}/thumbnails/thumbnail.jpg?height=900`;
+const imgURL       = id  => `https://imagedelivery.net/${IMG_HASH}/${id}/public`;
+
+/* ───────── Estado por defecto = portafolio publicado actual ───────── */
+const DEFAULT = {
+  phone: PHONE,
+  hero: {
+    eyebrow: "Producción audiovisual inmobiliaria · Monterrey",
+    h1: 'La diferencia entre <em>vender rápido</em> y quedarse esperando.',
+    sub: "El video convierte el interés en acción antes de la primera visita.",
+    imageId: "64968852-3666-4007-7a70-4ceb44a37300"
+  },
+  residencial: {
+    kicker: "Residencial",
+    h2: "Casas y departamentos en video.",
+    waText: "Hola, me interesa un video residencial para mi propiedad.",
+    videos: [
+      { uid:"4b940872c1f5812f6f16503b3e3c9663", loc:"Residencial", hidden:false },
+      { uid:"ed43474d6c831a6fb7ef5e1bd9debd1c", loc:"Residencial", hidden:false },
+      { uid:"227043a6e087886ba9571ac5bcb39078", loc:"Residencial", hidden:false }
+    ]
+  },
+  terreno: {
+    kicker: "Terreno",
+    h2: "Terrenos que se entienden de un vistazo.",
+    waText: "Hola, me interesa un video para mostrar mi terreno.",
+    videos: [
+      { uid:"20ebd72cddcf68d5f3bb39df6cea66b0", loc:"Terreno", hidden:false },
+      { uid:"c8dcdd1d76e162223bf1bd5e66c745d6", loc:"Terreno", hidden:false },
+      { uid:"8136f630160faf2a1dacc87d534ad930", loc:"Terreno", hidden:false }
+    ]
+  },
+  r360: {
+    kicker: "Recorrido virtual 360°",
+    h2: "Que recorran la propiedad completa antes de pedir una cita.",
+    intro: "Una visita virtual: el comprador recorre toda la propiedad desde su teléfono, a cualquier hora, sin que nadie lo acompañe.",
+    bgImageId: "2259a170-ab20-4969-fd95-f03145222f00",
+    tourUrl: "https://app.cloudpano.com/tours/UuTw8BcDs",
+    badge: "360° · recorrido residencial",
+    waText: "Hola, me interesa un recorrido 360 para mi propiedad."
+  },
+  fotos: {
+    kicker: "Fotografía",
+    h2: "Atrae más miradas.",
+    waText: "Hola, me interesa fotografía profesional para mi propiedad.",
+    photos: [
+      { id:"f1891001-e90e-45ca-0818-521b1a29b800", alt:"Cocina de diseño — Inmuebles Audiovisuales", wide:true,  hidden:false },
+      { id:"64968852-3666-4007-7a70-4ceb44a37300", alt:"Fachada residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"3bf733fd-de1b-4d0d-5627-b7843e99bc00", alt:"Cocina — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"13b41797-ee1f-4815-f799-0e6085b11800", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"4e9d68d9-565f-4bb2-6a7f-1999c03e8400", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"64b6b81d-ef65-425f-6a20-908f0fe4a800", alt:"Sala de cine en casa — Inmuebles Audiovisuales", wide:true,  hidden:false },
+      { id:"829ddeac-411f-4077-1105-e966b9327d00", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"5dcb84b4-37d4-4878-ca2a-584cf58bde00", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"3c370aef-0fd4-439a-ba2c-b4f2dc8f5a00", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"94a5c86b-554d-47f5-7795-999dbb2be600", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"d4d1c9d4-bf1f-4b23-83cf-5407cfa91a00", alt:"Interior residencial — Inmuebles Audiovisuales", wide:true,  hidden:false },
+      { id:"bc2ed869-2565-4ef4-3f85-0e6642756700", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"0228faf3-d40e-46bc-884d-982b2824e800", alt:"Interior residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"ee01ff60-6722-42da-3164-4b6cbcc67100", alt:"Sala residencial — Inmuebles Audiovisuales", wide:false, hidden:false },
+      { id:"dad31053-c640-4479-bbe6-0f001afb1000", alt:"Espacio comercial — Inmuebles Audiovisuales", wide:false, hidden:false }
+    ]
+  }
+};
+
+const LS_KEY = "iav_portafolio_editor_v1";
+let cfg = load();
+
+function load(){
+  try { const s = localStorage.getItem(LS_KEY); if (s) return JSON.parse(s); } catch(e){}
+  return structuredClone(DEFAULT);
+}
+let saveTimer=null;
+function save(){
+  clearTimeout(saveTimer);
+  document.getElementById('saveState').textContent = "Guardando…";
+  saveTimer = setTimeout(()=>{
+    try { localStorage.setItem(LS_KEY, JSON.stringify(cfg)); } catch(e){}
+    document.getElementById('saveState').textContent = "Guardado ✓";
+  }, 400);
+}
+const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const wa  = t => `https://wa.me/${cfg.phone}?text=${encodeURIComponent(t)}`;
+
+/* ───────── Iconos SVG (idénticos al portafolio) ───────── */
+const SVG = {
+  wa:'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M17.5 14.4c-.3-.1-1.8-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.1-.3 0-.5.1-.6l.4-.5c.2-.2.2-.3.3-.5.1-.2.1-.4 0-.5L9 8.6c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.5-.3M12 .2C5.5.2.2 5.5.2 12c0 2.1.5 4.1 1.6 5.9L.1 24l6.3-1.7c1.7.9 3.7 1.4 5.7 1.4 6.5 0 11.8-5.3 11.8-11.8S18.5.2 12 .2"/></svg>',
+  arrow:'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  chevDown:'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>',
+  house:'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>',
+  land:'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg>',
+  ext:'<svg aria-hidden="true" viewBox="0 0 24 24"><path d="M7 17 17 7M9 7h8v8"/></svg>'
+};
+
+/* ───────── GENERADOR: cfg → portafolio.html completo (salida = preview) ───────── */
+function videoCard(v, locSVG, waText){
+  return `
+      <figure class="vcard">
+        <div class="vcard__media">
+          <img class="vcard__poster" src="${streamPoster(v.uid)}" alt="Video ${esc(v.loc.toLowerCase())} · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="${esc(v.uid)}" playsinline preload="none" controls poster="${streamPoster(v.uid)}"></video>
+          <button class="vcard__play" type="button" aria-label="Reproducir video con sonido"></button>
+        </div>
+        <figcaption class="vcard__foot">
+          <span class="vcard__loc">${locSVG} ${esc(v.loc)}</span>
+          <a class="vcard__cta" target="_blank" rel="noopener" href="${wa(waText)}">Cotizar este video ${SVG.arrow}</a>
+        </figcaption>
+      </figure>`;
+}
+function videoSection(sec, id, white, locSVG){
+  const cards = sec.videos.filter(v=>!v.hidden).map(v=>videoCard(v, locSVG, sec.waText)).join("");
+  return `
+<section class="sec${white?' sec--white':''}" id="${id}">
+  <div class="wrap">
+    <div class="sechead">
+      <div>
+        <span class="kicker">${esc(sec.kicker)}</span>
+        <h2>${esc(sec.h2)}</h2>
+      </div>
+      <span class="hint">Desliza ${SVG.arrow}</span>
+    </div>
+    <div class="vgrid">${cards}
+    </div>
+  </div>
+</section>`;
+}
+function photosSection(f){
+  const figs = f.photos.filter(p=>!p.hidden).map(p=>
+    `      <figure${p.wide?' class="wide"':''}><img src="${imgURL(p.id)}" alt="${esc(p.alt)}" loading="lazy"></figure>`
+  ).join("\n");
+  return `
+<section class="sec" id="fotos">
+  <div class="wrap">
+    <span class="kicker">${esc(f.kicker)}</span>
+    <h2>${esc(f.h2)}</h2>
+    <div class="pgrid">
+${figs}
+    </div>
+    <p class="nudge">¿Quieres fotografía profesional de tu propiedad? <a target="_blank" rel="noopener" href="${wa(f.waText)}">Cotiza por WhatsApp</a></p>
+  </div>
+</section>`;
+}
+
+function buildHTML(c){
+return `<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Portafolio · Inmuebles Audiovisuales · Video y Fotografía de Bienes Raíces en Monterrey</title>
+<meta name="description" content="Producción audiovisual inmobiliaria en Monterrey: video, recorridos 360° y fotografía que ayudan a vender más rápido. Mira el trabajo y cotiza por WhatsApp.">
+<meta name="theme-color" content="#F9F7F4">
+<link rel="canonical" href="https://inmueblesaudiovisuales.com/portafolio.html">
+<link rel="icon" type="image/x-icon" href="favicons/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Portafolio · Inmuebles Audiovisuales · Monterrey">
+<meta property="og:description" content="Video, recorridos 360° y fotografía inmobiliaria que ayudan a vender más rápido en Monterrey. Mira el trabajo y cotiza por WhatsApp.">
+<meta property="og:image" content="https://inmueblesaudiovisuales.com/fotografia-inmobiliaria-monterrey.webp">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://inmueblesaudiovisuales.com/portafolio.html">
+<meta property="og:locale" content="es_MX">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://inmueblesaudiovisuales.com/fotografia-inmobiliaria-monterrey.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="preconnect" href="https://imagedelivery.net">
+<link rel="dns-prefetch" href="https://cloudflarestream.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+${PORTAFOLIO_CSS}
+</style>
+</head>
+<body>
+<a class="skip" href="#contenido">Saltar al contenido</a>
+<header class="nav">
+  <nav class="nav__in" aria-label="Navegación principal">
+    <a class="nav__logo" href="#" aria-label="Inmuebles Audiovisuales"><img src="logo.svg" alt="Inmuebles Audiovisuales"></a>
+    <div class="nav__right">
+      <a class="nav__back" href="index.html" aria-label="Volver al sitio">← Sitio</a>
+      <a class="wa" target="_blank" rel="noopener" href="${wa('Hola, vi su portafolio y me gustaría cotizar la producción de una propiedad.')}">${SVG.wa} WhatsApp</a>
+    </div>
+  </nav>
+</header>
+<main id="contenido">
+
+<section class="hero">
+  <div class="hero__copy">
+    <span class="eyebrow">${esc(c.hero.eyebrow)}</span>
+    <h1>${c.hero.h1}</h1>
+    <p class="hero__sub">${esc(c.hero.sub)}</p>
+    <div class="hero__cta">
+      <a class="wa" target="_blank" rel="noopener" href="${wa('Hola, vi su portafolio y me gustaría cotizar la producción de una propiedad.')}">${SVG.wa} Cotizar por WhatsApp</a>
+      <a class="hero__cue" href="#residencial">Ver el trabajo ${SVG.chevDown}</a>
+    </div>
+  </div>
+  <div class="hero__media">
+    <img src="${imgURL(c.hero.imageId)}" alt="Fachada de casa residencial — producción de Inmuebles Audiovisuales" fetchpriority="high">
+  </div>
+</section>
+${videoSection(c.residencial, 'residencial', true, SVG.house)}
+${videoSection(c.terreno, 'terreno', false, SVG.land)}
+
+<section class="sec sec--white" id="r360">
+  <div class="wrap">
+    <div class="r360">
+      <div class="r360__copy">
+        <span class="kicker">${esc(c.r360.kicker)}</span>
+        <h2>${esc(c.r360.h2)}</h2>
+        <p class="r360__intro">${esc(c.r360.intro)}</p>
+        <div class="r360__points">
+          <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7Z"/><circle cx="12" cy="12" r="2.5"/></svg></span><div><p class="rp__h">La propiedad, completa</p><p class="rp__b">Recorren cada espacio como si estuvieran ahí. Nada queda a la imaginación.</p></div></div>
+          <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg></span><div><p class="rp__h">Filtra a los compradores serios</p><p class="rp__b">Solo agenda visita quien de verdad está interesado. Menos vueltas en vano.</p></div></div>
+          <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><p class="rp__h">Vende a distancia</p><p class="rp__b">Le vendes a quien está fuera de la ciudad y no puede ir en persona.</p></div></div>
+        </div>
+        <div class="r360__ctas">
+          <a class="ghost" target="_blank" rel="noopener" href="${esc(c.r360.tourUrl)}">Abrir recorrido ${SVG.ext}</a>
+          <span class="nudge" style="margin:0">¿Quieres un recorrido 360 para tu propiedad? <a target="_blank" rel="noopener" href="${wa(c.r360.waText)}">Cotiza por WhatsApp</a></span>
+        </div>
+      </div>
+      <div>
+        <a class="r360__media" target="_blank" rel="noopener" href="${esc(c.r360.tourUrl)}" style="display:block">
+          <div class="pan" style="background:url('${imgURL(c.r360.bgImageId)}') center/cover no-repeat;position:absolute;inset:0;z-index:0;transform:scale(1.1);animation:pan 18s ease-in-out infinite alternate"></div>
+          <div class="lbl">
+            <span class="r360__badge">${esc(c.r360.badge)}</span>
+            <span class="ghost" aria-hidden="true">${SVG.ext} Abrir recorrido</span>
+          </div>
+        </a>
+        <p class="nudge" style="text-align:center;font-size:.78rem">Vista previa · el recorrido completo se abre en pestaña nueva</p>
+      </div>
+    </div>
+  </div>
+</section>
+${photosSection(c.fotos)}
+
+<section class="sec">
+  <div class="wrap">
+    <div class="cta">
+      <span class="eyebrow">Cotiza tu proyecto</span>
+      <h2>Tu propiedad merece esta producción.</h2>
+      <p>Escríbenos por WhatsApp y la producimos.</p>
+      <a class="wa" target="_blank" rel="noopener" href="${wa('Hola, vi su portafolio y me gustaría cotizar la producción de una propiedad.')}">${SVG.wa} Escríbenos por WhatsApp</a>
+    </div>
+  </div>
+</section>
+</main>
+<footer class="foot wrap">
+  <span>Inmuebles Audiovisuales © <span id="anio">2026</span></span>
+  <span>Producción audiovisual · Monterrey, México</span>
+</footer>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@1/dist/hls.min.js"><\/script>
+<script>
+(function(){
+  var anio=document.getElementById('anio'); if(anio) anio.textContent=new Date().getFullYear();
+  var STREAM_CODE="${STREAM_CODE}", current=null;
+  function mount(v){ if(v.dataset.mounted)return; var id=v.dataset.stream; if(!id)return;
+    var url="https://customer-"+STREAM_CODE+".cloudflarestream.com/"+id+"/manifest/video.m3u8";
+    if(v.canPlayType("application/vnd.apple.mpegurl")){v.src=url;}
+    else if(window.Hls&&window.Hls.isSupported()){var h=new Hls();h.attachMedia(v);h.on(Hls.Events.MEDIA_ATTACHED,function(){h.loadSource(url);});}
+    else{v.src=url;} v.dataset.mounted="1"; }
+  document.querySelectorAll(".vcard").forEach(function(card){
+    var v=card.querySelector(".vcard__video"), btn=card.querySelector(".vcard__play"); if(!v||!btn)return;
+    btn.addEventListener("click",function(){
+      if(current&&current!==card){var cv=current.querySelector(".vcard__video"); if(cv)cv.pause(); current.classList.remove("playing");}
+      mount(v); card.classList.add("playing"); current=card; v.muted=false;
+      var p=v.play(); if(p&&p.catch)p.catch(function(){});
+    });
+  });
+})();
+<\/script>
+</body>
+</html>`;
+}
+
+/* CSS del portafolio (idéntico al publicado) — usado en la salida y el preview */
+const PORTAFOLIO_CSS = `:root{
+  --cream:#F9F7F4; --white:#FFFFFF; --char:#1C1C1E;
+  --gold:#C9A84C; --goldL:#E2C289; --goldink:#7A5E1A; --goldtint:#FBF6E9;
+  --muted:#6B6A66; --bd:#E8E8EA; --bd2:#DAD8D2;
+  --gut:clamp(1.2rem,5vw,4rem);
+  --sans:'Montserrat',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--cream);color:var(--char);font-weight:400;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+::selection{background:var(--gold);color:var(--char)}
+.skip{position:absolute;left:8px;top:-60px;z-index:50;background:var(--char);color:var(--white);padding:.7rem 1.1rem;border-radius:8px;font-size:.8rem;font-weight:700;transition:top .15s}
+.skip:focus{top:8px}
+:focus-visible{outline:2px solid var(--goldink);outline-offset:3px;border-radius:4px}
+.wrap{width:min(1240px,92vw);margin-inline:auto}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--goldink)}
+.kicker{display:inline-flex;align-items:center;gap:.6rem;font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--goldink);margin:0 0 .7rem}
+.kicker::before{content:"";width:26px;height:1px;background:var(--goldink)}
+.wa{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:var(--char);font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.85rem 1.4rem;border-radius:999px;transition:background .25s,transform .25s;min-height:46px}
+.wa:hover{background:var(--goldL);transform:translateY(-2px)}
+.wa svg{width:15px;height:15px;fill:currentColor}
+.nav{position:sticky;top:0;z-index:30;background:rgba(249,247,244,.86);backdrop-filter:blur(10px);border-bottom:1px solid var(--bd)}
+.nav__in{display:flex;align-items:center;justify-content:space-between;padding:.85rem var(--gut)}
+.nav__logo{display:inline-flex;align-items:center}
+.nav__logo img{height:42px;width:auto;display:block}
+.nav__right{display:flex;align-items:center;gap:1.4rem}
+.nav__back{font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:none}
+.nav__back:hover{color:var(--char)}
+@media(min-width:880px){.nav__back{display:inline}}
+.hero{display:grid;grid-template-columns:1fr;align-items:center;gap:clamp(1.6rem,4vw,3rem);padding:clamp(2rem,5vh,4rem) var(--gut) clamp(2.6rem,7vh,5rem)}
+.hero__media{order:1;width:100%;aspect-ratio:3/2;border-radius:14px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 18px 50px rgba(28,28,30,.10)}
+.hero__media img{width:100%;height:100%;object-fit:cover}
+.hero__copy{order:2}
+.hero h1{font-size:clamp(2.3rem,5.2vw,4rem);font-weight:800;line-height:1.03;letter-spacing:-.022em;margin:.9rem 0 0;max-width:15ch}
+.hero h1 em{font-style:normal;color:var(--goldink)}
+.hero__sub{margin:1.2rem 0 0;color:var(--muted);font-size:1.04rem;max-width:40ch}
+.hero__cta{display:flex;flex-wrap:wrap;align-items:center;gap:1rem 1.4rem;margin:1.9rem 0 0}
+.hero__cue{display:inline-flex;align-items:center;gap:.55rem;font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--goldink)}
+.hero__cue svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+@media(min-width:880px){
+  .hero{grid-template-columns:1.05fr 1fr;gap:clamp(2.5rem,5vw,5rem);min-height:84vh}
+  .hero__copy{order:1}
+  .hero__media{order:2;aspect-ratio:4/3}
+}
+.sec{padding:clamp(3.2rem,8vh,6rem) 0}
+.sec--white{background:var(--white);border-top:1px solid var(--bd)}
+.sec h2{font-size:clamp(1.7rem,3.4vw,2.5rem);font-weight:800;letter-spacing:-.015em;line-height:1.1;max-width:24ch;margin:.2rem 0 0}
+.sechead{display:flex;align-items:end;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin:0 0 1.6rem}
+.hint{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:none;align-items:center;gap:.4rem}
+.hint svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8}
+@media(max-width:720px){.hint{display:inline-flex}}
+.nudge{font-size:.95rem;color:var(--muted);margin:1.7rem 0 0}
+.nudge a{color:var(--goldink);font-weight:700;border-bottom:1px solid var(--gold);transition:color .2s,border-color .2s}
+.nudge a:hover{color:var(--char);border-color:var(--char)}
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(1rem,2.2vw,1.5rem);max-width:1000px;margin-inline:auto}
+.vcard{display:flex;flex-direction:column;gap:.8rem}
+.vcard__media{position:relative;aspect-ratio:9/16;border-radius:12px;overflow:hidden;border:1px solid var(--bd);background:var(--cream)}
+.vcard__poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vcard__video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;background:#000;z-index:2}
+.vcard.playing .vcard__poster,.vcard.playing .vcard__play{display:none}
+.vcard.playing .vcard__video{display:block}
+.vcard__play{position:absolute;inset:0;margin:auto;width:64px;height:64px;border-radius:50%;border:0;cursor:pointer;z-index:3;
+  background:rgba(255,255,255,.92);box-shadow:0 8px 26px rgba(28,28,30,.22);display:flex;align-items:center;justify-content:center;transition:transform .2s,background .2s}
+.vcard__play::after{content:"";border-left:20px solid var(--goldink);border-top:12px solid transparent;border-bottom:12px solid transparent;margin-left:5px}
+.vcard__play:hover{transform:scale(1.07);background:#fff}
+.vcard__media::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(28,28,30,.26),transparent 38%);z-index:1;pointer-events:none;transition:opacity .3s}
+.vcard.playing .vcard__media::after{opacity:0}
+.vcard__foot{display:flex;align-items:center;justify-content:space-between;gap:.6rem;flex-wrap:wrap}
+.vcard__loc{font-size:.92rem;font-weight:700;display:inline-flex;align-items:center;gap:.4rem}
+.vcard__loc svg{width:15px;height:15px;fill:none;stroke:var(--goldink);stroke-width:1.7}
+.vcard__cta{font-size:.72rem;font-weight:800;letter-spacing:.04em;color:var(--goldink);display:inline-flex;align-items:center;gap:.4rem;border:1px solid var(--gold);padding:.5rem .85rem;border-radius:999px;transition:background .25s,color .25s;min-height:40px}
+.vcard__cta:hover{background:var(--gold);color:var(--char)}
+.vcard__cta svg{width:12px;height:12px;fill:none;stroke:currentColor;stroke-width:2.2}
+@media(max-width:720px){
+  .vgrid{display:flex;gap:1rem;overflow-x:auto;scroll-snap-type:x mandatory;max-width:none;padding-bottom:.6rem;scrollbar-width:none}
+  .vgrid::-webkit-scrollbar{display:none}
+  .vcard{flex:0 0 78%;scroll-snap-align:center}
+}
+.r360{display:grid;grid-template-columns:1fr;gap:1.8rem;align-items:center}
+.r360__copy h2{margin:0 0 1.1rem}
+.r360__intro{font-size:1.04rem;color:var(--char);max-width:46ch}
+.r360__points{margin:1.6rem 0 0;display:grid;gap:1.1rem}
+.rp{display:grid;grid-template-columns:auto 1fr;gap:.85rem;align-items:start}
+.rp__ic{width:34px;height:34px;border-radius:50%;background:var(--goldtint);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+.rp__ic svg{width:17px;height:17px;fill:none;stroke:var(--goldink);stroke-width:1.7}
+.rp__h{font-size:.95rem;font-weight:700;margin:.15rem 0 .2rem}
+.rp__b{font-size:.9rem;color:var(--muted);max-width:42ch}
+.r360__ctas{display:flex;flex-wrap:wrap;gap:.8rem 1.2rem;align-items:center;margin:1.8rem 0 0}
+.r360__media{position:relative;aspect-ratio:4/3;border-radius:12px;overflow:hidden;border:1px solid var(--bd)}
+.r360__media::after{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(to bottom,rgba(20,20,24,.18),transparent 30%,transparent 60%,rgba(20,20,24,.28));pointer-events:none}
+@keyframes pan{from{transform:scale(1.1) translateX(-3.5%)}to{transform:scale(1.1) translateX(3.5%)}}
+.r360__media .lbl{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:.9rem;text-align:center;padding:1rem}
+.r360__badge{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--goldink);background:rgba(255,255,255,.85);padding:.3rem .7rem;border-radius:999px}
+.ghost{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:.8rem 1.3rem;border-radius:999px;border:1px solid var(--char);color:var(--char);background:rgba(255,255,255,.8);min-height:46px;transition:border-color .2s,color .2s}
+.ghost:hover{border-color:var(--goldink);color:var(--goldink)}
+.ghost svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.7}
+@media(min-width:920px){.r360{grid-template-columns:1fr 1fr;gap:clamp(2.5rem,5vw,4.5rem)}.r360__media{aspect-ratio:4/5}.r360__points{grid-template-columns:1fr 1fr}}
+.pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:1.7rem}
+.pgrid figure{margin:0;overflow:hidden;border-radius:8px;border:1px solid var(--bd)}
+.pgrid img{width:100%;height:100%;aspect-ratio:3/2;object-fit:cover}
+.pgrid .wide{grid-column:span 2}
+@media(min-width:680px){.pgrid{grid-template-columns:repeat(3,1fr);gap:12px}}
+@media(min-width:1040px){.pgrid{grid-template-columns:repeat(4,1fr)}}
+.cta{background:var(--goldtint);border:1px solid var(--gold);border-radius:18px;padding:clamp(2.6rem,6vw,4.2rem);text-align:center}
+.cta h2{font-size:clamp(2rem,4.4vw,3rem);font-weight:800;color:var(--char);margin:.7rem auto 0;letter-spacing:-.015em;max-width:18ch}
+.cta p{color:var(--muted);margin:.9rem 0 1.8rem;font-size:1.02rem}
+.foot{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;padding:2rem var(--gut) calc(2rem + env(safe-area-inset-bottom));border-top:1px solid var(--bd);margin-top:clamp(2.5rem,6vh,4rem)}
+.foot span{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}`;
+
+/* ───────── Preview (debounced) ───────── */
+let prevTimer=null;
+function renderPreview(){
+  clearTimeout(prevTimer);
+  prevTimer=setTimeout(()=>{
+    document.getElementById('prev').srcdoc = buildHTML(cfg);
+  }, 250);
+}
+
+/* ───────── UI del editor ───────── */
+const ICON = {
+  grip:'<svg viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.6"/><circle cx="9" cy="12" r="1.6"/><circle cx="9" cy="18" r="1.6"/><circle cx="15" cy="6" r="1.6"/><circle cx="15" cy="12" r="1.6"/><circle cx="15" cy="18" r="1.6"/></svg>',
+  eye:'<svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>',
+  eyeOff:'<svg viewBox="0 0 24 24"><path d="M9.9 5.1A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3 3.8M6.6 6.6A17 17 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4-.8"/><path d="M3 3l18 18"/></svg>',
+  del:'<svg viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>',
+  wide:'<svg viewBox="0 0 24 24"><path d="M3 8h18M3 16h18"/></svg>'
+};
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!=null)e.innerHTML=h; return e;};
+function field(label, val, oninput, hint, ml){
+  const f=el('div','f');
+  f.appendChild(el('label',null,label));
+  const inp = ml ? el('textarea') : Object.assign(document.createElement('input'),{type:'text'});
+  inp.value = val; inp.addEventListener('input',()=>oninput(inp.value));
+  f.appendChild(inp);
+  if(hint) f.appendChild(el('div','hint',hint));
+  return f;
+}
+function changed(){ save(); renderPreview(); }
+
+function videoItem(sec, v, idx){
+  const it=el('div','it'+(v.hidden?' hidden':''));
+  it.dataset.idx=idx;
+  it.appendChild(el('div','it__grip',ICON.grip));
+  const th=Object.assign(document.createElement('img'),{className:'it__thumb',src:streamPoster(v.uid),loading:'lazy'});
+  th.onerror=()=>{th.style.visibility='hidden';};
+  it.appendChild(th);
+  const main=el('div','it__main');
+  main.appendChild(el('div','it__id',v.uid));
+  const lf=Object.assign(document.createElement('input'),{className:'it__field',value:v.loc,placeholder:'Etiqueta (ej. Residencial)'});
+  lf.addEventListener('input',()=>{v.loc=lf.value;changed();});
+  main.appendChild(lf);
+  it.appendChild(main);
+  const btns=el('div','it__btns');
+  const eye=el('button','ibtn'+(v.hidden?'':' on'),v.hidden?ICON.eyeOff:ICON.eye);
+  eye.title=v.hidden?'Oculto — clic para mostrar':'Visible — clic para ocultar';
+  eye.onclick=()=>{v.hidden=!v.hidden;changed();renderEditor();};
+  const del=el('button','ibtn ibtn--del',ICON.del); del.title='Quitar';
+  del.onclick=()=>{ if(confirm('¿Quitar este video del portafolio?')){ sec.videos.splice(idx,1); changed(); renderEditor(); } };
+  btns.appendChild(eye); btns.appendChild(del);
+  it.appendChild(btns);
+  return it;
+}
+function photoItem(f, p, idx){
+  const it=el('div','it'+(p.hidden?' hidden':''));
+  it.dataset.idx=idx;
+  it.appendChild(el('div','it__grip',ICON.grip));
+  const th=Object.assign(document.createElement('img'),{className:'it__thumb ph',src:imgURL(p.id),loading:'lazy'});
+  th.onerror=()=>{th.style.visibility='hidden';};
+  it.appendChild(th);
+  const main=el('div','it__main');
+  main.appendChild(el('div','it__id',p.id));
+  const af=Object.assign(document.createElement('input'),{className:'it__field',value:p.alt,placeholder:'Texto alternativo (accesibilidad/SEO)'});
+  af.addEventListener('input',()=>{p.alt=af.value;changed();});
+  main.appendChild(af);
+  it.appendChild(main);
+  const btns=el('div','it__btns');
+  const wideb=el('button','ibtn'+(p.wide?' on':''),ICON.wide);
+  wideb.title=p.wide?'Ancho doble — clic para normal':'Normal — clic para ancho doble';
+  wideb.onclick=()=>{p.wide=!p.wide;changed();renderEditor();};
+  const eye=el('button','ibtn'+(p.hidden?'':' on'),p.hidden?ICON.eyeOff:ICON.eye);
+  eye.title=p.hidden?'Oculta — clic para mostrar':'Visible — clic para ocultar';
+  eye.onclick=()=>{p.hidden=!p.hidden;changed();renderEditor();};
+  const del=el('button','ibtn ibtn--del',ICON.del); del.title='Quitar';
+  del.onclick=()=>{ if(confirm('¿Quitar esta foto del portafolio?')){ f.photos.splice(idx,1); changed(); renderEditor(); } };
+  btns.appendChild(wideb); btns.appendChild(eye); btns.appendChild(del);
+  it.appendChild(btns);
+  return it;
+}
+function mediaList(items, makeItem, sec, kind){
+  const list=el('div','list');
+  items.forEach((m,i)=>list.appendChild(makeItem(sec,m,i)));
+  if (window.Sortable) {
+    Sortable.create(list,{
+      handle:'.it__grip', animation:160, ghostClass:'sortable-ghost', chosenClass:'sortable-chosen',
+      onEnd:e=>{ const arr=kind==='video'?sec.videos:sec.photos;
+        const [moved]=arr.splice(e.oldIndex,1); arr.splice(e.newIndex,0,moved); changed(); renderEditor(); }
+    });
+  } else {
+    list.classList.add('list--nodrag'); // sin librería de arrastre disponible
+  }
+  return list;
+}
+function addRow(placeholder, onAdd){
+  const row=el('div','add');
+  const inp=Object.assign(document.createElement('input'),{type:'text',placeholder});
+  const btn=el('button',null,'Agregar');
+  const go=()=>{ const val=inp.value.trim(); if(!val)return; onAdd(val); inp.value=''; };
+  btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
+  row.appendChild(inp); row.appendChild(btn);
+  return row;
+}
+function group(id, title, count, buildBody){
+  const open = openState[id] !== false;
+  const g=el('div','grp'+(open?' open':''));
+  const head=el('button','grp__head',
+    `${esc(title)} ${count!=null?`<span class="grp__count">${count}</span>`:''}<span class="grp__chev">${SVG.chevDown.replace('aria-hidden="true" ','')}</span>`);
+  head.onclick=()=>{ openState[id]=!g.classList.contains('open'); g.classList.toggle('open'); };
+  g.appendChild(head);
+  const body=el('div','grp__body'); buildBody(body); g.appendChild(body);
+  return g;
+}
+const openState={ hero:true, residencial:true, terreno:false, r360:false, fotos:false, ajustes:false };
+
+function renderEditor(){
+  const pane=document.getElementById('editPane');
+  pane.innerHTML='';
+
+  // HERO
+  pane.appendChild(group('hero','Portada (Hero)',null,b=>{
+    b.appendChild(field('Antetítulo', cfg.hero.eyebrow, v=>{cfg.hero.eyebrow=v;changed();}));
+    b.appendChild(field('Título principal (HTML: usa <em>…</em> para resaltar en dorado)', cfg.hero.h1, v=>{cfg.hero.h1=v;changed();}, 'Ej: La diferencia entre &lt;em&gt;vender rápido&lt;/em&gt; y…', true));
+    b.appendChild(field('Subtítulo', cfg.hero.sub, v=>{cfg.hero.sub=v;changed();}, null, true));
+    b.appendChild(field('ID de foto (Cloudflare Images)', cfg.hero.imageId, v=>{cfg.hero.imageId=v.trim();changed();}, 'El ID que va entre el hash y /public'));
+  }));
+
+  // RESIDENCIAL
+  pane.appendChild(group('residencial','Videos · Residencial', cfg.residencial.videos.length, b=>{
+    b.appendChild(field('Etiqueta de sección', cfg.residencial.kicker, v=>{cfg.residencial.kicker=v;changed();}));
+    b.appendChild(field('Título', cfg.residencial.h2, v=>{cfg.residencial.h2=v;changed();}));
+    b.appendChild(field('Mensaje WhatsApp del botón "Cotizar este video"', cfg.residencial.waText, v=>{cfg.residencial.waText=v;changed();}, null, true));
+    b.appendChild(el('div','kic','Videos · arrastra ⠿ para reordenar'));
+    b.appendChild(mediaList(cfg.residencial.videos, videoItem, cfg.residencial, 'video'));
+    b.appendChild(addRow('Pega el UID de Cloudflare Stream…', uid=>{
+      cfg.residencial.videos.push({uid:uid,loc:cfg.residencial.kicker,hidden:false}); changed(); renderEditor();
+    }));
+  }));
+
+  // TERRENO
+  pane.appendChild(group('terreno','Videos · Terreno', cfg.terreno.videos.length, b=>{
+    b.appendChild(field('Etiqueta de sección', cfg.terreno.kicker, v=>{cfg.terreno.kicker=v;changed();}));
+    b.appendChild(field('Título', cfg.terreno.h2, v=>{cfg.terreno.h2=v;changed();}));
+    b.appendChild(field('Mensaje WhatsApp del botón "Cotizar este video"', cfg.terreno.waText, v=>{cfg.terreno.waText=v;changed();}, null, true));
+    b.appendChild(el('div','kic','Videos · arrastra ⠿ para reordenar'));
+    b.appendChild(mediaList(cfg.terreno.videos, videoItem, cfg.terreno, 'video'));
+    b.appendChild(addRow('Pega el UID de Cloudflare Stream…', uid=>{
+      cfg.terreno.videos.push({uid:uid,loc:cfg.terreno.kicker,hidden:false}); changed(); renderEditor();
+    }));
+  }));
+
+  // 360
+  pane.appendChild(group('r360','Recorrido 360°',null,b=>{
+    b.appendChild(field('Etiqueta', cfg.r360.kicker, v=>{cfg.r360.kicker=v;changed();}));
+    b.appendChild(field('Título', cfg.r360.h2, v=>{cfg.r360.h2=v;changed();}, null, true));
+    b.appendChild(field('Intro', cfg.r360.intro, v=>{cfg.r360.intro=v;changed();}, null, true));
+    b.appendChild(field('Enlace del recorrido (CloudPano)', cfg.r360.tourUrl, v=>{cfg.r360.tourUrl=v.trim();changed();}));
+    b.appendChild(field('Insignia (badge)', cfg.r360.badge, v=>{cfg.r360.badge=v;changed();}));
+    b.appendChild(field('ID de foto de fondo (Cloudflare Images)', cfg.r360.bgImageId, v=>{cfg.r360.bgImageId=v.trim();changed();}));
+    b.appendChild(field('Mensaje WhatsApp', cfg.r360.waText, v=>{cfg.r360.waText=v;changed();}, null, true));
+  }));
+
+  // FOTOS
+  pane.appendChild(group('fotos','Fotografía', cfg.fotos.photos.length, b=>{
+    b.appendChild(field('Etiqueta', cfg.fotos.kicker, v=>{cfg.fotos.kicker=v;changed();}));
+    b.appendChild(field('Título', cfg.fotos.h2, v=>{cfg.fotos.h2=v;changed();}));
+    b.appendChild(field('Mensaje WhatsApp', cfg.fotos.waText, v=>{cfg.fotos.waText=v;changed();}, null, true));
+    b.appendChild(el('div','kic','Fotos · arrastra ⠿ para reordenar · ▭ = ancho doble'));
+    b.appendChild(mediaList(cfg.fotos.photos, photoItem, cfg.fotos, 'photo'));
+    b.appendChild(addRow('Pega el ID de Cloudflare Images…', id=>{
+      cfg.fotos.photos.push({id:id,alt:'Inmuebles Audiovisuales',wide:false,hidden:false}); changed(); renderEditor();
+    }));
+  }));
+
+  // AJUSTES
+  pane.appendChild(group('ajustes','Ajustes generales',null,b=>{
+    b.appendChild(field('Número de WhatsApp (con código de país, sin +)', cfg.phone, v=>{cfg.phone=v.replace(/[^0-9]/g,'');changed();}, 'Ej: 528127174207'));
+  }));
+}
+
+/* ───────── Toolbar acciones ───────── */
+function download(name, text, type){
+  const blob=new Blob([text],{type:type||'text/plain;charset=utf-8'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+document.getElementById('btnHTML').onclick=()=>download('portafolio.html', buildHTML(cfg), 'text/html;charset=utf-8');
+document.getElementById('btnReset').onclick=()=>{
+  if(confirm('¿Descartar tus cambios y volver al portafolio publicado actual?')){
+    cfg=structuredClone(DEFAULT); save(); renderEditor(); renderPreview();
+  }
+};
+// Dialog para JSON
+const dlgBack=document.getElementById('dlgBack');
+function showDialog(title,desc,text){
+  document.getElementById('dlgTitle').textContent=title;
+  document.getElementById('dlgDesc').textContent=desc;
+  document.getElementById('dlgText').value=text;
+  dlgBack.classList.add('show');
+}
+document.getElementById('dlgClose').onclick=()=>dlgBack.classList.remove('show');
+dlgBack.onclick=e=>{ if(e.target===dlgBack) dlgBack.classList.remove('show'); };
+document.getElementById('dlgCopy').onclick=()=>{ const t=document.getElementById('dlgText'); t.select(); try{document.execCommand('copy');}catch(e){} navigator.clipboard&&navigator.clipboard.writeText(t.value); document.getElementById('dlgCopy').textContent='Copiado ✓'; setTimeout(()=>document.getElementById('dlgCopy').textContent='Copiar',1500); };
+document.getElementById('btnJSON').onclick=()=>{
+  showDialog('Configuración (JSON)','Este es el contenido de tu portafolio como datos. Es lo que el backend guardará cuando conectemos el botón Publicar. Por ahora puedes copiarlo o descargarlo como respaldo.', JSON.stringify(cfg,null,2));
+};
+
+/* ───────── Preview viewport toggles ───────── */
+document.querySelectorAll('.prev__bar .seg button').forEach(btn=>{
+  btn.onclick=()=>{
+    const vw=btn.dataset.vw;
+    if(vw==='open'){ const w=window.open('','_blank'); w.document.open(); w.document.write(buildHTML(cfg)); w.document.close(); return; }
+    document.querySelectorAll('.prev__bar .seg button[data-vw="desk"],.prev__bar .seg button[data-vw="mob"]').forEach(b=>b.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('prev').classList.toggle('m', vw==='mob');
+  };
+});
+
+/* ───────── Init ───────── */
+renderEditor();
+renderPreview();
+</script>
+</body>
+</html>
