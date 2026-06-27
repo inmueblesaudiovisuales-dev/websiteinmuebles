@@ -206,6 +206,16 @@ const IMG_HASH    = "4FlhPwMCquiTgnacg31UZQ";     // Cloudflare Images (fotos)
 const PHONE       = "528127174207";
 const streamPoster = uid => `https://customer-${STREAM_CODE}.cloudflarestream.com/${uid}/thumbnails/thumbnail.jpg?height=900`;
 const imgURL       = id  => `https://imagedelivery.net/${IMG_HASH}/${id}/public`;
+// Extraen el UID/ID real aunque el usuario pegue una URL completa. Devuelven null si no es válido.
+function parseStreamUID(input){ const m=String(input||'').match(/[0-9a-f]{32}/i); return m?m[0].toLowerCase():null; }
+function parseImageID(input){
+  let s=String(input||'').trim();
+  const um=s.match(/imagedelivery\.net\/[^/]+\/([^/?#]+)/i); if(um) return um[1];
+  const uuid=s.match(/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i); if(uuid) return uuid[0];
+  return (s && !/[\s"'<>]/.test(s)) ? s : null;   // ID personalizado sin caracteres peligrosos
+}
+// Título del hero: permite solo <em>…</em>, escapa todo lo demás (evita romper el HTML).
+function heroTitle(raw){ return esc(raw).replace(/&lt;em&gt;/gi,'<em>').replace(/&lt;\/em&gt;/gi,'</em>'); }
 
 /* ───────── Estado por defecto = portafolio publicado actual ───────── */
 const DEFAULT = {
@@ -322,15 +332,16 @@ const SVG = {
 
 /* ───────── GENERADOR: cfg → portafolio.html completo (salida = preview) ───────── */
 function videoCard(v, locSVG, waText){
+  const loc = (v.loc || '').trim();
   return `
       <figure class="vcard">
         <div class="vcard__media">
-          <img class="vcard__poster" src="${streamPoster(v.uid)}" alt="Video ${esc(v.loc.toLowerCase())} · Inmuebles Audiovisuales" loading="lazy">
-          <video class="vcard__video" data-stream="${esc(v.uid)}" playsinline preload="none" controls poster="${streamPoster(v.uid)}"></video>
+          <img class="vcard__poster" src="${esc(streamPoster(v.uid))}" alt="Video ${esc(loc.toLowerCase())} · Inmuebles Audiovisuales" loading="lazy">
+          <video class="vcard__video" data-stream="${esc(v.uid)}" playsinline preload="none" controls poster="${esc(streamPoster(v.uid))}"></video>
           <button class="vcard__play" type="button" aria-label="Reproducir video con sonido"></button>
         </div>
         <figcaption class="vcard__foot">
-          <span class="vcard__loc">${locSVG} ${esc(v.loc)}</span>
+          <span class="vcard__loc">${locSVG} ${esc(loc)}</span>
           <a class="vcard__cta" target="_blank" rel="noopener" href="${wa(waText)}">Cotizar este video ${SVG.arrow}</a>
         </figcaption>
       </figure>`;
@@ -354,7 +365,7 @@ function videoSection(sec, id, white, locSVG){
 }
 function photosSection(f){
   const figs = f.photos.filter(p=>!p.hidden).map(p=>
-    `      <figure${p.wide?' class="wide"':''}><img src="${imgURL(p.id)}" alt="${esc(p.alt)}" loading="lazy"></figure>`
+    `      <figure${p.wide?' class="wide"':''}><img src="${esc(imgURL(p.id))}" alt="${esc(p.alt)}" loading="lazy"></figure>`
   ).join("\n");
   return `
 <section class="sec" id="fotos">
@@ -418,7 +429,7 @@ ${PORTAFOLIO_CSS}
 <section class="hero">
   <div class="hero__copy">
     <span class="eyebrow">${esc(c.hero.eyebrow)}</span>
-    <h1>${c.hero.h1}</h1>
+    <h1>${heroTitle(c.hero.h1)}</h1>
     <p class="hero__sub">${esc(c.hero.sub)}</p>
     <div class="hero__cta">
       <a class="wa" target="_blank" rel="noopener" href="${wa('Hola, vi su portafolio y me gustaría cotizar la producción de una propiedad.')}">${SVG.wa} Cotizar por WhatsApp</a>
@@ -426,7 +437,7 @@ ${PORTAFOLIO_CSS}
     </div>
   </div>
   <div class="hero__media">
-    <img src="${imgURL(c.hero.imageId)}" alt="Fachada de casa residencial — producción de Inmuebles Audiovisuales" fetchpriority="high">
+    <img src="${esc(imgURL(c.hero.imageId))}" alt="Fachada de casa residencial — producción de Inmuebles Audiovisuales" fetchpriority="high">
   </div>
 </section>
 ${videoSection(c.residencial, 'residencial', true, SVG.house)}
@@ -451,7 +462,7 @@ ${videoSection(c.terreno, 'terreno', false, SVG.land)}
       </div>
       <div>
         <a class="r360__media" target="_blank" rel="noopener" href="${esc(c.r360.tourUrl)}" style="display:block">
-          <div class="pan" style="background:url('${imgURL(c.r360.bgImageId)}') center/cover no-repeat;position:absolute;inset:0;z-index:0;transform:scale(1.1);animation:pan 18s ease-in-out infinite alternate"></div>
+          <div class="pan" style="background:url('${esc(imgURL(c.r360.bgImageId))}') center/cover no-repeat;position:absolute;inset:0;z-index:0;transform:scale(1.1);animation:pan 18s ease-in-out infinite alternate"></div>
           <div class="lbl">
             <span class="r360__badge">${esc(c.r360.badge)}</span>
             <span class="ghost" aria-hidden="true">${SVG.ext} Abrir recorrido</span>
@@ -625,7 +636,9 @@ let prevTimer=null;
 function renderPreview(){
   clearTimeout(prevTimer);
   prevTimer=setTimeout(()=>{
-    document.getElementById('prev').srcdoc = buildHTML(cfg);
+    try { document.getElementById('prev').srcdoc = buildHTML(cfg); }
+    catch(e){ document.getElementById('prev').srcdoc =
+      '<body style="font-family:sans-serif;padding:2rem;color:#C0492F"><h3>No se pudo generar la vista previa</h3><p>'+String(e.message||e).replace(/</g,'&lt;')+'</p><p style="color:#666">Revisa los últimos campos que editaste.</p></body>'; }
   }, 250);
 }
 
@@ -648,6 +661,20 @@ function field(label, val, oninput, hint, ml){
   return f;
 }
 function changed(){ save(); renderPreview(); }
+
+// Agregar media con validación. Devuelven false si la entrada es inválida (para no limpiar el campo).
+function addVideo(sec, input){
+  const uid = parseStreamUID(input);
+  if(!uid){ alert('No reconocí un UID de Cloudflare Stream válido (32 caracteres hexadecimales). Puedes pegar el UID o la URL del video.'); return false; }
+  if(sec.videos.some(v=>v.uid===uid)){ alert('Ese video ya está en esta lista.'); return false; }
+  sec.videos.push({ uid, loc: sec.kicker, hidden:false }); changed(); renderEditor();
+}
+function addPhoto(f, input){
+  const id = parseImageID(input);
+  if(!id){ alert('No reconocí un ID de Cloudflare Images válido. Puedes pegar el ID o la URL de la imagen.'); return false; }
+  if(f.photos.some(p=>p.id===id)){ alert('Esa foto ya está en la galería.'); return false; }
+  f.photos.push({ id, alt:'Inmuebles Audiovisuales', wide:false, hidden:false }); changed(); renderEditor();
+}
 
 function videoItem(sec, v, idx){
   const it=el('div','it'+(v.hidden?' hidden':''));
@@ -716,7 +743,7 @@ function addRow(placeholder, onAdd){
   const row=el('div','add');
   const inp=Object.assign(document.createElement('input'),{type:'text',placeholder});
   const btn=el('button',null,'Agregar');
-  const go=()=>{ const val=inp.value.trim(); if(!val)return; onAdd(val); inp.value=''; };
+  const go=()=>{ const val=inp.value.trim(); if(!val)return; if(onAdd(val)!==false) inp.value=''; };
   btn.onclick=go; inp.addEventListener('keydown',e=>{if(e.key==='Enter')go();});
   row.appendChild(inp); row.appendChild(btn);
   return row;
@@ -752,9 +779,7 @@ function renderEditor(){
     b.appendChild(field('Mensaje WhatsApp del botón "Cotizar este video"', cfg.residencial.waText, v=>{cfg.residencial.waText=v;changed();}, null, true));
     b.appendChild(el('div','kic','Videos · arrastra ⠿ para reordenar'));
     b.appendChild(mediaList(cfg.residencial.videos, videoItem, cfg.residencial, 'video'));
-    b.appendChild(addRow('Pega el UID de Cloudflare Stream…', uid=>{
-      cfg.residencial.videos.push({uid:uid,loc:cfg.residencial.kicker,hidden:false}); changed(); renderEditor();
-    }));
+    b.appendChild(addRow('Pega el UID o la URL del video de Stream…', input=>addVideo(cfg.residencial, input)));
   }));
 
   // TERRENO
@@ -764,9 +789,7 @@ function renderEditor(){
     b.appendChild(field('Mensaje WhatsApp del botón "Cotizar este video"', cfg.terreno.waText, v=>{cfg.terreno.waText=v;changed();}, null, true));
     b.appendChild(el('div','kic','Videos · arrastra ⠿ para reordenar'));
     b.appendChild(mediaList(cfg.terreno.videos, videoItem, cfg.terreno, 'video'));
-    b.appendChild(addRow('Pega el UID de Cloudflare Stream…', uid=>{
-      cfg.terreno.videos.push({uid:uid,loc:cfg.terreno.kicker,hidden:false}); changed(); renderEditor();
-    }));
+    b.appendChild(addRow('Pega el UID o la URL del video de Stream…', input=>addVideo(cfg.terreno, input)));
   }));
 
   // 360
@@ -787,9 +810,7 @@ function renderEditor(){
     b.appendChild(field('Mensaje WhatsApp', cfg.fotos.waText, v=>{cfg.fotos.waText=v;changed();}, null, true));
     b.appendChild(el('div','kic','Fotos · arrastra ⠿ para reordenar · ▭ = ancho doble'));
     b.appendChild(mediaList(cfg.fotos.photos, photoItem, cfg.fotos, 'photo'));
-    b.appendChild(addRow('Pega el ID de Cloudflare Images…', id=>{
-      cfg.fotos.photos.push({id:id,alt:'Inmuebles Audiovisuales',wide:false,hidden:false}); changed(); renderEditor();
-    }));
+    b.appendChild(addRow('Pega el ID o la URL de la foto de Images…', input=>addPhoto(cfg.fotos, input)));
   }));
 
   // AJUSTES
@@ -891,13 +912,17 @@ document.getElementById('pubGo').onclick = async ()=>{
   go.disabled = true; go.textContent = "Publicando…";
   document.getElementById('pubLog').hidden = false; document.getElementById('pubLog').innerHTML = "";
   const stamp = new Date().toISOString().slice(0,16).replace('T',' ');
+  // Generar TODO antes de tocar la red: si algo falla, no se commitea nada a medias.
+  let configStr, htmlStr;
+  try { configStr = configJSON(); htmlStr = buildHTML(cfg); }
+  catch(e){ plog('✗ No pude generar el portafolio: '+(e.message||e), 'er'); plog('<span class="mut">No se subió nada. Revisa los campos editados.</span>'); go.disabled=false; go.textContent='Reintentar'; return; }
   try {
     plog('<span class="mut">Conectando con GitHub…</span>');
     plog('Subiendo <b>'+PUBLISH.configPath+'</b>…');
-    await ghPutFile(PUBLISH.configPath, configJSON(), `portafolio: actualizar contenido (${stamp})`);
+    await ghPutFile(PUBLISH.configPath, configStr, `portafolio: actualizar contenido (${stamp})`);
     plog('✓ Config guardada', 'ok');
     plog('Subiendo <b>'+PUBLISH.htmlPath+'</b>…');
-    await ghPutFile(PUBLISH.htmlPath, buildHTML(cfg), `portafolio: publicar cambios (${stamp})`);
+    await ghPutFile(PUBLISH.htmlPath, htmlStr, `portafolio: publicar cambios (${stamp})`);
     plog('✓ Página publicada', 'ok');
     plog('<span class="ok">Listo.</span> Cloudflare desplegará en ~1 min. Verifica en <a href="https://inmueblesaudiovisuales.com/portafolio" target="_blank" rel="noopener">inmueblesaudiovisuales.com/portafolio</a>');
     hideDraftBanner();
