@@ -295,6 +295,36 @@ const ghToken = () => { try { return sessionStorage.getItem(GH_TOKEN_KEY) || "";
 
 function readDraft(){ try { const s=localStorage.getItem(LS_KEY); if(s) return JSON.parse(s); } catch(e){} return null; }
 function stripMeta(o){ const c=structuredClone(o); delete c._comment; delete c.version; return c; }
+
+// Devuelve SIEMPRE una config con el esquema completo, sin importar qué se cargue
+// (config de otro esquema, incompleta o manipulada). Evita que buildHTML/renderEditor crasheen.
+function normalize(raw){
+  const out = structuredClone(DEFAULT);
+  if (!raw || typeof raw !== 'object') return out;
+  const o = stripMeta(raw);
+  if (typeof o.phone === 'string') out.phone = o.phone;
+  if (o.hero) for (const k of ['eyebrow','h1','sub','imageId']) if (typeof o.hero[k]==='string') out.hero[k]=o.hero[k];
+  for (const sec of ['residencial','terreno']) {
+    if (!o[sec]) continue;
+    for (const k of ['kicker','h2','waText']) if (typeof o[sec][k]==='string') out[sec][k]=o[sec][k];
+    if (Array.isArray(o[sec].videos))
+      out[sec].videos = o[sec].videos.filter(v=>v&&typeof v.uid==='string')
+        .map(v=>({ uid:v.uid, loc: typeof v.loc==='string'?v.loc:out[sec].kicker, hidden: !!v.hidden }));
+  }
+  if (o.r360) for (const k of ['kicker','h2','intro','bgImageId','tourUrl','badge','waText']) if (typeof o.r360[k]==='string') out.r360[k]=o.r360[k];
+  if (o.fotos) {
+    for (const k of ['kicker','h2','waText']) if (typeof o.fotos[k]==='string') out.fotos[k]=o.fotos[k];
+    if (Array.isArray(o.fotos.photos))
+      out.fotos.photos = o.fotos.photos.filter(p=>p&&typeof p.id==='string')
+        .map(p=>({ id:p.id, alt: typeof p.alt==='string'?p.alt:'Inmuebles Audiovisuales', wide: !!p.wide, hidden: !!p.hidden }));
+  }
+  return out;
+}
+// Comparación independiente del orden de claves (evita falsos "borrador sin publicar").
+function stableStr(o){ return JSON.stringify(o, (k,v)=> (v && typeof v==='object' && !Array.isArray(v))
+  ? Object.keys(v).sort().reduce((a,kk)=>{ a[kk]=v[kk]; return a; },{}) : v ); }
+function sameConfig(a,b){ return stableStr(a)===stableStr(b); }
+
 async function fetchPublished(){
   // misma-origin cuando el editor se sirve junto al sitio; 404 en local → fallback
   const r = await fetch(PUBLISH.configPath, { cache:"no-store" });
@@ -311,7 +341,10 @@ function save(){
   }, 400);
 }
 const esc = s => String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const wa  = t => `https://wa.me/${cfg.phone}?text=${encodeURIComponent(t)}`;
+// Solo http(s); cualquier otra cosa (javascript:, data:, etc.) se neutraliza.
+const safeUrl = u => { const s=String(u||'').trim(); return /^https?:\/\//i.test(s) ? s : '#'; };
+const safePhone = () => String(cfg.phone||'').replace(/[^0-9]/g,'');
+const wa  = t => `https://wa.me/${safePhone()}?text=${encodeURIComponent(t)}`;
 function configJSON(){
   const out = Object.assign(
     { _comment:"Fuente de verdad del contenido del portafolio. La edita editor-portafolio.html y la publica junto con portafolio.html.", version:1 },
@@ -456,12 +489,12 @@ ${videoSection(c.terreno, 'terreno', false, SVG.land)}
           <div class="rp"><span class="rp__ic"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 21s7-5.5 7-11a7 7 0 1 0-14 0c0 5.5 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><div><p class="rp__h">Vende a distancia</p><p class="rp__b">Le vendes a quien está fuera de la ciudad y no puede ir en persona.</p></div></div>
         </div>
         <div class="r360__ctas">
-          <a class="ghost" target="_blank" rel="noopener" href="${esc(c.r360.tourUrl)}">Abrir recorrido ${SVG.ext}</a>
+          <a class="ghost" target="_blank" rel="noopener" href="${esc(safeUrl(c.r360.tourUrl))}">Abrir recorrido ${SVG.ext}</a>
           <span class="nudge" style="margin:0">¿Quieres un recorrido 360 para tu propiedad? <a target="_blank" rel="noopener" href="${wa(c.r360.waText)}">Cotiza por WhatsApp</a></span>
         </div>
       </div>
       <div>
-        <a class="r360__media" target="_blank" rel="noopener" href="${esc(c.r360.tourUrl)}" style="display:block">
+        <a class="r360__media" target="_blank" rel="noopener" href="${esc(safeUrl(c.r360.tourUrl))}" style="display:block">
           <div class="pan" style="background:url('${esc(imgURL(c.r360.bgImageId))}') center/cover no-repeat;position:absolute;inset:0;z-index:0;transform:scale(1.1);animation:pan 18s ease-in-out infinite alternate"></div>
           <div class="lbl">
             <span class="r360__badge">${esc(c.r360.badge)}</span>
@@ -684,7 +717,7 @@ function videoItem(sec, v, idx){
   th.onerror=()=>{th.style.visibility='hidden';};
   it.appendChild(th);
   const main=el('div','it__main');
-  main.appendChild(el('div','it__id',v.uid));
+  const vidId=el('div','it__id'); vidId.textContent=v.uid; main.appendChild(vidId);
   const lf=Object.assign(document.createElement('input'),{className:'it__field',value:v.loc,placeholder:'Etiqueta (ej. Residencial)'});
   lf.addEventListener('input',()=>{v.loc=lf.value;changed();});
   main.appendChild(lf);
@@ -707,7 +740,7 @@ function photoItem(f, p, idx){
   th.onerror=()=>{th.style.visibility='hidden';};
   it.appendChild(th);
   const main=el('div','it__main');
-  main.appendChild(el('div','it__id',p.id));
+  const phId=el('div','it__id'); phId.textContent=p.id; main.appendChild(phId);
   const af=Object.assign(document.createElement('input'),{className:'it__field',value:p.alt,placeholder:'Texto alternativo (accesibilidad/SEO)'});
   af.addEventListener('input',()=>{p.alt=af.value;changed();});
   main.appendChild(af);
@@ -828,7 +861,7 @@ function download(name, text, type){
 document.getElementById('btnHTML').onclick=()=>download('portafolio.html', buildHTML(cfg), 'text/html;charset=utf-8');
 document.getElementById('btnReset').onclick=async ()=>{
   if(!confirm('¿Descartar tus cambios y volver al portafolio publicado actual?')) return;
-  try { cfg = await fetchPublished(); } catch(e){ cfg = structuredClone(DEFAULT); }
+  try { cfg = normalize(await fetchPublished()); } catch(e){ cfg = structuredClone(DEFAULT); }
   save(); hideDraftBanner(); renderEditor(); renderPreview();
 };
 // Dialog para JSON
@@ -850,7 +883,7 @@ document.getElementById('btnJSON').onclick=()=>{
 document.querySelectorAll('.prev__bar .seg button').forEach(btn=>{
   btn.onclick=()=>{
     const vw=btn.dataset.vw;
-    if(vw==='open'){ const w=window.open('','_blank'); w.document.open(); w.document.write(buildHTML(cfg)); w.document.close(); return; }
+    if(vw==='open'){ const w=window.open('','_blank'); if(!w){ alert('El navegador bloqueó la ventana emergente. Permite popups para este sitio.'); return; } w.document.open(); w.document.write(buildHTML(cfg)); w.document.close(); return; }
     document.querySelectorAll('.prev__bar .seg button[data-vw="desk"],.prev__bar .seg button[data-vw="mob"]').forEach(b=>b.classList.remove('on'));
     btn.classList.add('on');
     document.getElementById('prev').classList.toggle('m', vw==='mob');
@@ -918,18 +951,19 @@ document.getElementById('pubGo').onclick = async ()=>{
   catch(e){ plog('✗ No pude generar el portafolio: '+(e.message||e), 'er'); plog('<span class="mut">No se subió nada. Revisa los campos editados.</span>'); go.disabled=false; go.textContent='Reintentar'; return; }
   try {
     plog('<span class="mut">Conectando con GitHub…</span>');
-    plog('Subiendo <b>'+PUBLISH.configPath+'</b>…');
-    await ghPutFile(PUBLISH.configPath, configStr, `portafolio: actualizar contenido (${stamp})`);
-    plog('✓ Config guardada', 'ok');
+    // La página primero: si el 2º commit fallara, lo que ven los visitantes ya quedó correcto.
     plog('Subiendo <b>'+PUBLISH.htmlPath+'</b>…');
     await ghPutFile(PUBLISH.htmlPath, htmlStr, `portafolio: publicar cambios (${stamp})`);
     plog('✓ Página publicada', 'ok');
+    plog('Subiendo <b>'+PUBLISH.configPath+'</b>…');
+    await ghPutFile(PUBLISH.configPath, configStr, `portafolio: actualizar contenido (${stamp})`);
+    plog('✓ Config guardada', 'ok');
     plog('<span class="ok">Listo.</span> Cloudflare desplegará en ~1 min. Verifica en <a href="https://inmueblesaudiovisuales.com/portafolio" target="_blank" rel="noopener">inmueblesaudiovisuales.com/portafolio</a>');
     hideDraftBanner();
     document.getElementById('saveState').textContent = "Publicado ✓";
     go.textContent = "Publicado ✓";
   } catch(err){
-    plog('✗ '+ (err && err.message ? err.message : 'Error desconocido'), 'er');
+    plog('✗ '+ esc(err && err.message ? err.message : 'Error desconocido'), 'er');
     if (/401|inválido|sin permiso/i.test(err.message||'')){ try{ sessionStorage.removeItem(GH_TOKEN_KEY); }catch(e){} plog('<span class="mut">Token borrado. Vuelve a abrir Publicar e ingrésalo de nuevo.</span>'); }
     go.disabled = false; go.textContent = "Reintentar";
   }
@@ -937,18 +971,21 @@ document.getElementById('pubGo').onclick = async ()=>{
 
 /* ───────── Arranque ───────── */
 async function boot(){
-  const draft = readDraft();
-  let published = null;
-  try { published = await fetchPublished(); } catch(e){ /* local/404: sin published */ }
+  const draftRaw = readDraft();
+  let publishedRaw = null;
+  try { publishedRaw = await fetchPublished(); } catch(e){ /* local/404: sin published */ }
+  const draft     = draftRaw     ? normalize(draftRaw)     : null;
+  const published = publishedRaw ? normalize(publishedRaw) : null;
   if (draft){
     cfg = draft;
-    if (published && JSON.stringify(published) !== JSON.stringify(stripMeta(draft))) showDraftBanner();
+    if (published && !sameConfig(published, draft)) showDraftBanner();
   } else if (published){
     cfg = published;
   } else {
     cfg = structuredClone(DEFAULT);
   }
-  renderEditor();
+  try { renderEditor(); }
+  catch(e){ cfg = structuredClone(DEFAULT); renderEditor(); }   // red de seguridad
   renderPreview();
 }
 boot();
