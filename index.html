@@ -343,7 +343,6 @@ document.addEventListener('keydown', function(e){
     </a>
     <div class="hidden md:flex items-center gap-6">
       <a href="#servicios"    onclick="navTo('servicios');return false;"    class="nav-lnk" style="color:rgba(255,255,255,.8)">Servicios</a>
-      <a href="#catalogo"     onclick="navTo('catalogo');return false;"     class="nav-lnk" style="color:rgba(255,255,255,.8)">Catálogo</a>
       <a href="#como-funciona" onclick="navTo('como-funciona');return false;" class="nav-lnk" style="color:rgba(255,255,255,.8)">Cómo funciona</a>
       <a href="#faq"          onclick="navTo('faq');return false;"          class="nav-lnk" style="color:rgba(255,255,255,.8)">FAQ</a>
       <a href="portafolio.html" class="nav-lnk" style="color:rgba(255,255,255,.8)">Portafolio</a>
@@ -403,7 +402,7 @@ document.addEventListener('keydown', function(e){
       </div>
 
       <!-- CTA Secundario -->
-      <a href="#catalogo" onclick="navTo('catalogo');return false;" style="animation:fadeInUp 600ms ease-out forwards;opacity:0;animation-delay:550ms;font-family:Montserrat;font-size:14px;color:rgba(250,250,250,0.8);text-decoration:underline;text-align:center;cursor:pointer;transition:color .2s" onmouseover="this.style.color='rgba(250,250,250,1)'" onmouseout="this.style.color='rgba(250,250,250,0.8)'">
+      <a href="#servicios" onclick="navTo('servicios');return false;" style="animation:fadeInUp 600ms ease-out forwards;opacity:0;animation-delay:550ms;font-family:Montserrat;font-size:14px;color:rgba(250,250,250,0.8);text-decoration:underline;text-align:center;cursor:pointer;transition:color .2s" onmouseover="this.style.color='rgba(250,250,250,1)'" onmouseout="this.style.color='rgba(250,250,250,0.8)'">
         ↓ Ver todo lo que producimos
       </a>
     </div>
@@ -648,100 +647,70 @@ document.addEventListener('keydown', function(e){
         </div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- CATÁLOGO DE SERVICIOS -->
-<section id="catalogo" class="py-20 md:py-24" style="background:#F9F7F4">
-  <span id="paquetes" aria-hidden="true" style="display:block;height:0;overflow:hidden"></span>
-  <style>
-    .cat-grid{display:grid;grid-template-columns:1fr;gap:20px;align-items:stretch}
-    .cat-grupo{margin-top:3rem}
-    .cat-grupo-tit{font-size:20px;font-weight:900;color:#1C1C1E;margin-bottom:6px;letter-spacing:-.01em}
-    .cat-grupo-sub{font-size:14px;line-height:1.7;color:#9B9B9F;margin-bottom:20px;max-width:640px}
-    @media (min-width:640px){ .cat-grid{grid-template-columns:repeat(2,1fr)} }
-    @media (min-width:1024px){ .cat-grid{grid-template-columns:repeat(4,1fr)} }
-  </style>
-  <div class="max-w-[1240px] mx-auto px-6 md:px-8">
+    <!-- Y ADEMÁS: servicios que no están en las tarjetas de arriba -->
+    <span id="paquetes" aria-hidden="true" style="display:block;height:0;overflow:hidden"></span>
+    <style>
+      .svc-extra{margin-top:4rem;background:#F9F7F4;border-radius:20px;padding:36px 28px}
+      .svc-extra-cols{display:grid;grid-template-columns:1fr;gap:40px}
+      .svc-extra-tit{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#C9A84C;margin-bottom:18px}
+      .svc-item{display:flex;gap:12px;padding:12px 0;border-top:1px solid #E8E8EA}
+      .svc-item:first-of-type{border-top:none;padding-top:0}
+      .svc-item .material-symbols-outlined{font-size:20px;color:#C9A84C;flex-shrink:0;margin-top:2px}
+      .svc-item h4{font-size:15px;font-weight:700;color:#1C1C1E;margin-bottom:3px}
+      .svc-item p{font-size:13px;line-height:1.55;color:#9B9B9F}
+      @media (min-width:900px){ .svc-extra-cols{grid-template-columns:1fr 1fr;gap:48px} .svc-extra{padding:44px 40px} }
+    </style>
 
-    <div class="text-center mb-12 reveal">
-      <div class="gold-bar"></div>
-      <h2 class="font-bold mb-4" style="font-size:clamp(24px,4vw,36px);letter-spacing:-.015em;color:#1C1C1E">Todo lo que producimos para tu propiedad</h2>
-      <p style="font-size:16px;line-height:1.7;color:#9B9B9F;max-width:640px;margin:0 auto">Cada servicio funciona por separado o combinado. Nos dices qué necesita tu propiedad y armamos la cobertura a la medida.</p>
-    </div>
+    <div class="svc-extra reveal">
+      <div class="svc-extra-cols">
 
-    <!-- ── RESIDENCIAL ── -->
-    <div class="reveal">
-      <p class="cat-grupo-tit">Casas, departamentos, Airbnbs y quintas</p>
-      <p class="cat-grupo-sub">Para agentes inmobiliarios, anfitriones de Airbnb, dueños de quintas y propiedades en venta o renta.</p>
-      <div class="cat-grid">
+        <div>
+          <p class="svc-extra-tit">Para terrenos y desarrollos</p>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">photo_camera</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Fotografía Profesional</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">35 a 50 imágenes en alta resolución de interiores y exteriores a nivel de piso: múltiples exposiciones combinadas para luminosidad perfecta, colores reales y detalles impecables. Listas para portales inmobiliarios.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Fotograf%C3%ADa%20Profesional" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">flight</span><div><h4>Video Cinemático Aéreo</h4><p>Clip de 30 a 60 segundos filmado íntegramente desde el aire, con movimientos fluidos y colorización profesional.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">videocam</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Video Cinemático</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Clip de 30 a 60 segundos con movimientos de cámara fluidos, colorización profesional y montaje dinámico. Música libre de derechos incluida.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Video%20Cinem%C3%A1tico" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">highlight_alt</span><div><h4>Animación Gráfica de Perímetro</h4><p>Con tracking 3D anclamos los límites y medidas del terreno sobre el video en movimiento. Se mantienen fijos sin importar el ángulo.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">drone</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Video y Fotografía Aérea con Drone</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Tomas aéreas de fachada, patios y entorno con movimientos fluidos, más 5 fotografías aéreas en alta resolución. Comunican plusvalía, accesos y contexto de la propiedad.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Video%20y%20Fotograf%C3%ADa%20A%C3%A9rea%20con%20Drone" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">landscape</span><div><h4>Fotografía Aérea con Delimitado</h4><p>Imágenes de alta resolución con el perímetro marcado gráficamente, listas para portales y presentaciones.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">360</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Recorrido Virtual Inmersivo</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Escaneo navegable 24/7 desde celular, tablet o computadora. El comprador recorre cada espacio como si estuviera físicamente ahí. Hospedaje en la nube incluido por 12 meses.</p><a href="https://app.cloudpano.com/group/RI9t58XNh" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:4px;margin-top:10px;font-size:12px;font-weight:700;color:#C9A84C;text-decoration:none" onmouseover="this.style.opacity='.75'" onmouseout="this.style.opacity='1'"><span class="material-symbols-outlined" style="font-size:13px">open_in_new</span>Ver ejemplo real</a></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Recorrido%20Virtual%20Inmersivo" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">panorama_photosphere</span><div><h4>Recorrido Virtual Aéreo</h4><p>Panorámica interactiva desde el aire: accesos, vialidades y puntos de referencia del entorno. Hospedaje incluido por 12 meses.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">pool</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Grabación de Amenidades</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Cobertura completa de alberca, gimnasio, salones, jardines y todos los espacios compartidos. Documentamos todo lo que forma parte del valor de la propiedad.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Grabaci%C3%B3n%20de%20Amenidades" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">auto_awesome</span><div><h4>Visualización de Potencial con IA</h4><p>Render de cómo podría lucir el terreno construido, integrado al video aéreo como transición entre lo real y lo edificable.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">record_voice_over</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Narración Profesional con IA</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Locución en off integrada al video cinemático, generada con voz natural. Comunica los puntos clave de la propiedad de forma persuasiva y profesional.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Narraci%C3%B3n%20Profesional%20con%20IA" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">forest</span><div><h4>Amenidades del Desarrollo</h4><p>Accesos, jardines y áreas verdes del fraccionamiento que forman parte del valor del terreno.</p></div></div>
+        </div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">smartphone</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Contenido para Redes Sociales</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Adaptaciones en formatos optimizados para Instagram Reels, Facebook y WhatsApp. Entrega de 3 videos cortos en formato vertical 9:16.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Contenido%20para%20Redes%20Sociales" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+        <div>
+          <p class="svc-extra-tit">Complementos</p>
 
-      </div>
-    </div>
+          <div class="svc-item"><span class="material-symbols-outlined">pool</span><div><h4>Grabación de Amenidades</h4><p>Alberca, gimnasio, salones y jardines: todo lo que forma parte del valor de la propiedad.</p></div></div>
 
-    <!-- ── TERRENOS ── -->
-    <div class="cat-grupo reveal">
-      <p class="cat-grupo-tit">Lotes, terrenos y desarrollos en preventa</p>
-      <p class="cat-grupo-sub">Contenido visual diseñado para resaltar ubicación, dimensiones y entorno del terreno, elevando su percepción de valor desde el primer vistazo.</p>
-      <div class="cat-grid">
+          <div class="svc-item"><span class="material-symbols-outlined">record_voice_over</span><div><h4>Narración Profesional con IA</h4><p>Locución en off con voz natural integrada al video, para comunicar los puntos clave de forma persuasiva.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">flight</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Video Cinemático Aéreo</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Clip de 30 a 60 segundos filmado íntegramente desde el aire, con movimientos fluidos y colorización profesional. Música libre de derechos incluida.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Video%20Cinem%C3%A1tico%20A%C3%A9reo" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">chair</span><div><h4>Staging Virtual</h4><p>Convierte espacios vacíos en ambientes amueblados y aspiracionales. Cotización por imagen.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">highlight_alt</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Animación Gráfica de Perímetro</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Con tracking 3D anclamos los límites del terreno sobre el video aéreo en movimiento. El perímetro, medidas y señalización se mantienen fijos sin importar el ángulo de la cámara.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Animaci%C3%B3n%20Gr%C3%A1fica%20de%20Per%C3%ADmetro" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">straighten</span><div><h4>Plano 3D + 2D</h4><p>Levantamiento digital de la propiedad con plano 2D y recorrido visual 3D. Entrega en PDF y JPG.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">landscape</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Fotografía Aérea con Delimitado</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Imágenes de alta resolución tomadas con drone, con el perímetro del terreno marcado gráficamente. Ideales para portales inmobiliarios y presentaciones a compradores.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Fotograf%C3%ADa%20A%C3%A9rea%20con%20Delimitado" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">person_play</span><div><h4>Asesor en Video</h4><p>Grabamos tu aparición en cámara para integrarla al video. No solo promocionas la propiedad: te posicionas tú.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">panorama_photosphere</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Recorrido Virtual Aéreo</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Vista panorámica interactiva desde el aire. El comprador explora el entorno del terreno —accesos, vialidades y puntos de referencia— desde cualquier dispositivo. Hospedaje incluido por 12 meses.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Recorrido%20Virtual%20A%C3%A9reo" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">web</span><div><h4>Landing Page</h4><p>Página exclusiva de la propiedad con galería, video, recorrido virtual y formulario. Independiente de los portales.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">auto_awesome</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Visualización de Potencial con IA</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Render que muestra cómo podría lucir el terreno con una construcción. Se integra al video aéreo creando una transición que conecta el terreno real con su potencial edificable.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Visualizaci%C3%B3n%20de%20Potencial%20con%20IA" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">picture_as_pdf</span><div><h4>Folleto Digital PDF</h4><p>Presentación digital e imprimible con fotos, características y datos de contacto. Listo para enviar por WhatsApp.</p></div></div>
 
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">forest</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Amenidades del Desarrollo</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Cobertura de accesos, jardines, áreas verdes y espacios compartidos del fraccionamiento que forman parte del valor del terreno.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesan%20las%20Amenidades%20del%20Desarrollo" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
+          <div class="svc-item"><span class="material-symbols-outlined">bolt</span><div><h4>Entrega Express</h4><p>Adelantamos la entrega cuando la propiedad no puede esperar los días hábiles habituales.</p></div></div>
+        </div>
 
       </div>
     </div>
 
-    <!-- ── COMPLEMENTOS ── -->
-    <div class="cat-grupo reveal">
-      <p class="cat-grupo-tit">Complementos</p>
-      <p class="cat-grupo-sub">Herramientas adicionales que se suman a cualquier servicio para presentar, compartir y cerrar más rápido.</p>
-      <div class="cat-grid">
-
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">web</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Landing Page</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Página web exclusiva para la propiedad con galería, video cinemático, recorrido virtual y formulario de contacto. Una herramienta de ventas independiente de los portales.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20una%20Landing%20Page" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
-
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">picture_as_pdf</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Folleto Digital PDF</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Material de presentación digital e imprimible con las fotografías principales, características de la propiedad y datos de contacto. Ideal para enviar por WhatsApp o correo.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20el%20Folleto%20Digital%20PDF" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
-
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">person_play</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Asesor en Video</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Grabamos tu aparición en cámara para integrarla al video del inmueble. No solo promocionas la propiedad: te posicionas tú.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Asesor%20en%20Video" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
-
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">chair</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Staging Virtual</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Transforma espacios vacíos en ambientes amueblados y aspiracionales. Cotización por imagen con descuento por volumen.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Staging%20Virtual" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
-
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">straighten</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Plano 3D + 2D</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Levantamiento digital de la propiedad con plano 2D y recorrido visual 3D. Entrega en PDF y JPG.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Plano%203D%20%2B%202D" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
-
-        <div class="bg-white rounded-2xl border-2 border-[#E8E8EA] overflow-hidden pkg-card-hover" style="box-shadow:0 6px 24px rgba(28,28,30,.06);display:grid;grid-template-rows:1fr auto"><div class="p-5 pb-4"><span class="material-symbols-outlined block mb-3" style="font-size:26px;color:#C9A84C">bolt</span><h3 class="font-black mb-2" style="font-size:17px;color:#1C1C1E">Entrega Express</h3><p style="font-size:13px;line-height:1.6;color:#9B9B9F">Adelantamos la entrega del material cuando la propiedad no puede esperar los días hábiles habituales.</p></div><div class="px-5 pb-5"><a href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20Entrega%20Express" class="btn-gold" style="width:100%;justify-content:center;font-size:11px">Solicitar</a></div></div>
-
-      </div>
-    </div>
-
-    <div class="text-center reveal" style="margin-top:3.5rem">
-      <p style="font-size:15px;line-height:1.7;color:#9B9B9F;max-width:560px;margin:0 auto 20px">¿No sabes qué necesita tu propiedad? Cuéntanos de qué se trata y te decimos qué material la vende mejor.</p>
+    <div class="text-center reveal" style="margin-top:3rem">
+      <p style="font-size:15px;line-height:1.7;color:#9B9B9F;max-width:560px;margin:0 auto 20px">Cada servicio se contrata por separado o combinado. Cuéntanos de qué se trata la propiedad y te decimos qué material la vende mejor.</p>
       <a href="https://wa.me/528127174207?text=Hola%2C%20quiero%20una%20cotizaci%C3%B3n%20a%20la%20medida" class="btn-gold btn-gold-lg">Cotizar por WhatsApp</a>
     </div>
-
   </div>
 </section>
+
 
 <!-- PREGUNTAS FRECUENTES -->
 <!-- CÓMO FUNCIONA -->
@@ -1319,7 +1288,6 @@ if(ctaLine){
 <div id="mob-drawer" aria-label="Menú móvil" role="dialog" aria-modal="true">
   <button type="button" id="drawer-close" onclick="closeDrawer()" aria-label="Cerrar menú" style="position:absolute;top:20px;right:20px;background:transparent;border:none;color:#fff;font-size:28px;cursor:pointer;padding:8px;line-height:1">&times;</button>
   <button onclick="navTo('servicios')" class="drawer-link">Servicios</button>
-  <button onclick="navTo('catalogo')" class="drawer-link">Catálogo</button>
   <button onclick="navTo('como-funciona')" class="drawer-link">Cómo funciona</button>
   <button onclick="navTo('faq')" class="drawer-link">Preguntas frecuentes</button>
   <button onclick="location.href='portafolio.html'" class="drawer-link">Portafolio</button>
