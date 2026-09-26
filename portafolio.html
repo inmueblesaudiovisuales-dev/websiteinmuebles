@@ -169,6 +169,31 @@ a{color:inherit;text-decoration:none}
 .foot{display:flex;flex-wrap:wrap;gap:.8rem;justify-content:space-between;padding:2rem var(--gut) calc(2rem + env(safe-area-inset-bottom));border-top:1px solid var(--bd);margin-top:clamp(2.5rem,6vh,4rem)}
 .foot span{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 
+/* COMPARTIR UN VIDEO */
+.vcard__actions{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.vcard__share{position:relative;display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;flex:0 0 auto;border-radius:999px;border:1px solid var(--bd2);background:var(--white);color:var(--muted);cursor:pointer;transition:border-color .2s,color .2s}
+.vcard__share:hover{border-color:var(--goldink);color:var(--goldink)}
+.vcard__share svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8}
+.vcard__share::before{content:"Enlace copiado";position:absolute;bottom:120%;left:50%;transform:translateX(-50%) translateY(4px);background:var(--char);color:#fff;font-size:.68rem;font-weight:700;padding:.35rem .6rem;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s}
+.vcard__share.is-shared::before{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* VISTA DE UN SOLO VIDEO (enlace compartido: ?v=UID) */
+#videoView{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:var(--char)}
+html.vv-open #videoView{display:flex}
+html.vv-open .nav,html.vv-open main{visibility:hidden}
+html.vv-open,html.vv-open body{overflow:hidden}
+.vview__bar{display:flex;align-items:center;padding:1.1rem var(--gut) 0}
+.vview__back{display:inline-flex;align-items:center;gap:.5rem;font-size:.74rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--cream);background:none;border:1px solid rgba(249,247,244,.35);padding:.7rem 1.1rem;border-radius:999px;cursor:pointer;transition:border-color .2s,color .2s}
+.vview__back:hover{border-color:var(--gold);color:var(--gold)}
+.vview__back svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.2}
+.vview__stage{flex:1;display:flex;align-items:center;justify-content:center;padding:1.4rem var(--gut) calc(1.4rem + env(safe-area-inset-bottom))}
+.vview__stage .vcard{width:100%;max-width:380px}
+.vview__stage .vcard__loc{color:var(--cream)}
+.vview__stage .vcard__cta{color:var(--gold);border-color:var(--gold)}
+.vview__stage .vcard__cta:hover{background:var(--gold);color:var(--char)}
+.vview__stage .vcard__share{border-color:rgba(249,247,244,.35);background:transparent;color:var(--cream)}
+.vview__stage .vcard__share:hover{border-color:var(--gold);color:var(--gold)}
+
 @media(prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   *,*::before,*::after{animation:none!important;transition:none!important}
@@ -176,6 +201,7 @@ a{color:inherit;text-decoration:none}
 </style>
 </head>
 <body>
+<script>(function(){try{if(new URLSearchParams(location.search).has('v'))document.documentElement.classList.add('vv-open');}catch(e){}})();</script>
 
 <a class="skip" href="#contenido">Saltar al contenido</a>
 
@@ -188,6 +214,28 @@ a{color:inherit;text-decoration:none}
     </div>
   </nav>
 </header>
+
+<div id="videoView">
+  <div class="vview__bar wrap">
+    <button type="button" class="vview__back"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg> Volver al portafolio</button>
+  </div>
+  <div class="vview__stage">
+    <figure class="vcard">
+      <div class="vcard__media">
+        <img class="vcard__poster" src="" alt="" loading="lazy">
+        <video class="vcard__video" playsinline preload="none" controls></video>
+        <button class="vcard__play" type="button" aria-label="Reproducir video con sonido"></button>
+      </div>
+      <figcaption class="vcard__foot">
+        <span class="vcard__loc"></span>
+        <span class="vcard__actions">
+          <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar este video por WhatsApp" href="#">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        </span>
+      </figcaption>
+    </figure>
+  </div>
+</div>
 
 <main id="contenido">
 
@@ -227,7 +275,10 @@ a{color:inherit;text-decoration:none}
         </div>
         <figcaption class="vcard__foot">
           <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
-          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="vcard__actions">
+            <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+            <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </span>
         </figcaption>
       </figure>
 
@@ -239,7 +290,10 @@ a{color:inherit;text-decoration:none}
         </div>
         <figcaption class="vcard__foot">
           <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
-          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="vcard__actions">
+            <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+            <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </span>
         </figcaption>
       </figure>
 
@@ -251,7 +305,10 @@ a{color:inherit;text-decoration:none}
         </div>
         <figcaption class="vcard__foot">
           <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg> Residencial</span>
-          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="vcard__actions">
+            <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+            <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video residencial" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20residencial%20para%20mi%20propiedad.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </span>
         </figcaption>
       </figure>
 
@@ -279,7 +336,10 @@ a{color:inherit;text-decoration:none}
         </div>
         <figcaption class="vcard__foot">
           <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
-          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="vcard__actions">
+            <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+            <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </span>
         </figcaption>
       </figure>
 
@@ -291,7 +351,10 @@ a{color:inherit;text-decoration:none}
         </div>
         <figcaption class="vcard__foot">
           <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
-          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="vcard__actions">
+            <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+            <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </span>
         </figcaption>
       </figure>
 
@@ -303,7 +366,10 @@ a{color:inherit;text-decoration:none}
         </div>
         <figcaption class="vcard__foot">
           <span class="vcard__loc"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 18h18"/><path d="M3 18l6-8 4 5 3-4 5 7"/></svg> Terreno</span>
-          <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <span class="vcard__actions">
+            <button class="vcard__share" type="button" aria-label="Copiar enlace de este video"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M10 14a5 5 0 0 0 7.07 0l2-2a5 5 0 0 0-7.07-7.07l-1 1"/><path d="M14 10a5 5 0 0 0-7.07 0l-2 2a5 5 0 0 0 7.07 7.07l1-1"/></svg></button>
+            <a class="vcard__cta" target="_blank" rel="noopener" aria-label="Cotizar por WhatsApp un video de terreno" href="https://wa.me/528127174207?text=Hola%2C%20me%20interesa%20un%20video%20para%20mostrar%20mi%20terreno.">Cotizar este video <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </span>
         </figcaption>
       </figure>
 
@@ -425,6 +491,81 @@ a{color:inherit;text-decoration:none}
       if (p && p.catch) p.catch(function(){});
     });
   });
+
+  // Compartir un video (enlace ?v=UID que abre solo ese video)
+  function fallbackCopy(url){
+    var ta = document.createElement("textarea");
+    ta.value = url; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); } catch(e){}
+    document.body.removeChild(ta);
+  }
+  document.addEventListener("click", function(e){
+    var btn = e.target.closest && e.target.closest(".vcard__share");
+    if (!btn) return;
+    var card = btn.closest(".vcard");
+    var vid = card && card.querySelector(".vcard__video");
+    var uid = vid && vid.dataset.stream;
+    if (!uid) return;
+    var url = location.origin + location.pathname + "?v=" + uid;
+    if (navigator.share) { navigator.share({ title: "Inmuebles Audiovisuales · Video", url: url }).catch(function(){}); return; }
+    function flash(){ btn.classList.add("is-shared"); setTimeout(function(){ btn.classList.remove("is-shared"); }, 1600); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(flash).catch(function(){ fallbackCopy(url); flash(); });
+    } else { fallbackCopy(url); flash(); }
+  });
+
+  // Vista de un solo video (enlace compartido): abre solo esa tarjeta, cubre el resto de la página
+  function findCardByUid(uid){
+    var v = document.querySelector('.vcard__video[data-stream="' + uid + '"]');
+    return (v && !v.closest("#videoView")) ? v.closest(".vcard") : null;
+  }
+  function openVideoView(uid){
+    var src = findCardByUid(uid);
+    if (!src) return false;
+    var vv = document.getElementById("videoView");
+    var poster = vv.querySelector(".vcard__poster");
+    var video = vv.querySelector(".vcard__video");
+    var locEl = vv.querySelector(".vcard__loc");
+    var ctaEl = vv.querySelector(".vcard__cta");
+    var srcPoster = src.querySelector(".vcard__poster");
+    var srcLoc = src.querySelector(".vcard__loc");
+    var srcCta = src.querySelector(".vcard__cta");
+    poster.src = srcPoster.src;
+    poster.alt = srcPoster.alt;
+    delete video.dataset.mounted;
+    video.removeAttribute("src");
+    video.dataset.stream = uid;
+    video.poster = srcPoster.src;
+    locEl.innerHTML = srcLoc.innerHTML;
+    ctaEl.href = srcCta.href;
+    document.documentElement.classList.add("vv-open");
+    return true;
+  }
+  function closeVideoView(){
+    var vv = document.getElementById("videoView");
+    var video = vv.querySelector(".vcard__video");
+    video.pause();
+    video.removeAttribute("src");
+    delete video.dataset.mounted;
+    vv.querySelector(".vcard").classList.remove("playing");
+    if (current === vv.querySelector(".vcard")) current = null;
+    document.documentElement.classList.remove("vv-open");
+    var url = new URL(location.href);
+    url.searchParams.delete("v");
+    history.replaceState(null, "", url.pathname + (url.search || "") + url.hash);
+  }
+  document.getElementById("videoView").querySelector(".vview__back").addEventListener("click", closeVideoView);
+  document.addEventListener("keydown", function(e){
+    if (e.key === "Escape" && document.documentElement.classList.contains("vv-open")) closeVideoView();
+  });
+
+  var sharedUid = new URLSearchParams(location.search).get("v");
+  if (sharedUid) {
+    if (!openVideoView(sharedUid)) document.documentElement.classList.remove("vv-open");
+  } else {
+    document.documentElement.classList.remove("vv-open");
+  }
 })();
 </script>
 </body>
