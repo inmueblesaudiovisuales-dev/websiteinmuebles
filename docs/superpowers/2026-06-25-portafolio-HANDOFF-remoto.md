@@ -56,7 +56,8 @@ Estos archivos están **gitignored** y NO viajan a la nube:
 |---|---|---|---|
 | Residencial | 1 (favorito) | `4b940872c1f5812f6f16503b3e3c9663` | 2509.03 IA version final 4k |
 | Residencial | 2 | `ed43474d6c831a6fb7ef5e1bd9debd1c` | 2602.09 IA 9x16 |
-| Residencial | 3 | `227043a6e087886ba9571ac5bcb39078` | 2603.10 IA 9x16 v2 |
+| Residencial | 3 | `575e917129ec924b38a42993f7735205` | IAV-2607.17-A REEL |
+| Residencial | 4 | `227043a6e087886ba9571ac5bcb39078` | 2603.10 IA 9x16 v2 |
 | Terreno | 1 (favorito) | `20ebd72cddcf68d5f3bb39df6cea66b0` | IAV-2606.07-A_1 |
 | Terreno | 2 | `c8dcdd1d76e162223bf1bd5e66c745d6` | 2603.04 IA 9x16 narrado |
 | Terreno | 3 | `8136f630160faf2a1dacc87d534ad930` | 2603.24 IA 9x16 NARRADO |
